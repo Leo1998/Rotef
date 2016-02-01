@@ -1,0 +1,5 @@
+SPRITE mob/player.png
+
+SPRITE tiles/dirt.png
+SPRITE tiles/water.png
+SPRITE tiles/stone.png
