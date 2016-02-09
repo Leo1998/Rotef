@@ -80,20 +80,20 @@ public class OptionsScreen extends BaseScreen {
 		t1.add(debugCheckbox).padBottom(25f);
 		t1.row();
 
-		final Label lightMapResSliderLabel = new Label("LightMap Resolution: " + Game.config.getLightMapRes(), UI.labelStyle);
-		final Slider lightMapResSlider = new Slider(1, 8, 1, false, UI.sliderStyle);
-		lightMapResSlider.setValue(Game.config.getLightMapRes());
+		final Label lightMapDownScaleSliderLabel = new Label("LightMapDownScale: " + Game.config.getLightMapDownScale(), UI.labelStyle);
+		final Slider lightMapResSlider = new Slider(1, 4, 1, false, UI.sliderStyle);
+		lightMapResSlider.setValue(Game.config.getLightMapDownScale());
 		lightMapResSlider.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				Game.config.setLightMapRes((int) lightMapResSlider.getValue());
+				Game.config.setLightMapDownScale((int) lightMapResSlider.getValue());
 				Game.applyConfig();
 
-				lightMapResSliderLabel.setText("LightMap Resolution: " + Game.config.getLightMapRes());
+				lightMapDownScaleSliderLabel.setText("LightMapDownScale: " + Game.config.getLightMapDownScale());
 			}
 		});
 		t1.add(lightMapResSlider);
-		t1.add(lightMapResSliderLabel).padLeft(5f);
+		t1.add(lightMapDownScaleSliderLabel).padLeft(5f);
 		t1.row();
 
 		final Label uiSizeSliderLabel = new Label("UI Size: " + Game.config.getUiSize(), UI.labelStyle);

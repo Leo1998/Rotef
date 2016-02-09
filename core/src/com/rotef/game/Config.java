@@ -20,7 +20,7 @@ public class Config {
 			setHeight(600);
 			setFullscreen(false);
 			setVSync(true);
-			setLightMapRes(Game.isMobile ? 2 : 8);
+			setLightMapDownScale(Game.isMobile ? 2 : 1);
 			setUiSize(Game.isMobile ? 2.0f : 1.5f);
 			setDebug(false);
 		}
@@ -191,12 +191,12 @@ public class Config {
 		putBoolean("Fullscreen", value);
 	}
 
-	public int getLightMapRes() {
-		return getInteger("LightMapRes");
+	public int getLightMapDownScale() {
+		return getInteger("LightMapDownScale");
 	}
 
-	public void setLightMapRes(int value) {
-		putInteger("LightMapRes", value);
+	public void setLightMapDownScale(int value) {
+		putInteger("LightMapDownScale", value);
 	}
 
 	public float getUiSize() {

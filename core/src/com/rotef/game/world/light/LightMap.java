@@ -1,5 +1,6 @@
 package com.rotef.game.world.light;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
@@ -20,10 +21,10 @@ public class LightMap {
 	private Mesh lightMapMesh;
 
 	public LightMap(int width, int height) {
-		init(false, width, height);
+		init(width, height);
 	}
 
-	public void init(boolean resize, int width, int height) {
+	public void init(int width, int height) {
 		if (fb != null) {
 			fb.dispose();
 		}
@@ -38,44 +39,33 @@ public class LightMap {
 		this.lightMapMesh = createLightMapMesh();
 	}
 
-	public void render(ShaderProgram shader, int resolution, int mapX, int mapY, Color ambientLight, LightArray lights, float sunIntensity) {
+	public void render(ShaderProgram shader, int downScale, int mapX, int mapY, Color ambientLight, LightArray lights, float sunIntensity) {
 		fb.begin();
 		shader.begin();
 
-		shader.setUniformi("u_resolution", resolution);
+		Gdx.gl.glClearColor(ambientLight.r, ambientLight.g, ambientLight.b, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE);
+
+		shader.setUniformi("u_downScale", downScale);
 		shader.setUniformf("u_mapCoord", mapX, mapY);
-		shader.setUniformf("u_ambientLight", ambientLight);
 		shader.setUniformf("u_sunIntensity", sunIntensity);
 
-		final int MAX_LIGHTS = 64;
-		float[] positionBuffer = new float[MAX_LIGHTS * 2];
-		float[] distBuffer = new float[MAX_LIGHTS * 1];
-		float[] colorBuffer = new float[MAX_LIGHTS * 4];
-		
-		int i = 0;
-		while (i < MAX_LIGHTS && i < lights.size) {
+		for (int i = 0; i < lights.size; i++) {
 			Light light = lights.get(i);
 
-			positionBuffer[i * 2 + 0] = light.getX();
-			positionBuffer[i * 2 + 1] = light.getY();
-			
-			distBuffer[i] = light.getDistance();
-			
-			colorBuffer[i * 4 + 0] = light.getColor().r;
-			colorBuffer[i * 4 + 1] = light.getColor().g;
-			colorBuffer[i * 4 + 2] = light.getColor().b;
-			colorBuffer[i * 4 + 3] = light.getColor().a;
-			
-			i++;
+			shader.setUniformf("u_lightPosition", light.getX(), light.getY());
+			shader.setUniformf("u_lightDist", light.getDistance());
+			shader.setUniformf("u_lightColor", light.getColor());
+
+			ShadowMap shadowMap = light.getShadowMap();
+			shadowMap.getShadowMapFB().getColorBufferTexture().bind(0);
+			shader.setUniformi("u_shadowMap", 0);
+
+			lightMapMesh.render(shader, GL20.GL_TRIANGLE_FAN);
 		}
-
-		shader.setUniform2fv("u_lightPosition[0]", positionBuffer, 0, positionBuffer.length);
-		shader.setUniform1fv("u_lightDist[0]", distBuffer, 0, distBuffer.length);
-		shader.setUniform4fv("u_lightColor[0]", colorBuffer, 0, colorBuffer.length);
-		
-		shader.setUniformi("u_lightCount", i + 1);
-
-		lightMapMesh.render(shader, GL20.GL_TRIANGLE_FAN);
 
 		shader.end();
 		fb.end();
@@ -107,25 +97,56 @@ public class LightMap {
 	}
 
 	private Mesh createLightMapMesh() {
-		float[] verts = new float[8];
+		float[] verts = new float[VERT_SIZE];
+		// vertex coord
+		verts[X1] = -1;
+		verts[Y1] = -1;
 
-		verts[0] = -1;
-		verts[1] = -1;
+		verts[X2] = 1;
+		verts[Y2] = -1;
 
-		verts[2] = 1;
-		verts[3] = -1;
+		verts[X3] = 1;
+		verts[Y3] = 1;
 
-		verts[4] = 1;
-		verts[5] = 1;
+		verts[X4] = -1;
+		verts[Y4] = 1;
 
-		verts[6] = -1;
-		verts[7] = 1;
+		// tex coords
+		verts[U1] = 0f;
+		verts[V1] = 0f;
 
-		Mesh tmpMesh = new Mesh(true, 4, 0, new VertexAttribute(Usage.Position, 2, "a_position"));
+		verts[U2] = 1f;
+		verts[V2] = 0f;
+
+		verts[U3] = 1f;
+		verts[V3] = 1f;
+
+		verts[U4] = 0f;
+		verts[V4] = 1f;
+
+		Mesh tmpMesh = new Mesh(true, 4, 0, new VertexAttribute(Usage.Position, 2, "a_position"), new VertexAttribute(Usage.TextureCoordinates, 2, "a_texCoord0"));
 
 		tmpMesh.setVertices(verts);
 		return tmpMesh;
 
 	}
+
+	static public final int VERT_SIZE = 16;
+	static public final int X1 = 0;
+	static public final int Y1 = 1;
+	static public final int U1 = 2;
+	static public final int V1 = 3;
+	static public final int X2 = 4;
+	static public final int Y2 = 5;
+	static public final int U2 = 6;
+	static public final int V2 = 7;
+	static public final int X3 = 8;
+	static public final int Y3 = 9;
+	static public final int U3 = 10;
+	static public final int V3 = 11;
+	static public final int X4 = 12;
+	static public final int Y4 = 13;
+	static public final int U4 = 14;
+	static public final int V4 = 15;
 
 }

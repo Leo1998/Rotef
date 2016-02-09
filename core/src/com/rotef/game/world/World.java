@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
-import com.rotef.game.renderer.WorldRenderer;
+import com.rotef.game.renderer.WorldScreen;
 import com.rotef.game.renderer.WorldViewport;
 import com.rotef.game.util.ThreadUtils;
 import com.rotef.game.util.file.DFAException;
@@ -32,7 +32,7 @@ public class World {
 	private int height;
 	private WorldHeightmap heightmap;
 
-	private WorldRenderer renderer;
+	private WorldScreen screen;
 
 	private final WorldDescriptor descriptor;
 	final ChunkLoader chunkLoader;
@@ -167,8 +167,6 @@ public class World {
 		}
 
 		entityManager.update(delta);
-
-		lightManager.update(delta, renderer.getViewport(), timeManager.getSunIntensity());
 	}
 
 	public void updateAfterRender(float delta) {
@@ -268,15 +266,15 @@ public class World {
 	}
 
 	private void updateChunks() {
-		WorldViewport viewport = renderer.getViewport();
+		WorldViewport viewport = screen.getViewport();
 		float x0 = viewport.getX();
 		float y0 = viewport.getY();
 		float x1 = x0 + viewport.getWidth();
 		float y1 = y0 + viewport.getHeight();
-		int chunkX0 = (int) (((x0 / Tile.TILE_SIZE) - 1) / WorldChunk.CHUNK_SIZE) - 1;
-		int chunkY0 = (int) (((y0 / Tile.TILE_SIZE) - 1) / WorldChunk.CHUNK_SIZE) - 1;
-		int chunkX1 = (int) (((x1 / Tile.TILE_SIZE) + 1) / WorldChunk.CHUNK_SIZE) + 1;
-		int chunkY1 = (int) (((y1 / Tile.TILE_SIZE) + 1) / WorldChunk.CHUNK_SIZE) + 1;
+		int chunkX0 = (int) (((x0 / Tile.TILE_SIZE) - 1) / WorldChunk.CHUNK_SIZE) - 2;
+		int chunkY0 = (int) (((y0 / Tile.TILE_SIZE) - 1) / WorldChunk.CHUNK_SIZE) - 2;
+		int chunkX1 = (int) (((x1 / Tile.TILE_SIZE) + 1) / WorldChunk.CHUNK_SIZE) + 2;
+		int chunkY1 = (int) (((y1 / Tile.TILE_SIZE) + 1) / WorldChunk.CHUNK_SIZE) + 2;
 		Array<WorldChunk> nessessaryChunks = new Array<WorldChunk>();
 
 		for (int xi = chunkX0; xi < chunkX1; xi++) {
@@ -416,12 +414,12 @@ public class World {
 		return lightManager;
 	}
 
-	public WorldRenderer getRenderer() {
-		return renderer;
+	public WorldScreen getScreen() {
+		return screen;
 	}
 
-	public void setRenderer(WorldRenderer renderer) {
-		this.renderer = renderer;
+	public void setScreen(WorldScreen screen) {
+		this.screen = screen;
 	}
 
 	public ChunkLoader getChunkLoader() {

@@ -1,24 +1,20 @@
-package com.rotef.game.ui;
+package com.rotef.game.renderer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.input.GestureDetector;
 import com.rotef.game.Game;
 import com.rotef.game.input.WorldInput;
-import com.rotef.game.renderer.BatchTechnique;
-import com.rotef.game.renderer.WorldRenderTechnique;
-import com.rotef.game.renderer.WorldRenderer;
-import com.rotef.game.renderer.WorldViewport;
+import com.rotef.game.ui.BaseScreen;
 import com.rotef.game.util.Debug;
 import com.rotef.game.world.World;
 import com.rotef.game.world.entity.Player;
 import com.rotef.game.world.physics.PhysicsManager;
 
-public class WorldScreen extends BaseScreen implements WorldRenderer {
+public class WorldScreen extends BaseScreen {
 
 	private OrthographicCamera worldCamera;
-	private WorldRenderTechnique renderTechnique;
+	private WorldRenderer renderer;
 
 	private World world;
 	private WorldViewport viewport = new WorldViewport();
@@ -36,11 +32,11 @@ public class WorldScreen extends BaseScreen implements WorldRenderer {
 	public void show() {
 		super.show();
 
-		this.renderTechnique = chooseRenderTechnique();
+		this.renderer = new WorldRenderer(world);
 
 		this.input = new WorldInput(this);
 
-		InputMultiplexer multiplexer = new InputMultiplexer(this.ui, new GestureDetector(input), input);
+		InputMultiplexer multiplexer = new InputMultiplexer(this.ui, input);
 		Gdx.input.setInputProcessor(multiplexer);
 
 		this.worldCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -66,7 +62,7 @@ public class WorldScreen extends BaseScreen implements WorldRenderer {
 
 		disposeWorld();
 
-		renderTechnique.dispose();
+		renderer.dispose();
 	}
 
 	private void disposeWorld() {
@@ -101,16 +97,12 @@ public class WorldScreen extends BaseScreen implements WorldRenderer {
 		if (Game.config.isDebug()) {
 			Debug.renderDebug(batch, world);
 		}
-		input.render(delta, this);
-
 	}
 
 	private void renderWorld() {
-		renderTechnique.setView(worldCamera);
+		renderer.setView(worldCamera, viewport);
 
-		renderTechnique.renderWorld(world, viewport);
-
-		// world.getPhysicsManager().renderDebug(worldCamera);
+		renderer.renderWorld();
 	}
 
 	@Override
@@ -128,11 +120,6 @@ public class WorldScreen extends BaseScreen implements WorldRenderer {
 		worldCamera.update();
 	}
 
-	private WorldRenderTechnique chooseRenderTechnique() {
-		return new BatchTechnique();
-	}
-
-	@Override
 	public OrthographicCamera getWorldCamera() {
 		return worldCamera;
 	}
@@ -143,14 +130,12 @@ public class WorldScreen extends BaseScreen implements WorldRenderer {
 		viewport.set(worldCamera.position.x - width / 2, worldCamera.position.y - height / 2, width, height);
 	}
 
-	@Override
 	public WorldViewport getViewport() {
 		updateViewport();
 
 		return viewport;
 	}
 
-	@Override
 	public WorldInput getInput() {
 		return input;
 	}

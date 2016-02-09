@@ -1,7 +1,7 @@
 package com.rotef.game.world;
 
+import com.rotef.game.renderer.WorldScreen;
 import com.rotef.game.ui.ErrorScreen;
-import com.rotef.game.ui.WorldScreen;
 import com.rotef.game.util.LoadingThread;
 
 public class WorldLoadingThread extends LoadingThread {
@@ -18,7 +18,7 @@ public class WorldLoadingThread extends LoadingThread {
 			final World world = new World(descriptor, this);
 
 			WorldScreen screen = new WorldScreen(world);
-			world.setRenderer(screen);
+			world.setScreen(screen);
 
 			return screen;
 		} catch (WorldLoadingException e) {
