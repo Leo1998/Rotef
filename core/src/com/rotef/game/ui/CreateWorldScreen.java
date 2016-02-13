@@ -40,7 +40,7 @@ public class CreateWorldScreen extends BaseScreen {
 		rootTable.add(titleLabel).center().expandX().padTop(10f).padBottom(10f);
 		rootTable.row();
 
-		final TextField nameTextField = new TextField("New World", UI.textFieldStyle);
+		final TextField nameTextField = new TextField(findUnusedWorldName(), UI.textFieldStyle);
 		nameTextField.setMaxLength(World.WORLD_NAME_MAX_LENGTH);
 		rootTable.add(nameTextField).width(width / 2 / uiScale).center().colspan(2).padTop(100f);
 		rootTable.row();
@@ -82,6 +82,33 @@ public class CreateWorldScreen extends BaseScreen {
 		});
 		rootTable.add(createButton).center().colspan(2).padTop(8f);
 		rootTable.row();
+	}
+
+	private String findUnusedWorldName() {
+		WorldDescriptor[] worlds = WorldDescriptor.getExistingWorlds();
+
+		final String defaultName = "New World";
+
+		String tryName = defaultName;
+
+		int n = 0;
+		while (true) {
+			boolean exists = false;
+			for (int i = 0; i < worlds.length; i++) {
+				if (worlds[i].getName().equals(tryName)) {
+					exists = true;
+					break;
+				}
+			}
+
+			if (exists) {
+				tryName = defaultName + " " + n++;
+			} else {
+				break;
+			}
+		}
+
+		return tryName;
 	}
 
 }
