@@ -1,6 +1,5 @@
 package com.rotef.game;
 
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -13,7 +12,6 @@ import com.rotef.game.world.WorldLoadingThread;
 
 public class Game extends com.badlogic.gdx.Game {
 
-	public static boolean isMobile;
 	public static Game game;
 	public static Assets assets;
 	public static Config config;
@@ -31,8 +29,8 @@ public class Game extends com.badlogic.gdx.Game {
 
 	@Override
 	public void create() {
-		ApplicationType type = Gdx.app.getType();
-		isMobile = type == ApplicationType.Android || type == ApplicationType.iOS;
+		Gdx.app.log("Game", "Bootstrapping...");
+		Gdx.app.log("Game", new GPUInfo(Gdx.gl).toString());
 
 		init(Gdx.files.local("save"));
 

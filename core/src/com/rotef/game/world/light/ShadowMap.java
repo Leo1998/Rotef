@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.rotef.game.world.physics.PhysicsManager;
@@ -18,9 +17,6 @@ public class ShadowMap {
 
 	private FrameBuffer occludersFB;
 	private FrameBuffer shadowMapFB;
-
-	private TextureRegion occludersDebug;
-	private TextureRegion shadowMapDebug;
 
 	private OrthographicCamera cam;
 
@@ -41,15 +37,9 @@ public class ShadowMap {
 		int d = (int) (light.getDistance() * 2 * PhysicsManager.PPM);
 		this.occludersFB = new FrameBuffer(Format.RGBA8888, d, d, false);
 
-		occludersDebug = new TextureRegion(occludersFB.getColorBufferTexture());
-		occludersDebug.flip(false, true);
-
 		this.shadowMapFB = new FrameBuffer(Format.RGBA8888, 360, 1, false);
 		shadowMapFB.getColorBufferTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		shadowMapFB.getColorBufferTexture().setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-
-		shadowMapDebug = new TextureRegion(shadowMapFB.getColorBufferTexture());
-		shadowMapDebug.flip(false, true);
 
 		this.cam = new OrthographicCamera();
 	}
@@ -68,8 +58,8 @@ public class ShadowMap {
 	public void end(SpriteBatch batch, ShaderProgram shadowMapShader) {
 		occludersFB.end();
 
-		//STEP 2:
-		
+		// STEP 2:
+
 		shadowMapFB.begin();
 
 		Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
@@ -110,14 +100,6 @@ public class ShadowMap {
 
 	public FrameBuffer getShadowMapFB() {
 		return shadowMapFB;
-	}
-
-	public TextureRegion getOccludersDebug() {
-		return occludersDebug;
-	}
-
-	public TextureRegion getShadowMapDebug() {
-		return shadowMapDebug;
 	}
 
 	public OrthographicCamera getCam() {

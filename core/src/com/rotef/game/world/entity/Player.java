@@ -9,7 +9,7 @@ public class Player extends Mob {
 	public Player(int id, World world) {
 		super(id, world);
 
-//		this.attachLight(Color.WHITE, 5);
+		// this.attachLight(Color.WHITE, 5);
 	}
 
 	@Override

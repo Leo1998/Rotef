@@ -21,7 +21,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.rotef.game.Game;
 
 public class UI {
 
@@ -102,7 +101,7 @@ public class UI {
 	private static BitmapFont loadTTFFont(String path) {
 		FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal(path));
 
-		int dp = Game.isMobile ? 10 : 16;
+		int dp = 16;
 		int fontSize = Math.round(dp * Gdx.graphics.getDensity());
 
 		FreeTypeFontParameter param = new FreeTypeFontParameter();

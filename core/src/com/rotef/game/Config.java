@@ -20,8 +20,8 @@ public class Config {
 			setHeight(600);
 			setFullscreen(false);
 			setVSync(true);
-			setLightMapDownScale(Game.isMobile ? 2 : 1);
-			setUiSize(Game.isMobile ? 2.0f : 1.5f);
+			setLightMapDownScale(2);
+			setUiSize(1.5f);
 			setDebug(false);
 		}
 	}

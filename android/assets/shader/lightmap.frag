@@ -10,6 +10,7 @@ precision mediump float;
 
 uniform int u_downScale;
 uniform vec2 u_mapCoord;
+uniform vec2 u_resolution;
 
 uniform float u_sunIntensity;
 
@@ -30,18 +31,19 @@ float calcShadowDist(vec2 norm) {
     vec2 tc = vec2(coord, 0.0);
 
 	float dist = texture2D(u_shadowMap, tc).r;
-	
+
 	return dist;
 }
 
-void main() {	
-	vec2 coord = u_mapCoord + (((v_transPos + 1.0) / 2.0) * 8.0);
-	
+void main() {
+	vec2 pos = ((v_transPos + 1.0) / 2.0);
+	vec2 coord = u_mapCoord.xy + vec2(pos.xy * u_resolution.xy);
+
 	vec4 color = vec4(0, 0, 0, 1);
-	
+
 	float dist = u_lightDist;
 	float dist2 = dist / 3;
-	
+
 	vec2 v = coord.xy - u_lightPosition.xy;
 	float l = length(v);
 	float intensity = (dist - max(l, 0.01)) / dist;
@@ -53,7 +55,7 @@ void main() {
 
 		float d = max(0.01, l - shadowDist);
 		float shadowFactor = (dist2 - d) / dist2;
-		
+
 		color = u_lightColor * intensity * shadowFactor;
 	}
 

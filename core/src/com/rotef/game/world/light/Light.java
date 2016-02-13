@@ -9,7 +9,7 @@ public class Light {
 	private float distance;
 
 	private Color color;
-	
+
 	private ShadowMap shadowMap;
 
 	public Light(float x, float y, float distance, Color color) {
@@ -58,7 +58,7 @@ public class Light {
 	void setShadowMap(ShadowMap shadowMap) {
 		this.shadowMap = shadowMap;
 	}
-	
+
 	void disposeShadowMap() {
 		this.shadowMap.dispose();
 		this.shadowMap = null;

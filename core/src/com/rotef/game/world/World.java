@@ -24,6 +24,7 @@ public class World {
 
 	public static final int WORLD_NAME_MAX_LENGTH = 32;
 
+	private Array<WorldChunk> loadedChunks = new Array<WorldChunk>();
 	private WorldChunk[] chunks;
 
 	private final WorldLoadingThread loadingThread;
@@ -74,14 +75,14 @@ public class World {
 				this.chunks = new WorldChunk[(width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)];
 				this.heightmap = chunkLoader.readWorldHeightmap();
 			}
+			
+			physicsManager.initialize();
 
-			lightManager.initialize();
+			int spawnX = (width / 4);
+			int spawnY = (getHighestTileAt(width / 2) + 5) / 2;
+			lightManager.addLight(new Light(spawnX, spawnY, 6, Color.WHITE));
 
-			int spawnXTile = width / 2;
-			int spawnYTile = getHighestTileAt(spawnXTile) + 3;
-			lightManager.addLight(new Light(spawnXTile, spawnYTile, 6, Color.WHITE));
-
-			player = (Player) entityManager.spawnEntity(1, spawnXTile, spawnYTile);
+			player = (Player) entityManager.spawnEntity(1, spawnX, spawnY);
 			player.addTask(new PlayerController(player));
 		} catch (Exception e) {
 			dispose(true);
@@ -150,6 +151,7 @@ public class World {
 		}
 
 		unloadAllLoadedChunks(true, true);
+		saveHeightmap();
 	}
 
 	public void update(float delta) {
@@ -193,10 +195,10 @@ public class World {
 
 	private WorldChunk loadChunk(WorldChunk chunk, boolean skipLogics) {
 		chunks[chunk.getChunkX() + chunk.getChunkY() * (width / WorldChunk.CHUNK_SIZE)] = chunk;
+		loadedChunks.add(chunk);
 
 		if (!skipLogics) {
 			physicsManager.onChunkLoaded(chunk);
-			lightManager.onChunkLoaded(chunk);
 		}
 
 		return chunk;
@@ -242,10 +244,10 @@ public class World {
 		}
 
 		chunks[chunk.getChunkX() + chunk.getChunkY() * (width / WorldChunk.CHUNK_SIZE)] = null;
+		loadedChunks.removeValue(chunk, true);
 
 		if (!skipLogics) {
 			physicsManager.onChunkUnloaded(chunk);
-			lightManager.onChunkUnloaded(chunk);
 		}
 	}
 
@@ -256,12 +258,10 @@ public class World {
 	 * @param skipPhysics
 	 */
 	private void unloadAllLoadedChunks(boolean save, boolean skipPhysics) {
-		for (int chunkX = 0; chunkX < width / WorldChunk.CHUNK_SIZE; chunkX++) {
-			for (int chunkY = 0; chunkY < height / WorldChunk.CHUNK_SIZE; chunkY++) {
-				WorldChunk chunk = chunks[chunkX + chunkY * (width / WorldChunk.CHUNK_SIZE)];
-				if (chunk != null)
-					unloadChunk(chunk, save, skipPhysics);
-			}
+		for (int i = 0; i < loadedChunks.size; i++) {
+			WorldChunk chunk = loadedChunks.get(i);
+
+			unloadChunk(chunk, save, skipPhysics);
 		}
 	}
 
@@ -292,14 +292,11 @@ public class World {
 		}
 
 		// close unnessessary Chunks
-		for (int chunkX = 0; chunkX < width / WorldChunk.CHUNK_SIZE; chunkX++) {
-			for (int chunkY = 0; chunkY < height / WorldChunk.CHUNK_SIZE; chunkY++) {
-				WorldChunk chunk = chunks[chunkX + chunkY * (width / WorldChunk.CHUNK_SIZE)];
-				if (chunk != null) {
-					if (!nessessaryChunks.contains(chunk, true)) {
-						unloadChunk(chunk.getChunkX(), chunk.getChunkY());
-					}
-				}
+		for (int i = 0; i < loadedChunks.size; i++) {
+			WorldChunk chunk = loadedChunks.get(i);
+
+			if (!nessessaryChunks.contains(chunk, true)) {
+				unloadChunk(chunk.getChunkX(), chunk.getChunkY());
 			}
 		}
 	}
@@ -377,12 +374,10 @@ public class World {
 	}
 
 	private void save() {
-		for (int chunkX = 0; chunkX < width / WorldChunk.CHUNK_SIZE; chunkX++) {
-			for (int chunkY = 0; chunkY < height / WorldChunk.CHUNK_SIZE; chunkY++) {
-				WorldChunk chunk = chunks[chunkX + chunkY * (width / WorldChunk.CHUNK_SIZE)];
-				if (chunk != null)
-					chunk.save();
-			}
+		for (int i = 0; i < loadedChunks.size; i++) {
+			WorldChunk chunk = loadedChunks.get(i);
+
+			chunk.save();
 		}
 
 		saveHeightmap();
@@ -424,6 +419,10 @@ public class World {
 
 	public ChunkLoader getChunkLoader() {
 		return chunkLoader;
+	}
+
+	public Array<WorldChunk> getLoadedChunks() {
+		return loadedChunks;
 	}
 
 	public TileRegister getTileRegister() {

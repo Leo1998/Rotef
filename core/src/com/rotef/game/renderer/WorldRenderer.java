@@ -34,7 +34,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.rotef.game.assets.Sprite;
 import com.rotef.game.util.ShaderUtils;
 import com.rotef.game.world.World;
-import com.rotef.game.world.WorldChunk;
 import com.rotef.game.world.entity.Entity;
 import com.rotef.game.world.entity.skin.EntitySkin;
 import com.rotef.game.world.light.Light;
@@ -47,7 +46,7 @@ public class WorldRenderer {
 
 	private static final int NUM_VERTICES = 20;
 
-	private Rectangle tmpRect = new Rectangle();
+	// private Rectangle tmpRect = new Rectangle();
 
 	private ShaderProgram objectShader;
 	private ShaderProgram lightMapRenderShader;
@@ -92,38 +91,24 @@ public class WorldRenderer {
 		LightManager lightManager = world.getLightManager();
 		lightManager.update(this, viewport, world.getTimeManager().getSunIntensity(), lightMapShader, shadowMapShader);
 
-		renderLightMaps(lightManager, batch);
+		renderLightMap(lightManager, batch);
 
 	}
 
-	private void renderLightMaps(LightManager lightManager, SpriteBatch batch) {
+	private void renderLightMap(LightManager lightManager, SpriteBatch batch) {
 		batch.setShader(lightMapRenderShader);
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		batch.enableBlending();
 		batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
 
-		float x0 = viewport.getX();
-		float y0 = viewport.getY();
-		float x1 = x0 + viewport.getWidth();
-		float y1 = y0 + viewport.getHeight();
-		int chunkX0 = (int) (x0 / Tile.TILE_SIZE / WorldChunk.CHUNK_SIZE) - 1;
-		int chunkY0 = (int) (y0 / Tile.TILE_SIZE / WorldChunk.CHUNK_SIZE) - 1;
-		int chunkX1 = (int) (x1 / Tile.TILE_SIZE / WorldChunk.CHUNK_SIZE) + 1;
-		int chunkY1 = (int) (y1 / Tile.TILE_SIZE / WorldChunk.CHUNK_SIZE) + 1;
+		float x = viewport.getX();
+		float y = viewport.getY();
+		float w = viewport.getWidth();
+		float h = viewport.getHeight();
 
-		final int m = WorldChunk.CHUNK_SIZE * Tile.TILE_SIZE;
-		for (int xi = chunkX0; xi < chunkX1; xi++) {
-			for (int yi = chunkY0; yi < chunkY1; yi++) {
-				LightMap lightMap = lightManager.getLightMap(xi, yi);
-				if (lightMap != null) {
-					tmpRect.set(xi * m, yi * m, m, m);
-					if (viewport.contains(tmpRect)) {
-						batch.draw(lightMap.getTexture(), xi * m, yi * m + m, m, -m);
-					}
-				}
-			}
-		}
+		LightMap lightMap = lightManager.getLightMap();
+		batch.draw(lightMap.getTexture(), x, y + h, w, -h);
 
 		batch.end();
 	}
@@ -159,7 +144,6 @@ public class WorldRenderer {
 		}
 		Collection<Entity> entities = world.getEntityManager().getEntities();
 		for (Entity e : entities) {
-
 			EntitySkin skin = e.getSkin();
 			if (skin != null) {
 				Sprite sprite = skin.getSprite();
@@ -197,10 +181,10 @@ public class WorldRenderer {
 		batch.enableBlending();
 		batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-		int x0 = (int) lightRect.x;
-		int y0 = (int) lightRect.y;
-		int x1 = (int) (x0 + lightRect.width);
-		int y1 = (int) (y0 + lightRect.height);
+		int x0 = (int) (lightRect.x * 2);
+		int y0 = (int) (lightRect.y * 2);
+		int x1 = (int) (x0 + (lightRect.width * 2));
+		int y1 = (int) (y0 + (lightRect.height * 2));
 
 		for (int xt = x0; xt < x1; xt++) {
 			for (int yt = y0; yt < y1; yt++) {
@@ -251,6 +235,9 @@ public class WorldRenderer {
 	}
 
 	private void renderObject(Sprite sprite, float x, float y, float width, float height) {
+		if (sprite == null)
+			return;
+
 		final Color batchColor = batch.getColor();
 		final float color = Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, batchColor.a);
 
@@ -300,7 +287,7 @@ public class WorldRenderer {
 
 	public void dispose() {
 		batch.dispose();
-		
+
 		objectShader.dispose();
 		lightMapRenderShader.dispose();
 		lightMapShader.dispose();

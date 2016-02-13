@@ -5,7 +5,7 @@ import com.rotef.game.world.tile.textures.TileSprite;
 
 public abstract class Tile {
 
-	public static final int TILE_SIZE = 64;
+	public static final int TILE_SIZE = 32;
 	public static final int TILE_TEXTURE_SIZE = 16;
 
 	private final int id;

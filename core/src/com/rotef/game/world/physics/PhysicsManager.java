@@ -52,7 +52,9 @@ public class PhysicsManager implements ContactListener {
 
 	public PhysicsManager(World world) {
 		this.world = world;
-
+	}
+	
+	public void initialize() {
 		this.physicsWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, -9.81f), true);
 
 		this.physicsWorld.setContactListener(this);
@@ -121,16 +123,16 @@ public class PhysicsManager implements ContactListener {
 		}
 
 		BodyDef tileBodyDef = new BodyDef();
-		tileBodyDef.position.set(new Vector2(tile.getXTile() + 0.5F, tile.getYTile() + 0.5F));
+		tileBodyDef.position.set(new Vector2((tile.getXTile() / 2f) + 0.25F, (tile.getYTile() / 2f) + 0.25F));
 		tileBodyDef.type = BodyType.StaticBody;
 
 		Body tileBody = physicsWorld.createBody(tileBodyDef);
 
 		ChainShape shape = new ChainShape();
 		Vector2[] v = new Vector2[3];
-		v[0] = new Vector2(-0.5f, -0.5f);
-		v[1] = new Vector2(-0.5f, 0.5f);
-		v[2] = new Vector2(0.5f, 0.5f);
+		v[0] = new Vector2(-0.25f, -0.25f);
+		v[1] = new Vector2(-0.25f, 0.25f);
+		v[2] = new Vector2(0.25f, 0.25f);
 		shape.createChain(v);
 
 		FixtureDef fDef = new FixtureDef();

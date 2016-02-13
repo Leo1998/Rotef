@@ -42,19 +42,17 @@ public class OptionsScreen extends BaseScreen {
 		Table t1 = new Table();
 		rootTable.add(t1).colspan(2).padTop(35f);
 
-		if (!Game.isMobile) {
-			final CheckBox fullscreenCheckbox = new CheckBox("Fullscreen", UI.checkBoxStyle);
-			fullscreenCheckbox.setChecked(Game.config.isFullscreen());
-			fullscreenCheckbox.addListener(new ChangeListener() {
-				@Override
-				public void changed(ChangeEvent event, Actor actor) {
-					Game.config.setFullscreen(fullscreenCheckbox.isChecked());
-					Game.applyConfig();
-				}
-			});
-			t1.add(fullscreenCheckbox).padBottom(25f);
-			t1.row();
-		}
+		final CheckBox fullscreenCheckbox = new CheckBox("Fullscreen", UI.checkBoxStyle);
+		fullscreenCheckbox.setChecked(Game.config.isFullscreen());
+		fullscreenCheckbox.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				Game.config.setFullscreen(fullscreenCheckbox.isChecked());
+				Game.applyConfig();
+			}
+		});
+		t1.add(fullscreenCheckbox).padBottom(25f);
+		t1.row();
 
 		final CheckBox vSyncCheckbox = new CheckBox("VSync", UI.checkBoxStyle);
 		vSyncCheckbox.setChecked(Game.config.isVSync());

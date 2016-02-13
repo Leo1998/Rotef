@@ -28,18 +28,21 @@ public class LightMap {
 		if (fb != null) {
 			fb.dispose();
 		}
+		if (lightMapMesh != null) {
+			lightMapMesh.dispose();
+		}
 
 		this.width = width;
 		this.height = height;
 
 		this.fb = new FrameBuffer(Format.RGB888, width, height, false);
-		fb.getColorBufferTexture().setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		fb.getColorBufferTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		fb.getColorBufferTexture().setWrap(TextureWrap.ClampToEdge, TextureWrap.ClampToEdge);
 
 		this.lightMapMesh = createLightMapMesh();
 	}
 
-	public void render(ShaderProgram shader, int downScale, int mapX, int mapY, Color ambientLight, LightArray lights, float sunIntensity) {
+	public void render(ShaderProgram shader, int downScale, float xMap, float yMap, float wMap, float hMap, Color ambientLight, LightArray lights, float sunIntensity) {
 		fb.begin();
 		shader.begin();
 
@@ -50,7 +53,8 @@ public class LightMap {
 		Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE);
 
 		shader.setUniformi("u_downScale", downScale);
-		shader.setUniformf("u_mapCoord", mapX, mapY);
+		shader.setUniformf("u_mapCoord", xMap, yMap);
+		shader.setUniformf("u_resolution", wMap, hMap);
 		shader.setUniformf("u_sunIntensity", sunIntensity);
 
 		for (int i = 0; i < lights.size; i++) {

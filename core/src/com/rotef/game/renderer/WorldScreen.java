@@ -1,11 +1,13 @@
 package com.rotef.game.renderer;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.rotef.game.Game;
 import com.rotef.game.input.WorldInput;
 import com.rotef.game.ui.BaseScreen;
+import com.rotef.game.ui.MainMenuScreen;
 import com.rotef.game.util.Debug;
 import com.rotef.game.world.World;
 import com.rotef.game.world.entity.Player;
@@ -81,28 +83,33 @@ public class WorldScreen extends BaseScreen {
 
 	@Override
 	public void renderWorld(float delta) {
-		updateWorldCamera();
+		update(delta);
 
 		if (world != null) {
 			world.update(delta);
 
-			renderWorld();
+			renderer.setView(worldCamera, viewport);
+
+			renderer.renderWorld();
 
 			world.updateAfterRender(delta);
 		}
 	}
 
-	@Override
-	public void renderAdditionalUI(float delta) {
-		if (Game.config.isDebug()) {
-			Debug.renderDebug(batch, world);
+	private void update(float delta) {
+		updateWorldCamera();
+		updateViewport();
+
+		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
+			Game.game.setScreen(new MainMenuScreen());
 		}
 	}
 
-	private void renderWorld() {
-		renderer.setView(worldCamera, viewport);
-
-		renderer.renderWorld();
+	@Override
+	public void renderAdditionalUI(float delta) {
+		if (Game.config.isDebug() && world != null) {
+			Debug.renderDebug(batch, world);
+		}
 	}
 
 	@Override
@@ -110,6 +117,9 @@ public class WorldScreen extends BaseScreen {
 		super.resize(width, height);
 
 		worldCamera.setToOrtho(false, width, height);
+		if (world != null) {
+			world.getLightManager().resize(width, height);
+		}
 	}
 
 	private void updateWorldCamera() {
@@ -131,8 +141,6 @@ public class WorldScreen extends BaseScreen {
 	}
 
 	public WorldViewport getViewport() {
-		updateViewport();
-
 		return viewport;
 	}
 
