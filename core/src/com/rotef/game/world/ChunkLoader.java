@@ -152,7 +152,7 @@ public class ChunkLoader {
 		return data;
 	}
 
-	public void saveChunk(WorldChunk chunk) throws DFAException {
+	public synchronized void saveChunk(WorldChunk chunk) throws DFAException {
 		int chunkX = chunk.getChunkX();
 		int chunkY = chunk.getChunkY();
 

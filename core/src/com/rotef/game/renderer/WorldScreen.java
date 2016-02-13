@@ -92,6 +92,10 @@ public class WorldScreen extends BaseScreen {
 
 			renderer.renderWorld();
 
+			if (Game.config.isDebug()) {
+				world.getPhysicsManager().renderDebug(worldCamera);
+			}
+
 			world.updateAfterRender(delta);
 		}
 	}

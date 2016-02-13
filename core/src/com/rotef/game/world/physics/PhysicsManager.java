@@ -3,6 +3,7 @@ package com.rotef.game.world.physics;
 import java.util.HashMap;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -52,11 +53,8 @@ public class PhysicsManager implements ContactListener {
 
 	public PhysicsManager(World world) {
 		this.world = world;
-	}
 
-	public void initialize() {
 		this.physicsWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, -9.81f), true);
-
 		this.physicsWorld.setContactListener(this);
 	}
 
@@ -65,7 +63,11 @@ public class PhysicsManager implements ContactListener {
 			debugRenderer = new Box2DDebugRenderer();
 		}
 
-		debugRenderer.render(physicsWorld, camera.combined);
+		Matrix4 debugMatrix = new Matrix4(camera.combined);
+
+		debugMatrix.scale(PPM, PPM, 1f);
+
+		debugRenderer.render(physicsWorld, debugMatrix);
 	}
 
 	public void updatePhysics(float delta) {
@@ -83,7 +85,7 @@ public class PhysicsManager implements ContactListener {
 		}
 	}
 
-	public void onChunkLoaded(WorldChunk chunk) {
+	public synchronized void onChunkLoaded(WorldChunk chunk) {
 		for (int x = 0; x < WorldChunk.CHUNK_SIZE; x++) {
 			for (int y = 0; y < WorldChunk.CHUNK_SIZE; y++) {
 				Tile tile = chunk.getTile(x, y);
@@ -95,7 +97,7 @@ public class PhysicsManager implements ContactListener {
 		}
 	}
 
-	public void onChunkUnloaded(WorldChunk chunk) {
+	public synchronized void onChunkUnloaded(WorldChunk chunk) {
 		for (int x = 0; x < WorldChunk.CHUNK_SIZE; x++) {
 			for (int y = 0; y < WorldChunk.CHUNK_SIZE; y++) {
 				Tile tile = chunk.getTile(x, y);
@@ -129,10 +131,12 @@ public class PhysicsManager implements ContactListener {
 		Body tileBody = physicsWorld.createBody(tileBodyDef);
 
 		ChainShape shape = new ChainShape();
-		Vector2[] v = new Vector2[3];
+		Vector2[] v = new Vector2[5];
 		v[0] = new Vector2(-0.25f, -0.25f);
 		v[1] = new Vector2(-0.25f, 0.25f);
 		v[2] = new Vector2(0.25f, 0.25f);
+		v[3] = new Vector2(0.25f, -0.25f);
+		v[4] = new Vector2(-0.25f, -0.25f);
 		shape.createChain(v);
 
 		FixtureDef fDef = new FixtureDef();

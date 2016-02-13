@@ -24,6 +24,7 @@ public class World {
 	public static final int WORLD_NAME_MAX_LENGTH = 32;
 
 	private Array<WorldChunk> loadedChunks = new Array<WorldChunk>();
+	private Array<WorldChunk> nessessaryChunks = new Array<WorldChunk>();
 	private WorldChunk[] chunks;
 
 	private final StatusListener listener;
@@ -51,9 +52,6 @@ public class World {
 		try {
 			tileRegister = new TileRegister();
 			entityManager = new EntityManager(this);
-			physicsManager = new PhysicsManager(this);
-			lightManager = new LightManager(this);
-			timeManager = new TimeManager(this);
 
 			chunkLoader = new ChunkLoader(this);
 			if (chunkLoader.isFirstInit()) {
@@ -75,7 +73,9 @@ public class World {
 				this.heightmap = chunkLoader.readWorldHeightmap();
 			}
 
-			physicsManager.initialize();
+			physicsManager = new PhysicsManager(this);
+			lightManager = new LightManager(this);
+			timeManager = new TimeManager(this);
 
 			int spawnX = (width / 4);
 			int spawnY = (getHighestTileAt(width / 2) + 5) / 2;
@@ -140,8 +140,8 @@ public class World {
 			heightmap.setHeight(x, h);
 		}
 
-		unloadAllLoadedChunks(true, true);
-		saveHeightmap();
+		save();
+		unloadAllLoadedChunks(false, true);
 	}
 
 	public void update(float delta) {
@@ -253,6 +253,11 @@ public class World {
 
 			unloadChunk(chunk, save, skipPhysics);
 		}
+
+		loadedChunks.clear();
+		for (int i = 0; i < chunks.length; i++) {
+			chunks[i] = null;
+		}
 	}
 
 	private void updateChunks() {
@@ -265,7 +270,7 @@ public class World {
 		int chunkY0 = (int) (((y0 / Tile.TILE_SIZE) - 1) / WorldChunk.CHUNK_SIZE) - 2;
 		int chunkX1 = (int) (((x1 / Tile.TILE_SIZE) + 1) / WorldChunk.CHUNK_SIZE) + 2;
 		int chunkY1 = (int) (((y1 / Tile.TILE_SIZE) + 1) / WorldChunk.CHUNK_SIZE) + 2;
-		Array<WorldChunk> nessessaryChunks = new Array<WorldChunk>();
+		nessessaryChunks.clear();
 
 		for (int xi = chunkX0; xi < chunkX1; xi++) {
 			for (int yi = chunkY0; yi < chunkY1; yi++) {
@@ -286,7 +291,7 @@ public class World {
 			WorldChunk chunk = loadedChunks.get(i);
 
 			if (!nessessaryChunks.contains(chunk, true)) {
-				unloadChunk(chunk.getChunkX(), chunk.getChunkY());
+				unloadChunk(chunk, true, false);
 			}
 		}
 	}

@@ -48,7 +48,7 @@ public class WorldChunk {
 		world.unloadChunk(chunkX, chunkY);
 	}
 
-	public void save() {
+	public synchronized void save() {
 		ChunkLoader chunkLoader = world.getChunkLoader();
 
 		try {

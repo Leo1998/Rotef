@@ -99,4 +99,32 @@ public abstract class Tile {
 		this.solid = solid;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		result = prime * result + xTile;
+		result = prime * result + yTile;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Tile other = (Tile) obj;
+		if (id != other.id)
+			return false;
+		if (xTile != other.xTile)
+			return false;
+		if (yTile != other.yTile)
+			return false;
+		return true;
+	}
+
 }
