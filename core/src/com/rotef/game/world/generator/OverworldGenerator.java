@@ -1,11 +1,12 @@
 package com.rotef.game.world.generator;
 
+import com.rotef.game.util.StatusListener;
 import com.rotef.game.util.noise.PerlinNoiseGenerator;
 
 public class OverworldGenerator extends Generator {
 
-	public OverworldGenerator(GeneratorThread generatorThread) {
-		super(generatorThread);
+	public OverworldGenerator(StatusListener listener) {
+		super(listener);
 	}
 
 	@Override
@@ -25,6 +26,8 @@ public class OverworldGenerator extends Generator {
 		PerlinNoiseGenerator caveNoise = new PerlinNoiseGenerator(random);
 
 		for (double x = 0; x < width; x++) {
+			sendProgress("Generating World...", (float) (x / width));
+
 			double heightVal = heightNoise.noise(x / xScale, 4, 0.25, true);
 			int yLevel = groundLevel + Math.round((float) heightVal * featureSize);
 
@@ -54,11 +57,9 @@ public class OverworldGenerator extends Generator {
 					map[(int) (x + y * width)] = 2;
 				}
 			}
-
-			sendProgress((float) (x / width));
 		}
 
-		sendProgress(1.0f);
+		sendProgress("Finished!", 1.0f);
 
 		return map;
 	}

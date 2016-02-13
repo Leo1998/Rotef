@@ -2,17 +2,16 @@ package com.rotef.game.world;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.rotef.game.renderer.WorldScreen;
 import com.rotef.game.renderer.WorldViewport;
-import com.rotef.game.util.ThreadUtils;
+import com.rotef.game.util.StatusListener;
 import com.rotef.game.util.file.DFAException;
 import com.rotef.game.world.entity.EntityManager;
 import com.rotef.game.world.entity.Player;
 import com.rotef.game.world.entity.PlayerController;
+import com.rotef.game.world.generator.Generator;
 import com.rotef.game.world.generator.GeneratorException;
-import com.rotef.game.world.generator.GeneratorThread;
 import com.rotef.game.world.generator.OverworldGenerator;
 import com.rotef.game.world.light.Light;
 import com.rotef.game.world.light.LightManager;
@@ -27,7 +26,7 @@ public class World {
 	private Array<WorldChunk> loadedChunks = new Array<WorldChunk>();
 	private WorldChunk[] chunks;
 
-	private final WorldLoadingThread loadingThread;
+	private final StatusListener listener;
 
 	private int width;
 	private int height;
@@ -45,9 +44,9 @@ public class World {
 
 	private Player player;
 
-	public World(WorldDescriptor descriptor, WorldLoadingThread loadingThread) throws WorldLoadingException {
+	public World(WorldDescriptor descriptor, StatusListener listener) throws WorldLoadingException {
 		this.descriptor = descriptor;
-		this.loadingThread = loadingThread;
+		this.listener = listener;
 
 		try {
 			tileRegister = new TileRegister();
@@ -75,7 +74,7 @@ public class World {
 				this.chunks = new WorldChunk[(width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)];
 				this.heightmap = chunkLoader.readWorldHeightmap();
 			}
-			
+
 			physicsManager.initialize();
 
 			int spawnX = (width / 4);
@@ -93,23 +92,14 @@ public class World {
 
 	private void generate() throws GeneratorException {
 		Gdx.app.log("World", "generating...");
-		GeneratorThread generatorThread = new GeneratorThread(OverworldGenerator.class, width, height);
-		generatorThread.launch();
-		Gdx.app.log("World", "GeneratorThread launched!");
 
-		while (generatorThread.isRunning()) {
-			loadingThread.setProgress(generatorThread.getProgress() / 2f);
-
-			ThreadUtils.sleep(5);
-		}
-
-		int[] map = null;
-		if (generatorThread.getResult() instanceof int[]) {
-			map = (int[]) generatorThread.getResult();
-		} else {
-			throw new IllegalStateException("Generator Thread returned bad result!");
-		}
-		Gdx.app.log("World", "GeneratorThread finished with success!");
+		Generator generator = Generator.createGeneratorInstance(OverworldGenerator.class, new StatusListener() {
+			@Override
+			public void status(String msg, float progress) {
+				listener.status(msg, progress);
+			}
+		});
+		int[] map = generator.generateMap(width, height);
 
 		Gdx.app.log("World", "generating chunks...");
 		{
@@ -131,7 +121,7 @@ public class World {
 					loadChunk(chunk, true);
 
 					float progress = ((float) loadedChunks / (float) ((width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)));
-					loadingThread.setProgress(MathUtils.clamp(progress, 0.5f, 1f));
+					listener.status("Generating Chunks...", progress);
 					loadedChunks++;
 				}
 			}

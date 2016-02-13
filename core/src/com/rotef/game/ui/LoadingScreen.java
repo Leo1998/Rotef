@@ -1,23 +1,16 @@
 package com.rotef.game.ui;
 
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.rotef.game.Game;
-import com.rotef.game.util.LoadingThread;
 
 public class LoadingScreen extends BaseScreen {
 
-	private volatile LoadingThread thread;
-	private boolean needsStart = true;
-
 	private ProgressBar progressBar;
+	private Label msgLabel;
 
-	public LoadingScreen(LoadingThread thread) {
+	public LoadingScreen() {
 		super();
-
-		this.thread = thread;
 	}
 
 	@Override
@@ -25,26 +18,14 @@ public class LoadingScreen extends BaseScreen {
 		super.show();
 	}
 
-	private void update() {
-		if (needsStart) {
-			needsStart = false;
-
-			thread.launch();
-		}
-
-		progressBar.setValue(thread.getProgress());
-
-		Object result = thread.getResult();
-		if (result != null && result instanceof Screen) {
-			Game.game.setScreen((Screen) result);
-		}
-	}
-
 	@Override
 	public void render(float delta) {
-		update();
-
 		super.render(delta);
+	}
+
+	public void sendStatus(String msg, float progress) {
+		progressBar.setValue(progress);
+		msgLabel.setText(msg);
 	}
 
 	@Override
@@ -54,6 +35,12 @@ public class LoadingScreen extends BaseScreen {
 		Label label = new Label("Loading", UI.labelStyle);
 		label.setFontScale(2.5f);
 		t.add(label).center();
+
+		t.row();
+
+		msgLabel = new Label("", UI.labelStyle);
+		msgLabel.setFontScale(1.25f);
+		t.add(msgLabel).center();
 
 		t.row();
 

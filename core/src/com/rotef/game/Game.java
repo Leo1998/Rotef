@@ -4,11 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.rotef.game.assets.Assets;
+import com.rotef.game.renderer.WorldScreen;
+import com.rotef.game.ui.ErrorScreen;
 import com.rotef.game.ui.LoadingScreen;
 import com.rotef.game.ui.MainMenuScreen;
 import com.rotef.game.ui.UI;
+import com.rotef.game.util.StatusListener;
+import com.rotef.game.world.World;
 import com.rotef.game.world.WorldDescriptor;
-import com.rotef.game.world.WorldLoadingThread;
+import com.rotef.game.world.WorldLoadingException;
 
 public class Game extends com.badlogic.gdx.Game {
 
@@ -20,11 +24,45 @@ public class Game extends com.badlogic.gdx.Game {
 	public static FileHandle worldRoot;
 
 	public static void openWorld(String name) {
-		WorldLoadingThread thread = new WorldLoadingThread(new WorldDescriptor(name));
+		final WorldDescriptor descriptor = new WorldDescriptor(name);
 
-		LoadingScreen loadingScreen = new LoadingScreen(thread);
-
+		final LoadingScreen loadingScreen = new LoadingScreen();
 		game.setScreen(loadingScreen);
+
+		Thread loadingThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				StatusListener listener = new StatusListener() {
+					@Override
+					public void status(String msg, float progress) {
+						loadingScreen.sendStatus(msg, progress);
+					}
+				};
+
+				World world;
+				try {
+					world = new World(descriptor, listener);
+				} catch (WorldLoadingException e) {
+					game.setScreen(new ErrorScreen(e));
+					return;
+				}
+
+				final WorldScreen screen = new WorldScreen(world);
+				world.setScreen(screen);
+
+				Gdx.app.postRunnable(new Runnable() {
+					@Override
+					public void run() {
+						game.setScreen(screen);
+					}
+				});
+			}
+		}, "Loading Thread");
+
+		loadingThread.setDaemon(true);
+		loadingThread.setPriority(Thread.MAX_PRIORITY);
+
+		loadingThread.start();
 	}
 
 	@Override
@@ -57,6 +95,11 @@ public class Game extends com.badlogic.gdx.Game {
 		super.dispose();
 
 		saveConfig();
+	}
+
+	@Override
+	public void render() {
+		super.render();
 	}
 
 	public void init(FileHandle rootDirParam) {

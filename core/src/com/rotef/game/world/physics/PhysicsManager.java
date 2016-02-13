@@ -53,7 +53,7 @@ public class PhysicsManager implements ContactListener {
 	public PhysicsManager(World world) {
 		this.world = world;
 	}
-	
+
 	public void initialize() {
 		this.physicsWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, -9.81f), true);
 
