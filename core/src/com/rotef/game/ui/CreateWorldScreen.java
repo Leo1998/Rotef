@@ -62,7 +62,8 @@ public class CreateWorldScreen extends BaseScreen {
 
 				if (worldName == null || worldName.isEmpty() || worldName.length() > World.WORLD_NAME_MAX_LENGTH) {
 					valid = false;
-					errorMessage = "World Name can't be empty or longer than " + World.WORLD_NAME_MAX_LENGTH + " characters!";
+					errorMessage = "World Name can't be empty or longer than " + World.WORLD_NAME_MAX_LENGTH
+							+ " characters!";
 				}
 
 				WorldDescriptor[] worlds = WorldDescriptor.getExistingWorlds();

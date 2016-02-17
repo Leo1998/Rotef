@@ -39,7 +39,8 @@ public class LightManager {
 		return lightMap;
 	}
 
-	public void update(WorldRenderer renderer, WorldViewport viewport, float sunIntensity, ShaderProgram lightMapShader, ShaderProgram shadowMapShader) {
+	public void update(WorldRenderer renderer, WorldViewport viewport, float sunIntensity, ShaderProgram lightMapShader,
+			ShaderProgram shadowMapShader) {
 		if (shadowRenderBatch == null) {
 			shadowRenderBatch = new SpriteBatch();
 		}

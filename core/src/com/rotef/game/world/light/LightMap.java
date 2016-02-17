@@ -42,7 +42,8 @@ public class LightMap {
 		this.lightMapMesh = createLightMapMesh();
 	}
 
-	public void render(ShaderProgram shader, int downScale, float xMap, float yMap, float wMap, float hMap, Color ambientLight, LightArray lights, float sunIntensity) {
+	public void render(ShaderProgram shader, int downScale, float xMap, float yMap, float wMap, float hMap,
+			Color ambientLight, LightArray lights, float sunIntensity) {
 		fb.begin();
 		shader.begin();
 
@@ -128,7 +129,8 @@ public class LightMap {
 		verts[U4] = 0f;
 		verts[V4] = 1f;
 
-		Mesh tmpMesh = new Mesh(true, 4, 0, new VertexAttribute(Usage.Position, 2, "a_position"), new VertexAttribute(Usage.TextureCoordinates, 2, "a_texCoord0"));
+		Mesh tmpMesh = new Mesh(true, 4, 0, new VertexAttribute(Usage.Position, 2, "a_position"),
+				new VertexAttribute(Usage.TextureCoordinates, 2, "a_texCoord0"));
 
 		tmpMesh.setVertices(verts);
 		return tmpMesh;

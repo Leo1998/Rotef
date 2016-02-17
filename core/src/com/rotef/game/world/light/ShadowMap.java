@@ -46,7 +46,8 @@ public class ShadowMap {
 
 	public void begin() {
 		cam.setToOrtho(false, occludersFB.getWidth(), occludersFB.getHeight());
-		cam.translate((light.getX() - light.getDistance()) * PhysicsManager.PPM, (light.getY() - light.getDistance()) * PhysicsManager.PPM);
+		cam.translate((light.getX() - light.getDistance()) * PhysicsManager.PPM,
+				(light.getY() - light.getDistance()) * PhysicsManager.PPM);
 		cam.update();
 
 		occludersFB.begin();

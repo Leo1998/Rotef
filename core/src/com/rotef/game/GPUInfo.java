@@ -16,7 +16,8 @@ public class GPUInfo {
 
 	@Override
 	public String toString() {
-		return "GPUInfo [gpu_gl_version=" + gpu_gl_version + ", gpu_vendor=" + gpu_vendor + ", gpu_renderer=" + gpu_renderer + "]";
+		return "GPUInfo [gpu_gl_version=" + gpu_gl_version + ", gpu_vendor=" + gpu_vendor + ", gpu_renderer="
+				+ gpu_renderer + "]";
 	}
 
 }

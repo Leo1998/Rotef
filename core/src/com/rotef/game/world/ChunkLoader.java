@@ -167,7 +167,8 @@ public class ChunkLoader {
 	}
 
 	public boolean hasChunk(int chunkX, int chunkY) {
-		if (chunkX < 0 || chunkX >= (world.getWidth() / WorldChunk.CHUNK_SIZE) || chunkY < 0 || chunkY >= (world.getHeight() / WorldChunk.CHUNK_SIZE)) {
+		if (chunkX < 0 || chunkX >= (world.getWidth() / WorldChunk.CHUNK_SIZE) || chunkY < 0
+				|| chunkY >= (world.getHeight() / WorldChunk.CHUNK_SIZE)) {
 			return false;
 		}
 

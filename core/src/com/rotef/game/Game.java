@@ -130,9 +130,9 @@ public class Game extends com.badlogic.gdx.Game {
 		Gdx.graphics.setVSync(config.isVSync());
 
 		if (!config.isFullscreen()) {
-			Gdx.graphics.setDisplayMode(config.getWidth(), config.getHeight(), false);
+			Gdx.graphics.setWindowedMode(config.getWidth(), config.getHeight());
 		} else {
-			Gdx.graphics.setDisplayMode(Gdx.graphics.getDesktopDisplayMode().width, Gdx.graphics.getDesktopDisplayMode().height, true);
+			Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		}
 
 		saveConfig();
