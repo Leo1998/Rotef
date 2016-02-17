@@ -58,7 +58,12 @@ public abstract class BaseScreen implements Screen {
 		ui.act(Gdx.graphics.getDeltaTime());
 
 		if (background != null) {
-			background.render(delta);
+			batch.setProjectionMatrix(ui.getCamera().combined);
+			batch.begin();
+			
+			background.render(batch, delta);
+			
+			batch.end();
 		}
 
 		renderWorld(delta);

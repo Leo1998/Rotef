@@ -1,9 +1,9 @@
 #Config
-#Wed Feb 17 17:40:45 CET 2016
-Height(int)=1045
+#Wed Feb 17 19:14:04 CET 2016
+Height(int)=1051
 uiScale(float)=1.5
 LightMapDownScale(int)=2
 VSync(bool)=true
 Debug(bool)=false
-Width(int)=1914
+Width(int)=1837
 Fullscreen(bool)=false

@@ -41,8 +41,6 @@ public class UI {
 		font = loadTTFFont("ui/font.ttf");
 
 		loadUITexture("pane.png");
-		loadUITexture("touchpad-background.png");
-		loadUITexture("touchpad-knob.png");
 		loadUITexture("button-up.png");
 		loadUITexture("button-down.png");
 		loadUITexture("progressbar-background.png");
@@ -57,14 +55,11 @@ public class UI {
 		scrollPaneStyle = new ScrollPaneStyle();
 		scrollPaneStyle.background = new TextureRegionDrawable(getTexture("pane"));
 
-		touchpadStyle = new TouchpadStyle();
-		touchpadStyle.background = new TextureRegionDrawable(getTexture("touchpad-background"));
-		touchpadStyle.knob = new TextureRegionDrawable(getTexture("touchpad-knob"));
-
 		textButtonStyle = new TextButtonStyle();
 		textButtonStyle.font = font;
 		textButtonStyle.up = new TextureRegionDrawable(getTexture("button-up"));
 		textButtonStyle.down = new TextureRegionDrawable(getTexture("button-down"));
+		textButtonStyle.over = textButtonStyle.down;
 
 		labelStyle = new LabelStyle();
 		labelStyle.font = font;
@@ -88,14 +83,6 @@ public class UI {
 		textFieldStyle.fontColor = Color.WHITE;
 		textFieldStyle.background = new TextureRegionDrawable(getTexture("textField-background"));
 		textFieldStyle.cursor = new TextureRegionDrawable(getTexture("textField-cursor"));
-
-		// controll buttons
-
-		loadUITexture("button-left.png");
-		loadUITexture("button-right.png");
-		loadUITexture("button-b.png");
-		loadUITexture("button-a.png");
-		loadUITexture("hover.png");
 	}
 
 	private static BitmapFont loadTTFFont(String path) {

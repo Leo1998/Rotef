@@ -12,13 +12,6 @@ import com.rotef.game.Game;
 public class OptionsScreen extends BaseScreen {
 
 	@Override
-	public void show() {
-		super.show();
-
-		rootTable.setColor(1, 1, 1, 0.75f);
-	}
-
-	@Override
 	protected void makeContent() {
 		float padding = 10.0f;
 

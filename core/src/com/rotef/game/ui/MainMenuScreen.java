@@ -1,5 +1,6 @@
 package com.rotef.game.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -14,8 +15,8 @@ public class MainMenuScreen extends BaseScreen {
 	@Override
 	public void show() {
 		super.show();
-
-		rootTable.setColor(1, 1, 1, 0.75f);
+		
+		this.background = new SmokeBackgroundRenderer();
 	}
 
 	@Override
@@ -76,7 +77,7 @@ public class MainMenuScreen extends BaseScreen {
 			}
 		});
 		rootTable.row();
-		rootTable.add(createButton).center();
+		rootTable.add(createButton).padTop(10f).center();
 
 		TextButton optionsButton = new TextButton("Options", UI.textButtonStyle);
 		optionsButton.addListener(new ClickListener() {
@@ -87,7 +88,18 @@ public class MainMenuScreen extends BaseScreen {
 		});
 		rootTable.row();
 
-		rootTable.add(optionsButton).right().bottom();
+		rootTable.add(optionsButton).padTop(10f).center();
+
+		TextButton exitButton = new TextButton("Exit", UI.textButtonStyle);
+		exitButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				Gdx.app.exit();
+			}
+		});
+		rootTable.row();
+		rootTable.add(exitButton).padTop(10f).center();
+
 	}
 
 }

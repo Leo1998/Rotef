@@ -9,10 +9,6 @@ public class LoadingScreen extends BaseScreen {
 	private ProgressBar progressBar;
 	private Label msgLabel;
 
-	public LoadingScreen() {
-		super();
-	}
-
 	@Override
 	public void show() {
 		super.show();
