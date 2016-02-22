@@ -206,6 +206,11 @@ public class WorldRenderer {
 		}
 		Collection<Entity> entities = world.getEntityManager().getEntities();
 		for (Entity e : entities) {
+			Light attached = e.getAttachedLight();
+			if (attached != null && attached == light) {
+				continue;
+			}
+			
 			EntitySkin skin = e.getSkin();
 			if (skin != null) {
 				Sprite sprite = skin.getSprite();

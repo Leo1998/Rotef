@@ -1,5 +1,6 @@
 package com.rotef.game.world.entity;
 
+import com.badlogic.gdx.graphics.Color;
 import com.rotef.game.world.World;
 
 public class Player extends Mob {
@@ -9,7 +10,7 @@ public class Player extends Mob {
 	public Player(int id, World world) {
 		super(id, world);
 
-		// this.attachLight(Color.WHITE, 5);
+		this.attachLight(Color.WHITE, 5);
 	}
 
 	@Override

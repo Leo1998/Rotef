@@ -32,7 +32,7 @@ public class SunMap {
 		this.width = width;
 		this.pixmap = new Pixmap(width, 1, Format.RGBA8888);
 		this.texture = new Texture(width, 1, Format.RGBA8888);
-		this.texture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		this.texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		this.texture.setWrap(TextureWrap.ClampToEdge, TextureWrap.ClampToEdge);
 	}
 
