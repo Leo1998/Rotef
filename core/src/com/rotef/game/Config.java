@@ -1,218 +1,133 @@
 package com.rotef.game;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.io.OutputStreamWriter;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.JsonWriter;
+import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
-public class Config {
+public class Config implements Json.Serializable {
 
-	private Map<String, Object> map = new HashMap<String, Object>();
+	private int width;
+	private int height;
+	private boolean fullscreen;
+	private boolean vSync;
+	private int lightMapDownScale;
+	private float uiSize;
+	private boolean debug;
 
-	public Config(boolean loadDefaults) {
-		if (loadDefaults) {
-
-			setWidth(800);
-			setHeight(600);
-			setFullscreen(false);
-			setVSync(true);
-			setLightMapDownScale(2);
-			setUiSize(1.5f);
-			setDebug(false);
-		}
-	}
-
-	public void copyFrom(Config other) {
-		getMap().putAll(other.getMap());
-	}
-
-	public void load(FileHandle file) {
-		try {
-			load(file.read());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void load(InputStream in) throws IOException {
-		Properties props = new Properties();
-		props.load(in);
-		for (Map.Entry<Object, Object> entry : props.entrySet()) {
-			String key = (String) entry.getKey();
-			String val = (String) entry.getValue();
-			if (val != null) {
-				val = val.trim();
-			}
-			if (key.endsWith("(int)")) {
-				key = key.substring(0, key.length() - 5);
-				int iVal = Integer.parseInt(val);
-				putInteger(key, iVal);
-			} else if (key.endsWith("(string)")) {
-				putString(key.substring(0, key.length() - 8), val);
-			} else if (key.endsWith("(bool)")) {
-				boolean bVal = Boolean.parseBoolean(val);
-				putBoolean(key.substring(0, key.length() - 6), bVal);
-			} else if (key.endsWith("(float)")) {
-				float fVal = Float.parseFloat(val);
-				putFloat(key.substring(0, key.length() - 7), fVal);
-			} else {
-				throw new IOException("Cannot parse key: " + key);
-			}
-		}
-		in.close();
-	}
-
-	public void save(FileHandle file) {
-		try {
-			save(file.write(false));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void save(OutputStream out) throws IOException {
-		Properties props = new Properties();
-		for (Map.Entry<String, Object> entry : getMap().entrySet()) {
-			Object val = entry.getValue();
-			String type;
-			if (val instanceof Integer) {
-				type = "(int)";
-			} else if (val instanceof String) {
-				type = "(string)";
-			} else if (val instanceof Boolean) {
-				type = "(bool)";
-			} else if (val instanceof Float) {
-				type = "(float)";
-			} else {
-				// See the note in the Config.save(String)
-				// method regarding object type settings.
-				continue;
-			}
-			props.setProperty(entry.getKey() + type, val.toString());
-		}
-		props.store(out, "Config");
-		out.close();
-	}
-
-	public Map<String, Object> getMap() {
-		return map;
-	}
-
-	public int getInteger(String key) {
-		Integer i = (Integer) getMap().get(key);
-		if (i == null) {
-			return 0;
-		}
-
-		return i.intValue();
-	}
-
-	public boolean getBoolean(String key) {
-		Boolean b = (Boolean) getMap().get(key);
-		if (b == null) {
-			return false;
-		}
-
-		return b.booleanValue();
-	}
-
-	public String getString(String key) {
-		String s = (String) getMap().get(key);
-		if (s == null) {
-			return null;
-		}
-
-		return s;
-	}
-
-	public float getFloat(String key) {
-		Float f = (Float) getMap().get(key);
-		if (f == null) {
-			return 0f;
-		}
-
-		return f.floatValue();
-	}
-
-	public void putInteger(String key, int value) {
-		getMap().put(key, Integer.valueOf(value));
-	}
-
-	public void putBoolean(String key, boolean value) {
-		getMap().put(key, Boolean.valueOf(value));
-	}
-
-	public void putString(String key, String value) {
-		getMap().put(key, value);
-	}
-
-	public void putFloat(String key, float value) {
-		getMap().put(key, Float.valueOf(value));
+	public Config() {
+		setWidth(800);
+		setHeight(600);
+		setFullscreen(false);
+		setVSync(true);
+		setLightMapDownScale(2);
+		setUiSize(1.5f);
+		setDebug(false);
 	}
 
 	public int getWidth() {
-		return getInteger("Width");
+		return width;
 	}
 
-	public void setWidth(int value) {
-		putInteger("Width", value);
+	public void setWidth(int width) {
+		this.width = width;
 	}
 
 	public int getHeight() {
-		return getInteger("Height");
+		return height;
 	}
 
-	public void setHeight(int value) {
-		putInteger("Height", value);
-	}
-
-	public void setResolution(int width, int height) {
-		setWidth(width);
-		setHeight(height);
-	}
-
-	public boolean isVSync() {
-		return getBoolean("VSync");
-	}
-
-	public void setVSync(boolean value) {
-		putBoolean("VSync", value);
+	public void setHeight(int height) {
+		this.height = height;
 	}
 
 	public boolean isFullscreen() {
-		return getBoolean("Fullscreen");
+		return fullscreen;
 	}
 
-	public void setFullscreen(boolean value) {
-		putBoolean("Fullscreen", value);
+	public void setFullscreen(boolean fullscreen) {
+		this.fullscreen = fullscreen;
+	}
+
+	public boolean isVSync() {
+		return vSync;
+	}
+
+	public void setVSync(boolean vSync) {
+		this.vSync = vSync;
 	}
 
 	public int getLightMapDownScale() {
-		return getInteger("LightMapDownScale");
+		return lightMapDownScale;
 	}
 
-	public void setLightMapDownScale(int value) {
-		putInteger("LightMapDownScale", value);
+	public void setLightMapDownScale(int lightMapDownScale) {
+		this.lightMapDownScale = lightMapDownScale;
 	}
 
 	public float getUiSize() {
-		return getFloat("uiScale");
+		return uiSize;
 	}
 
-	public void setUiSize(float value) {
-		putFloat("uiScale", value);
+	public void setUiSize(float uiSize) {
+		this.uiSize = uiSize;
 	}
 
 	public boolean isDebug() {
-		return getBoolean("Debug");
+		return debug;
 	}
 
-	public void setDebug(boolean value) {
-		putBoolean("Debug", value);
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
+
+	public static Config load(FileHandle file) {
+		return load(file.read());
+	}
+
+	public static Config load(InputStream in) {
+		Json json = new Json(OutputType.json);
+
+		return json.fromJson(Config.class, in);
+	}
+
+	public static void save(FileHandle file, Config config) {
+		save(file.write(false), config);
+	}
+
+	public static void save(OutputStream out, Config config) {
+		Json json = new Json(OutputType.json);
+
+		JsonWriter writer = new JsonWriter(new OutputStreamWriter(out));
+
+		json.toJson(config, writer);
+	}
+
+	@Override
+	public void write(Json json) {
+		json.writeValue("width", width);
+		json.writeValue("height", height);
+		json.writeValue("fullscreen", fullscreen);
+		json.writeValue("vSync", vSync);
+		json.writeValue("lightMapDownScale", lightMapDownScale);
+		json.writeValue("uiSize", uiSize);
+		json.writeValue("debug", debug);
+	}
+
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+		this.width = jsonData.get("width").asInt();
+		this.height = jsonData.get("height").asInt();
+		this.fullscreen = jsonData.get("fullscreen").asBoolean();
+		this.vSync = jsonData.get("vSync").asBoolean();
+		this.lightMapDownScale = jsonData.get("lightMapDownScale").asInt();
+		this.uiSize = jsonData.get("uiSize").asFloat();
+		this.debug = jsonData.get("debug").asBoolean();
 	}
 
 }

@@ -1,9 +1,0 @@
-#Config
-#Mon Feb 22 18:25:25 CET 2016
-Height(int)=1051
-uiScale(float)=1.5
-LightMapDownScale(int)=2
-VSync(bool)=true
-Debug(bool)=false
-Width(int)=1837
-Fullscreen(bool)=false

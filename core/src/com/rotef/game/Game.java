@@ -85,7 +85,8 @@ public class Game extends com.badlogic.gdx.Game {
 
 	@Override
 	public void resize(int width, int height) {
-		config.setResolution(width, height);
+		config.setWidth(width);
+		config.setHeight(height);
 
 		super.resize(width, height);
 	}
@@ -108,22 +109,21 @@ public class Game extends com.badlogic.gdx.Game {
 		worldRoot = rootDir.child("worlds");
 		worldRoot.mkdirs();
 
-		FileHandle configFile = rootDir.child("config.dat");
+		FileHandle configFile = rootDir.child("config.json");
 
-		config = new Config(true);
 		if (configFile.exists()) {
-			config.load(configFile);
+			config = Config.load(configFile);
 		} else {
-			// create the file at first
-			config.save(configFile);
+			config = new Config();
+			Config.save(configFile, config);
 		}
 
 		applyConfig();
 	}
 
 	private static void saveConfig() {
-		FileHandle configFile = rootDir.child("config.dat");
-		config.save(configFile);
+		FileHandle configFile = rootDir.child("config.json");
+		Config.save(configFile, config);
 	}
 
 	public static void applyConfig() {
