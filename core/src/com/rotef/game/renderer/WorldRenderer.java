@@ -210,7 +210,7 @@ public class WorldRenderer {
 			if (attached != null && attached == light) {
 				continue;
 			}
-			
+
 			EntitySkin skin = e.getSkin();
 			if (skin != null) {
 				Sprite sprite = skin.getSprite();
