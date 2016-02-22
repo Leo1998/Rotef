@@ -73,8 +73,7 @@ public class DynamicTileSprite extends TileSprite {
 		if (xTex != xTexNew || yTex != yTexNew) {
 			xTex = xTexNew;
 			yTex = yTexNew;
-			this.currentSprite = new Sprite(new TextureRegion(map.getTex(), xTex * Tile.TILE_TEXTURE_SIZE,
-					yTex * Tile.TILE_TEXTURE_SIZE, Tile.TILE_TEXTURE_SIZE, Tile.TILE_TEXTURE_SIZE));
+			this.currentSprite = new Sprite(new TextureRegion(map.getTex(), xTex * Tile.TILE_TEXTURE_SIZE, yTex * Tile.TILE_TEXTURE_SIZE, Tile.TILE_TEXTURE_SIZE, Tile.TILE_TEXTURE_SIZE));
 		}
 	}
 

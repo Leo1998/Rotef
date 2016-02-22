@@ -42,8 +42,7 @@ public class LightMap {
 		this.lightMapMesh = createLightMapMesh();
 	}
 
-	public void render(ShaderProgram shader, int downScale, float xMap, float yMap, float wMap, float hMap,
-			Color ambientLight, LightArray lights, float sunIntensity) {
+	public void render(ShaderProgram shader, int downScale, float xMap, float yMap, float wMap, float hMap, Color ambientLight, LightArray lights, SunMap sunMap, float sunIntensity, float sunMapX, float sunMapW, float worldHeight) {
 		fb.begin();
 		shader.begin();
 
@@ -56,8 +55,21 @@ public class LightMap {
 		shader.setUniformi("u_downScale", downScale);
 		shader.setUniformf("u_mapCoord", xMap, yMap);
 		shader.setUniformf("u_resolution", wMap, hMap);
-		shader.setUniformf("u_sunIntensity", sunIntensity);
 
+		// sun
+
+		shader.setUniformf("u_sunIntensity", sunIntensity);
+		shader.setUniformf("u_sunMapX", sunMapX);
+		shader.setUniformf("u_sunMapW", sunMapW);
+		shader.setUniformf("u_worldHeight", worldHeight);
+		sunMap.getTexture().bind(0);
+		shader.setUniformi("u_sunMap", 0);
+
+		lightMapMesh.render(shader, GL20.GL_TRIANGLE_FAN);
+
+		// lights
+
+		shader.setUniformf("u_sunIntensity", -1);
 		for (int i = 0; i < lights.size; i++) {
 			Light light = lights.get(i);
 
@@ -129,8 +141,7 @@ public class LightMap {
 		verts[U4] = 0f;
 		verts[V4] = 1f;
 
-		Mesh tmpMesh = new Mesh(true, 4, 0, new VertexAttribute(Usage.Position, 2, "a_position"),
-				new VertexAttribute(Usage.TextureCoordinates, 2, "a_texCoord0"));
+		Mesh tmpMesh = new Mesh(true, 4, 0, new VertexAttribute(Usage.Position, 2, "a_position"), new VertexAttribute(Usage.TextureCoordinates, 2, "a_texCoord0"));
 
 		tmpMesh.setVertices(verts);
 		return tmpMesh;

@@ -13,8 +13,7 @@ public class PhysicsProperties {
 		this(0.0f, 0.0f, 0.0f, false, false);
 	}
 
-	public PhysicsProperties(float weight, float restitution, float friction, boolean fixedRotation,
-			boolean requireFootSensor) {
+	public PhysicsProperties(float weight, float restitution, float friction, boolean fixedRotation, boolean requireFootSensor) {
 		super();
 		this.weight = weight;
 		this.restitution = restitution;

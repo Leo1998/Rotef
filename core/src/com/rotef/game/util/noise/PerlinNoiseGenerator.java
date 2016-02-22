@@ -3,8 +3,7 @@ package com.rotef.game.util.noise;
 import java.util.Random;
 
 public class PerlinNoiseGenerator extends NoiseGenerator {
-	protected static final int grad3[][] = { { 1, 1, 0 }, { -1, 1, 0 }, { 1, -1, 0 }, { -1, -1, 0 }, { 1, 0, 1 },
-			{ -1, 0, 1 }, { 1, 0, -1 }, { -1, 0, -1 }, { 0, 1, 1 }, { 0, -1, 1 }, { 0, 1, -1 }, { 0, -1, -1 } };
+	protected static final int grad3[][] = { { 1, 1, 0 }, { -1, 1, 0 }, { 1, -1, 0 }, { -1, -1, 0 }, { 1, 0, 1 }, { -1, 0, 1 }, { 1, 0, -1 }, { -1, 0, -1 }, { 0, 1, 1 }, { 0, -1, 1 }, { 0, 1, -1 }, { 0, -1, -1 } };
 
 	protected PerlinNoiseGenerator() {
 		// Hash lookup table as defined by Ken Perlin.
@@ -88,11 +87,6 @@ public class PerlinNoiseGenerator extends NoiseGenerator {
 		int BA = permutation[B] + Z;
 		int BB = permutation[B + 1] + Z;
 
-		return lerp(fZ,
-				lerp(fY, lerp(fX, grad(permutation[AA], x, y, z), grad(permutation[BA], x - 1, y, z)),
-						lerp(fX, grad(permutation[AB], x, y - 1, z), grad(permutation[BB], x - 1, y - 1, z))),
-				lerp(fY, lerp(fX, grad(permutation[AA + 1], x, y, z - 1), grad(permutation[BA + 1], x - 1, y, z - 1)),
-						lerp(fX, grad(permutation[AB + 1], x, y - 1, z - 1),
-								grad(permutation[BB + 1], x - 1, y - 1, z - 1))));
+		return lerp(fZ, lerp(fY, lerp(fX, grad(permutation[AA], x, y, z), grad(permutation[BA], x - 1, y, z)), lerp(fX, grad(permutation[AB], x, y - 1, z), grad(permutation[BB], x - 1, y - 1, z))), lerp(fY, lerp(fX, grad(permutation[AA + 1], x, y, z - 1), grad(permutation[BA + 1], x - 1, y, z - 1)), lerp(fX, grad(permutation[AB + 1], x, y - 1, z - 1), grad(permutation[BB + 1], x - 1, y - 1, z - 1))));
 	}
 }

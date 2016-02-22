@@ -5,12 +5,12 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class SmokeBackgroundRenderer extends BackgroundRenderer {
-	
+
 	private ParticleEffect effect;
 
 	public SmokeBackgroundRenderer() {
 		super();
-		
+
 		this.effect = new ParticleEffect();
 		this.effect.load(Gdx.files.internal("particles/smoke.p"), Gdx.files.internal("particles"));
 	}

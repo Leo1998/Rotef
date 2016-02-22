@@ -13,6 +13,10 @@ uniform vec2 u_mapCoord;
 uniform vec2 u_resolution;
 
 uniform float u_sunIntensity;
+uniform float u_sunMapX;
+uniform float u_sunMapW;
+uniform float u_worldHeight;
+uniform sampler2D u_sunMap;
 
 uniform vec2 u_lightPosition;
 uniform float u_lightDist;
@@ -41,22 +45,40 @@ void main() {
 
 	vec4 color = vec4(0, 0, 0, 1);
 
-	float dist = u_lightDist;
-	float dist2 = dist / 3;
+	if (u_sunIntensity != -1) {
+		float sunDist = 1.5;
+	
+		float x = (coord.x - u_sunMapX) / u_sunMapW;
 
-	vec2 v = coord.xy - u_lightPosition.xy;
-	float l = length(v);
-	float intensity = (dist - max(l, 0.01)) / dist;
+		vec2 tc = vec2(x, 0.0);
+		float invHeight = texture2D(u_sunMap, tc).r;
+		float height = invHeight * u_worldHeight;
+		
+		float dif = height - coord.y;
+		float intensity = 1f;
+		if (dif >= 0) {
+			intensity = (sunDist - dif) / sunDist;
+		}
 
-	if (intensity > 0.03) {
-		vec2 norm = vec2(v.x, -v.y);
+		color = vec4(vec3(u_sunIntensity * intensity), 1.0);
+	} else {
+		float dist = u_lightDist;
+		float dist2 = dist / 3;
 
-		float shadowDist = dist * calcShadowDist(norm);
+		vec2 v = coord.xy - u_lightPosition.xy;
+		float l = length(v);
+		float intensity = (dist - max(l, 0.01)) / dist;
 
-		float d = max(0.01, l - shadowDist);
-		float shadowFactor = (dist2 - d) / dist2;
+		if (intensity > 0.03) {
+			vec2 norm = vec2(v.x, -v.y);
 
-		color = u_lightColor * intensity * shadowFactor;
+			float shadowDist = dist * calcShadowDist(norm);
+
+			float d = max(0.01, l - shadowDist);
+			float shadowFactor = (dist2 - d) / dist2;
+
+			color = u_lightColor * intensity * shadowFactor;
+		}
 	}
 
 	gl_FragColor = color;

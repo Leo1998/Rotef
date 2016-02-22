@@ -72,8 +72,7 @@ public class Assets {
 		float height = texture.getRegionHeight();
 		float invTexWidth = 1f / texture.getTexture().getWidth();
 		float invTexHeight = 1f / texture.getTexture().getHeight();
-		texture.setRegion((x + .00000001f) * invTexWidth, (y + .00000001f) * invTexHeight,
-				(x + width - .00000001f) * invTexWidth, (y + height - .00000001f) * invTexHeight);
+		texture.setRegion((x + .00000001f) * invTexWidth, (y + .00000001f) * invTexHeight, (x + width - .00000001f) * invTexWidth, (y + height - .00000001f) * invTexHeight);
 	}
 
 }

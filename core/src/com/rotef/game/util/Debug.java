@@ -12,12 +12,10 @@ public class Debug {
 				+ "FPS: " + Gdx.graphics.getFramesPerSecond() + "\n"//
 				+ "Java Heap: " + Gdx.app.getJavaHeap() + "\n"//
 				+ "Native Heap: " + Gdx.app.getNativeHeap() + "\n"//
-				+ "Daytime: " + world.getTimeManager().getDaytime() + " (Time: " + world.getTimeManager().getTime()
-				+ ")" + "\n"//
+				+ "Daytime: " + world.getTimeManager().getDaytime() + " (Time: " + world.getTimeManager().getTime() + ")" + "\n"//
 				+ "Physic Bodies: " + world.getPhysicsManager().getBodyCount() + "\n"//
 				+ "Loaded Chunks: " + world.getLoadedChunks().size + "\n"//
-				+ "Lights: " + world.getLightManager().getLightCount() + ", Visible Lights: "
-				+ world.getLightManager().getVisibleLightCount() + "\n";//
+				+ "Lights: " + world.getLightManager().getLightCount() + ", Visible Lights: " + world.getLightManager().getVisibleLightCount() + "\n";//
 
 		UI.renderString(batch, msg, 10, 7 * 15);
 	}

@@ -7,8 +7,7 @@ import com.rotef.game.util.StatusListener;
 
 public abstract class Generator {
 
-	public static Generator createGeneratorInstance(Class<? extends Generator> clazz, StatusListener listener)
-			throws GeneratorException {
+	public static Generator createGeneratorInstance(Class<? extends Generator> clazz, StatusListener listener) throws GeneratorException {
 		try {
 			Constructor<? extends Generator> constr = clazz.getConstructor(StatusListener.class);
 

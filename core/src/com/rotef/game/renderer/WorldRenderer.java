@@ -58,6 +58,11 @@ public class WorldRenderer {
 	private float vertices[] = new float[NUM_VERTICES];
 
 	private World world;
+
+	public World getWorld() {
+		return world;
+	}
+
 	private OrthographicCamera camera;
 	private WorldViewport viewport;
 
@@ -66,17 +71,13 @@ public class WorldRenderer {
 
 		this.batch = new SpriteBatch();
 
-		this.objectShader = new ShaderProgram(Gdx.files.internal("shader/object.vert"),
-				Gdx.files.internal("shader/object.frag"));
+		this.objectShader = new ShaderProgram(Gdx.files.internal("shader/object.vert"), Gdx.files.internal("shader/object.frag"));
 		ShaderUtils.validateShader(objectShader);
-		this.lightMapRenderShader = new ShaderProgram(Gdx.files.internal("shader/lightmap_render.vert"),
-				Gdx.files.internal("shader/lightmap_render.frag"));
+		this.lightMapRenderShader = new ShaderProgram(Gdx.files.internal("shader/lightmap_render.vert"), Gdx.files.internal("shader/lightmap_render.frag"));
 		ShaderUtils.validateShader(lightMapRenderShader);
-		this.lightMapShader = new ShaderProgram(Gdx.files.internal("shader/lightmap.vert"),
-				Gdx.files.internal("shader/lightmap.frag"));
+		this.lightMapShader = new ShaderProgram(Gdx.files.internal("shader/lightmap.vert"), Gdx.files.internal("shader/lightmap.frag"));
 		ShaderUtils.validateShader(lightMapShader);
-		this.shadowMapShader = new ShaderProgram(Gdx.files.internal("shader/shadowmap.vert"),
-				Gdx.files.internal("shader/shadowmap.frag"));
+		this.shadowMapShader = new ShaderProgram(Gdx.files.internal("shader/shadowmap.vert"), Gdx.files.internal("shader/shadowmap.frag"));
 		ShaderUtils.validateShader(shadowMapShader);
 	}
 
@@ -296,6 +297,10 @@ public class WorldRenderer {
 		lightMapRenderShader.dispose();
 		lightMapShader.dispose();
 		shadowMapShader.dispose();
+	}
+
+	public void setWorld(World world) {
+		this.world = world;
 	}
 
 }

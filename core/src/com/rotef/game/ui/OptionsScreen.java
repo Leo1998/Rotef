@@ -71,8 +71,7 @@ public class OptionsScreen extends BaseScreen {
 		t1.add(debugCheckbox).padBottom(25f);
 		t1.row();
 
-		final Label lightMapDownScaleSliderLabel = new Label("LightMapDownScale: " + Game.config.getLightMapDownScale(),
-				UI.labelStyle);
+		final Label lightMapDownScaleSliderLabel = new Label("LightMapDownScale: " + Game.config.getLightMapDownScale(), UI.labelStyle);
 		final Slider lightMapResSlider = new Slider(1, 4, 1, false, UI.sliderStyle);
 		lightMapResSlider.setValue(Game.config.getLightMapDownScale());
 		lightMapResSlider.addListener(new ChangeListener() {

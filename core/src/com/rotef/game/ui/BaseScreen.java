@@ -30,9 +30,7 @@ public abstract class BaseScreen implements Screen {
 
 		batch = new SpriteBatch();
 
-		ui = new Stage(
-				new ScalingViewport(Scaling.stretch, width / uiScale, height / uiScale, new OrthographicCamera()),
-				batch);
+		ui = new Stage(new ScalingViewport(Scaling.stretch, width / uiScale, height / uiScale, new OrthographicCamera()), batch);
 		ui.setDebugAll(Game.config.isDebug());
 		Gdx.input.setInputProcessor(ui);
 
@@ -60,9 +58,9 @@ public abstract class BaseScreen implements Screen {
 		if (background != null) {
 			batch.setProjectionMatrix(ui.getCamera().combined);
 			batch.begin();
-			
+
 			background.render(batch, delta);
-			
+
 			batch.end();
 		}
 

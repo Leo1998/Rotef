@@ -15,8 +15,6 @@ public class MainMenuScreen extends BaseScreen {
 	@Override
 	public void show() {
 		super.show();
-		
-		this.background = new SmokeBackgroundRenderer();
 	}
 
 	@Override

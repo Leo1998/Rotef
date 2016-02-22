@@ -120,8 +120,7 @@ public class World {
 					WorldChunk chunk = new WorldChunk(chunkX, chunkY, this, new RawChunkData(subData));
 					loadChunk(chunk, true);
 
-					float progress = ((float) loadedChunks
-							/ (float) ((width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)));
+					float progress = ((float) loadedChunks / (float) ((width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)));
 					listener.status("Generating Chunks...", progress);
 					loadedChunks++;
 				}

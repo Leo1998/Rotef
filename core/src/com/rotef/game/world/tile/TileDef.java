@@ -45,8 +45,7 @@ public class TileDef {
 
 			return tile;
 		} catch (NoSuchMethodException e) {
-			Gdx.app.error("TileDef",
-					"Every Tile needs to implement the Constructor Tile(int id, World world, int xTile, int yTile)!");
+			Gdx.app.error("TileDef", "Every Tile needs to implement the Constructor Tile(int id, World world, int xTile, int yTile)!");
 			e.printStackTrace();
 			return null;
 		} catch (SecurityException e) {

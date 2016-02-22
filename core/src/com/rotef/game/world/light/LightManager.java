@@ -10,6 +10,7 @@ import com.rotef.game.renderer.WorldRenderer;
 import com.rotef.game.renderer.WorldViewport;
 import com.rotef.game.world.World;
 import com.rotef.game.world.physics.PhysicsManager;
+import com.rotef.game.world.tile.Tile;
 
 public class LightManager {
 
@@ -22,6 +23,7 @@ public class LightManager {
 
 	private final int downScale;
 	private LightMap lightMap;
+	private SunMap sunMap;
 	private Color ambientLight = new Color(0.01f, 0.01f, 0.01f, 1.0f);
 
 	public LightManager(World world) {
@@ -33,26 +35,35 @@ public class LightManager {
 		if (lightMap != null) {
 			this.lightMap.init(width / downScale, height / downScale);
 		}
+		if (sunMap != null) {
+			this.sunMap.init((width / Tile.TILE_SIZE) + 1);
+		}
 	}
 
 	public LightMap getLightMap() {
 		return lightMap;
 	}
 
-	public void update(WorldRenderer renderer, WorldViewport viewport, float sunIntensity, ShaderProgram lightMapShader,
-			ShaderProgram shadowMapShader) {
+	public SunMap getSunMap() {
+		return sunMap;
+	}
+
+	public void update(WorldRenderer renderer, WorldViewport viewport, float sunIntensity, ShaderProgram lightMapShader, ShaderProgram shadowMapShader) {
 		if (shadowRenderBatch == null) {
 			shadowRenderBatch = new SpriteBatch();
 		}
+		int w = Gdx.graphics.getWidth();
+		int h = Gdx.graphics.getHeight();
 		if (lightMap == null) {
-			int w = Gdx.graphics.getWidth();
-			int h = Gdx.graphics.getHeight();
-
 			this.lightMap = new LightMap(w / downScale, h / downScale);
+		}
+		if (sunMap == null) {
+			this.sunMap = new SunMap((w / Tile.TILE_SIZE) + 1);
 		}
 
 		updateVisibleLights(viewport);
 
+		sunMap.update(viewport, world);
 		updateShadowMaps(renderer, shadowMapShader);
 
 		float xMap = viewport.getX() / PhysicsManager.PPM;
@@ -61,7 +72,11 @@ public class LightManager {
 		float wMap = viewport.getWidth() / PhysicsManager.PPM;
 		float hMap = viewport.getHeight() / PhysicsManager.PPM;
 
-		lightMap.render(lightMapShader, downScale, xMap, yMap, wMap, hMap, ambientLight, visibleLights, sunIntensity);
+		float sunMapX = (int) (viewport.getX() / Tile.TILE_SIZE) / 2f;
+		float sunMapW = sunMap.getWidth() / 2f;
+		float worldHeight = world.getHeight() / 2f;
+
+		lightMap.render(lightMapShader, downScale, xMap, yMap, wMap, hMap, ambientLight, visibleLights, sunMap, sunIntensity, sunMapX, sunMapW, worldHeight);
 	}
 
 	private void updateVisibleLights(WorldViewport viewport) {
@@ -104,6 +119,12 @@ public class LightManager {
 	public void dispose() {
 		if (shadowRenderBatch != null) {
 			shadowRenderBatch.dispose();
+		}
+		if (lightMap != null) {
+			lightMap.dispose();
+		}
+		if (sunMap != null) {
+			sunMap.dispose();
 		}
 	}
 
