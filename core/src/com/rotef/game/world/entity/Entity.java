@@ -6,7 +6,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.rotef.game.assets.Sprite;
 import com.rotef.game.world.World;
-import com.rotef.game.world.WorldChunk;
 import com.rotef.game.world.entity.skin.BaseEntitySkin;
 import com.rotef.game.world.entity.skin.EntitySkin;
 import com.rotef.game.world.light.Light;
@@ -72,26 +71,6 @@ public abstract class Entity {
 
 	public float getY() {
 		return getPosition().y;
-	}
-
-	public int getTileX() {
-		return (int) getX();
-	}
-
-	public int getTileY() {
-		return (int) getY();
-	}
-
-	public int getChunkX() {
-		return getTileX() / WorldChunk.CHUNK_SIZE;
-	}
-
-	public int getChunkY() {
-		return getTileY() / WorldChunk.CHUNK_SIZE;
-	}
-
-	public WorldChunk getChunk() {
-		return getWorld().getChunk(getChunkX(), getChunkY());
 	}
 
 	public float getWidth() {

@@ -305,8 +305,18 @@ public class World {
 	 * @param yTile
 	 */
 	void onTileUpdate(WorldChunk chunk, Tile oldTile, Tile newTile, int xTile, int yTile) {
-		if (yTile > heightmap.getHeight(xTile)) {
+		if (newTile != null && yTile > heightmap.getHeight(xTile)) {
 			heightmap.setHeight(xTile, yTile);
+		} else {
+			int h = 0;
+			for (int y = height - 1; y > 0; y--) {
+				if (getTile(xTile, y, true) != null) {
+					h = y;
+					break;
+				}
+			}
+
+			heightmap.setHeight(xTile, h);
 		}
 
 		physicsManager.onTileUpdate(chunk, oldTile, newTile, xTile, yTile);
@@ -334,6 +344,28 @@ public class World {
 		}
 
 		return chunk.getTile(xTile - chunkX * WorldChunk.CHUNK_SIZE, yTile - chunkY * WorldChunk.CHUNK_SIZE);
+	}
+
+	public void setTile(int xTile, int yTile, int id) {
+		if (xTile < 0 || xTile >= width || yTile < 0 || yTile >= height) {
+			return;
+		}
+
+		int chunkX = xTile / WorldChunk.CHUNK_SIZE;
+		int chunkY = yTile / WorldChunk.CHUNK_SIZE;
+
+		WorldChunk chunk = getChunk(chunkX, chunkY);
+
+		if (chunk == null) {
+			chunk = loadChunk(chunkX, chunkY);
+			if (chunk == null) {
+				return;
+			}
+		}
+
+		Tile tile = tileRegister.createTile(id, this, xTile, yTile);
+
+		chunk.setTile(xTile - chunkX * WorldChunk.CHUNK_SIZE, yTile - chunkY * WorldChunk.CHUNK_SIZE, tile);
 	}
 
 	public int getHighestTileAt(int xTile) {

@@ -15,6 +15,7 @@ public class EntityRegister {
 			playerDef.addValue("skin", "mob/player-skin.dat");
 			playerDef.addValue("walkingSpeed", "3.6");
 			playerDef.addValue("life", "100");
+			playerDef.addValue("miningDistance", "3.5");
 
 			entityDefs.put(playerDef.getId(), playerDef);
 		}

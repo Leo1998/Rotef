@@ -80,12 +80,20 @@ public class WorldChunk {
 		setTile(xTile, yTile, tile, false);
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param xTile in chunk coordinates
+	 * @param yTile in chunk coordinates
+	 * @param tile
+	 * @param skipTileUpdate
+	 */
 	public void setTile(int xTile, int yTile, Tile tile, boolean skipTileUpdate) {
 		if (xTile >= 0 && xTile < CHUNK_SIZE && yTile >= 0 && yTile < CHUNK_SIZE) {
 			Tile oldTile = tiles[xTile + yTile * CHUNK_SIZE];
 
 			if (!skipTileUpdate) {
-				world.onTileUpdate(this, oldTile, tile, xTile, yTile);
+				world.onTileUpdate(this, oldTile, tile, xTile + chunkX * CHUNK_SIZE, yTile + chunkY * CHUNK_SIZE);
 			}
 
 			tiles[xTile + yTile * CHUNK_SIZE] = tile;

@@ -10,9 +10,15 @@ public class PlayerController extends MobTask {
 
 	@Override
 	public void update(float delta) {
-		WorldInput input = mob.getWorld().getScreen().getInput();
+		if (!(mob instanceof Player)) {
+			return;
+		}
 
-		input.movePlayer(mob, delta);
+		Player player = (Player) mob;
+
+		WorldInput input = player.getWorld().getScreen().getInput();
+
+		input.handlePlayer(player, delta);
 	}
 
 }

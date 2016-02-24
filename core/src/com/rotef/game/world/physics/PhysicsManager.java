@@ -110,11 +110,11 @@ public class PhysicsManager implements ContactListener {
 	}
 
 	public void onTileUpdate(WorldChunk chunk, Tile oldTile, Tile newTile, int xTile, int yTile) {
-		if (oldTile.isSolid() && !newTile.isSolid()) {
+		if ((oldTile != null && oldTile.isSolid()) && (newTile == null || !newTile.isSolid())) {
 			removeTileBody(oldTile);
 		}
 
-		if (!oldTile.isSolid() && newTile.isSolid()) {
+		if ((oldTile == null || !oldTile.isSolid()) && (newTile != null && newTile.isSolid())) {
 			createTileBody(newTile);
 		}
 	}
