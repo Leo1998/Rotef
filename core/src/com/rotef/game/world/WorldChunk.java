@@ -2,15 +2,18 @@ package com.rotef.game.world;
 
 import com.badlogic.gdx.Gdx;
 import com.rotef.game.util.file.DFAException;
+import com.rotef.game.world.physics.PhysicsSpatial;
 import com.rotef.game.world.tile.Tile;
 
-public class WorldChunk {
+public final class WorldChunk {
 
 	public static final int CHUNK_SIZE = 8;
 
 	private int chunkX;
 	private int chunkY;
 	private Tile[] tiles;
+	private boolean active = false;
+	private PhysicsSpatial physicsSpatial = null;
 
 	private World world;
 
@@ -83,8 +86,10 @@ public class WorldChunk {
 	/**
 	 * 
 	 * 
-	 * @param xTile in chunk coordinates
-	 * @param yTile in chunk coordinates
+	 * @param xTile
+	 *            in chunk coordinates
+	 * @param yTile
+	 *            in chunk coordinates
 	 * @param tile
 	 * @param skipTileUpdate
 	 */
@@ -92,12 +97,18 @@ public class WorldChunk {
 		if (xTile >= 0 && xTile < CHUNK_SIZE && yTile >= 0 && yTile < CHUNK_SIZE) {
 			Tile oldTile = tiles[xTile + yTile * CHUNK_SIZE];
 
-			if (!skipTileUpdate) {
-				world.onTileUpdate(this, oldTile, tile, xTile + chunkX * CHUNK_SIZE, yTile + chunkY * CHUNK_SIZE);
-			}
-
 			tiles[xTile + yTile * CHUNK_SIZE] = tile;
+
+			if (!skipTileUpdate) {
+				tileUpdate(oldTile, tile, xTile + chunkX * CHUNK_SIZE, yTile + chunkY * CHUNK_SIZE);
+			}
 		}
+	}
+
+	private void tileUpdate(Tile oldTile, Tile tile, int xTile, int yTile) {
+		world.onTileUpdate(this, oldTile, tile, xTile, yTile);
+
+		physicsSpatial.update();
 	}
 
 	public void update(float delta) {
@@ -110,6 +121,29 @@ public class WorldChunk {
 				}
 			}
 		}
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		if (!this.active && active) {
+			activate();
+		} else if (this.active && !active) {
+			deactivate();
+		}
+
+		this.active = active;
+	}
+
+	private void activate() {
+		physicsSpatial = new PhysicsSpatial(this);
+	}
+
+	private void deactivate() {
+		physicsSpatial.dispose();
+		physicsSpatial = null;
 	}
 
 	public int getChunkX() {

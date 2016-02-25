@@ -23,8 +23,8 @@ public class World {
 
 	public static final int WORLD_NAME_MAX_LENGTH = 32;
 
-	private Array<WorldChunk> loadedChunks = new Array<WorldChunk>();
-	private Array<WorldChunk> nessessaryChunks = new Array<WorldChunk>();
+	private Array<WorldChunk> loadedChunks = new Array<WorldChunk>(4096);
+	private Array<WorldChunk> activeChunks = new Array<WorldChunk>(128);
 	private WorldChunk[] chunks;
 
 	private final StatusListener listener;
@@ -58,24 +58,32 @@ public class World {
 				this.width = 1024;
 				this.height = 256;
 				this.chunks = new WorldChunk[(width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)];
-				this.heightmap = new WorldHeightmap(width);
 
 				chunkLoader.initialize();
 
 				generate();
 			} else {
-				chunkLoader.initialize();// nothing happens here, but don't care
-											// about it...
+				chunkLoader.initialize();
 
 				this.width = chunkLoader.readWorldWidth();
 				this.height = chunkLoader.readWorldHeight();
 				this.chunks = new WorldChunk[(width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)];
-				this.heightmap = chunkLoader.readWorldHeightmap();
+
+				for (int chunkX = 0; chunkX < width / WorldChunk.CHUNK_SIZE; chunkX++) {
+					for (int chunkY = 0; chunkY < height / WorldChunk.CHUNK_SIZE; chunkY++) {
+						loadChunk(chunkX, chunkY);
+					}
+				}
 			}
 
 			physicsManager = new PhysicsManager(this);
 			lightManager = new LightManager(this);
 			timeManager = new TimeManager(this);
+
+			heightmap = new WorldHeightmap(width);
+			for (int x = 0; x < width; x++) {
+				updateHeightmap(x);
+			}
 
 			int spawnX = (width / 4);
 			int spawnY = (getHighestTileAt(width / 2) + 5) / 2;
@@ -118,7 +126,7 @@ public class World {
 					}
 
 					WorldChunk chunk = new WorldChunk(chunkX, chunkY, this, new RawChunkData(subData));
-					loadChunk(chunk, true);
+					loadChunk(chunk);
 
 					float progress = ((float) loadedChunks / (float) ((width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)));
 					listener.status("Generating Chunks...", progress);
@@ -126,22 +134,6 @@ public class World {
 				}
 			}
 		}
-
-		// generate heightmap
-		for (int x = 0; x < width; x++) {
-			int h = 0;
-			for (int y = height - 1; y > 0; y--) {
-				if (getTile(x, y, false) != null) {
-					h = y;
-					break;
-				}
-			}
-
-			heightmap.setHeight(x, h);
-		}
-
-		save();
-		unloadAllLoadedChunks(false, true);
 	}
 
 	public void update(float delta) {
@@ -149,13 +141,8 @@ public class World {
 
 		updateChunks();
 
-		for (int chunkX = 0; chunkX < width / WorldChunk.CHUNK_SIZE; chunkX++) {
-			for (int chunkY = 0; chunkY < height / WorldChunk.CHUNK_SIZE; chunkY++) {
-				WorldChunk chunk = getChunk(chunkX, chunkY);
-				if (chunk != null) {
-					chunk.update(delta);
-				}
-			}
+		for (WorldChunk chunk : activeChunks) {
+			chunk.update(delta);
 		}
 
 		entityManager.update(delta);
@@ -166,16 +153,12 @@ public class World {
 	}
 
 	public WorldChunk loadChunk(int chunkX, int chunkY) {
-		return loadChunk(chunkX, chunkY, false);
-	}
-
-	public WorldChunk loadChunk(int chunkX, int chunkY, boolean skipPhysics) {
 		try {
 			WorldChunkData chunkData = chunkLoader.readChunk(chunkX, chunkY);
 
 			WorldChunk chunk = new WorldChunk(chunkX, chunkY, this, chunkData);
 
-			return loadChunk(chunk, skipPhysics);
+			return loadChunk(chunk);
 		} catch (DFAException e) {
 			return null;
 		} catch (InvalidChunkDataException e) {
@@ -183,13 +166,9 @@ public class World {
 		}
 	}
 
-	private WorldChunk loadChunk(WorldChunk chunk, boolean skipLogics) {
+	private WorldChunk loadChunk(WorldChunk chunk) {
 		chunks[chunk.getChunkX() + chunk.getChunkY() * (width / WorldChunk.CHUNK_SIZE)] = chunk;
 		loadedChunks.add(chunk);
-
-		if (!skipLogics) {
-			physicsManager.onChunkLoaded(chunk);
-		}
 
 		return chunk;
 	}
@@ -215,7 +194,7 @@ public class World {
 	public void unloadChunk(int chunkX, int chunkY) {
 		WorldChunk chunk = getChunk(chunkX, chunkY);
 
-		unloadChunk(chunk, true, false);
+		unloadChunk(chunk, true);
 	}
 
 	/**
@@ -228,17 +207,13 @@ public class World {
 	 * @param skipLogics
 	 *            if logics should be skipped
 	 */
-	private void unloadChunk(WorldChunk chunk, boolean save, boolean skipLogics) {
+	private void unloadChunk(WorldChunk chunk, boolean save) {
 		if (save) {
 			chunk.save();
 		}
 
 		chunks[chunk.getChunkX() + chunk.getChunkY() * (width / WorldChunk.CHUNK_SIZE)] = null;
 		loadedChunks.removeValue(chunk, true);
-
-		if (!skipLogics) {
-			physicsManager.onChunkUnloaded(chunk);
-		}
 	}
 
 	/**
@@ -247,11 +222,11 @@ public class World {
 	 * @param save
 	 * @param skipPhysics
 	 */
-	private void unloadAllLoadedChunks(boolean save, boolean skipPhysics) {
+	private void unloadAllLoadedChunks(boolean save) {
 		for (int i = 0; i < loadedChunks.size; i++) {
 			WorldChunk chunk = loadedChunks.get(i);
 
-			unloadChunk(chunk, save, skipPhysics);
+			unloadChunk(chunk, save);
 		}
 
 		loadedChunks.clear();
@@ -270,7 +245,10 @@ public class World {
 		int chunkY0 = (int) (((y0 / Tile.TILE_SIZE) - 1) / WorldChunk.CHUNK_SIZE) - 2;
 		int chunkX1 = (int) (((x1 / Tile.TILE_SIZE) + 1) / WorldChunk.CHUNK_SIZE) + 2;
 		int chunkY1 = (int) (((y1 / Tile.TILE_SIZE) + 1) / WorldChunk.CHUNK_SIZE) + 2;
-		nessessaryChunks.clear();
+
+		Array<WorldChunk> oldActiveChunks = new Array<WorldChunk>();
+		oldActiveChunks.addAll(activeChunks);
+		activeChunks.clear();
 
 		for (int xi = chunkX0; xi < chunkX1; xi++) {
 			for (int yi = chunkY0; yi < chunkY1; yi++) {
@@ -278,22 +256,26 @@ public class World {
 					if (!isChunkLoaded(xi, yi)) {
 						WorldChunk chunk = loadChunk(xi, yi);
 
-						nessessaryChunks.add(chunk);
+						activeChunks.add(chunk);
 					} else {
-						nessessaryChunks.add(getChunk(xi, yi));
+						activeChunks.add(getChunk(xi, yi));
 					}
 				}
 			}
 		}
 
-		// close unnessessary Chunks
-		for (int i = 0; i < loadedChunks.size; i++) {
-			WorldChunk chunk = loadedChunks.get(i);
-
-			if (!nessessaryChunks.contains(chunk, true)) {
-				unloadChunk(chunk, true, false);
+		for (WorldChunk chunk : oldActiveChunks) {
+			if (activeChunks.contains(chunk, true)) {
+				if (!chunk.isActive()) {
+					chunk.setActive(true);
+				}
+			} else {
+				if (chunk.isActive()) {
+					chunk.setActive(false);
+				}
 			}
 		}
+
 	}
 
 	/**
@@ -305,21 +287,7 @@ public class World {
 	 * @param yTile
 	 */
 	void onTileUpdate(WorldChunk chunk, Tile oldTile, Tile newTile, int xTile, int yTile) {
-		if (newTile != null && yTile > heightmap.getHeight(xTile)) {
-			heightmap.setHeight(xTile, yTile);
-		} else {
-			int h = 0;
-			for (int y = height - 1; y > 0; y--) {
-				if (getTile(xTile, y, true) != null) {
-					h = y;
-					break;
-				}
-			}
-
-			heightmap.setHeight(xTile, h);
-		}
-
-		physicsManager.onTileUpdate(chunk, oldTile, newTile, xTile, yTile);
+		updateHeightmap(xTile);
 	}
 
 	public Tile getTile(int xTile, int yTile, boolean loadChunkIfNessessary) {
@@ -375,15 +343,15 @@ public class World {
 	public void requestSave() {
 		Gdx.app.log("World", "save requested!");
 
-		save();
+		save(false);
 	}
 
 	public void dispose(boolean error) {
 		if (!error) {
-			save();
+			save(true);
 
 			// chunks are allready saved
-			unloadAllLoadedChunks(false, false);
+			unloadAllLoadedChunks(false);
 		}
 
 		if (chunkLoader != null)
@@ -400,23 +368,28 @@ public class World {
 		Gdx.app.log("World", "disposed!");
 	}
 
-	private void save() {
-		for (int i = 0; i < loadedChunks.size; i++) {
-			WorldChunk chunk = loadedChunks.get(i);
+	private void save(boolean wait) {
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				for (int i = 0; i < loadedChunks.size; i++) {
+					WorldChunk chunk = loadedChunks.get(i);
 
-			chunk.save();
-		}
+					chunk.save();
+				}
 
-		saveHeightmap();
+				Gdx.app.log("World", "saved!");
+			}
+		}, "Save Thread");
 
-		Gdx.app.log("World", "saved!");
-	}
+		thread.setDaemon(true);
+		thread.start();
 
-	private void saveHeightmap() {
-		try {
-			chunkLoader.writeWorldHeightmap(heightmap);
-		} catch (DFAException e) {
-			e.printStackTrace();
+		if (wait) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+			}
 		}
 	}
 
@@ -452,6 +425,10 @@ public class World {
 		return loadedChunks;
 	}
 
+	public Array<WorldChunk> getActiveChunks() {
+		return activeChunks;
+	}
+
 	public TileRegister getTileRegister() {
 		return tileRegister;
 	}
@@ -470,6 +447,18 @@ public class World {
 
 	public WorldHeightmap getHeightmap() {
 		return heightmap;
+	}
+
+	private void updateHeightmap(int x) {
+		int h = 0;
+		for (int y = height - 1; y > 0; y--) {
+			if (getTile(x, y, true) != null) {
+				h = y;
+				break;
+			}
+		}
+
+		heightmap.setHeight(x, h);
 	}
 
 	public TimeManager getTimeManager() {

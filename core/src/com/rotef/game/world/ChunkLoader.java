@@ -14,10 +14,8 @@ public class ChunkLoader {
 
 	private FileHandle rootDir;
 	private FileHandle dataFile;
-	private FileHandle heightmapFile;
 
 	private DirectFileAccess dfa;
-	private DirectFileAccess dfaHeightmap;
 
 	private boolean isFirstInit = false;
 
@@ -34,13 +32,7 @@ public class ChunkLoader {
 			dataFile.write(false);// creates new file
 		}
 
-		heightmapFile = rootDir.child("heightmap.bin");
-		if (!heightmapFile.exists()) {
-			heightmapFile.write(false);// creates new file
-		}
-
 		this.dfa = new DirectFileAccess(dataFile);
-		this.dfaHeightmap = new DirectFileAccess(heightmapFile);
 
 		if (!isInitialized()) {
 			this.isFirstInit = true;
@@ -104,26 +96,6 @@ public class ChunkLoader {
 		dfa.writeString(name, World.WORLD_NAME_MAX_LENGTH);
 	}
 
-	public WorldHeightmap readWorldHeightmap() throws DFAException {
-		WorldHeightmap heightmap = new WorldHeightmap(world.getWidth());
-
-		dfaHeightmap.seek(0);
-
-		for (int x = 0; x < world.getWidth(); x++) {
-			heightmap.setHeight(x, dfaHeightmap.readInt());
-		}
-
-		return heightmap;
-	}
-
-	public void writeWorldHeightmap(WorldHeightmap heightmap) throws DFAException {
-		dfaHeightmap.seek(0);
-
-		for (int x = 0; x < world.getWidth(); x++) {
-			dfaHeightmap.writeInt(heightmap.getHeight(x));
-		}
-	}
-
 	private void seekChunk(int chunkX, int chunkY) {
 		int i = chunkX + chunkY * (world.getWidth() / WorldChunk.CHUNK_SIZE);
 
@@ -180,7 +152,6 @@ public class ChunkLoader {
 
 	public void dispose() {
 		dfa.close();
-		dfaHeightmap.close();
 	}
 
 }

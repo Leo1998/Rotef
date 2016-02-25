@@ -10,7 +10,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -19,11 +18,9 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.rotef.game.world.World;
-import com.rotef.game.world.WorldChunk;
 import com.rotef.game.world.entity.Entity;
 import com.rotef.game.world.entity.Foot;
 import com.rotef.game.world.entity.PhysicsProperties;
-import com.rotef.game.world.tile.Tile;
 
 public class PhysicsManager implements ContactListener {
 
@@ -44,7 +41,6 @@ public class PhysicsManager implements ContactListener {
 
 	private Box2DDebugRenderer debugRenderer;
 
-	private HashMap<Tile, Body> tileBodies = new HashMap<Tile, Body>();
 	private HashMap<Entity, Body> entityBodies = new HashMap<Entity, Body>();
 
 	private World world;
@@ -83,85 +79,6 @@ public class PhysicsManager implements ContactListener {
 			physicsWorld.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 			accumulator -= TIME_STEP;
 		}
-	}
-
-	public synchronized void onChunkLoaded(WorldChunk chunk) {
-		for (int x = 0; x < WorldChunk.CHUNK_SIZE; x++) {
-			for (int y = 0; y < WorldChunk.CHUNK_SIZE; y++) {
-				Tile tile = chunk.getTile(x, y);
-
-				if (tile != null && tile.isSolid()) {
-					createTileBody(tile);
-				}
-			}
-		}
-	}
-
-	public synchronized void onChunkUnloaded(WorldChunk chunk) {
-		for (int x = 0; x < WorldChunk.CHUNK_SIZE; x++) {
-			for (int y = 0; y < WorldChunk.CHUNK_SIZE; y++) {
-				Tile tile = chunk.getTile(x, y);
-
-				if (tile != null && tile.isSolid()) {
-					removeTileBody(tile);
-				}
-			}
-		}
-	}
-
-	public void onTileUpdate(WorldChunk chunk, Tile oldTile, Tile newTile, int xTile, int yTile) {
-		if ((oldTile != null && oldTile.isSolid()) && (newTile == null || !newTile.isSolid())) {
-			removeTileBody(oldTile);
-		}
-
-		if ((oldTile == null || !oldTile.isSolid()) && (newTile != null && newTile.isSolid())) {
-			createTileBody(newTile);
-		}
-	}
-
-	private Body createTileBody(Tile tile) {
-		if (tileBodies.containsKey(tile)) {
-			return tileBodies.get(tile);
-		}
-
-		BodyDef tileBodyDef = new BodyDef();
-		tileBodyDef.position.set(new Vector2((tile.getXTile() / 2f) + 0.25F, (tile.getYTile() / 2f) + 0.25F));
-		tileBodyDef.type = BodyType.StaticBody;
-
-		Body tileBody = physicsWorld.createBody(tileBodyDef);
-
-		ChainShape shape = new ChainShape();
-		Vector2[] v = new Vector2[5];
-		v[0] = new Vector2(-0.25f, -0.25f);
-		v[1] = new Vector2(-0.25f, 0.25f);
-		v[2] = new Vector2(0.25f, 0.25f);
-		v[3] = new Vector2(0.25f, -0.25f);
-		v[4] = new Vector2(-0.25f, -0.25f);
-		shape.createChain(v);
-
-		FixtureDef fDef = new FixtureDef();
-		fDef.shape = shape;
-		fDef.density = 0.0f;
-
-		tileBody.createFixture(fDef).setUserData(tile);
-
-		shape.dispose();
-
-		tileBodies.put(tile, tileBody);
-
-		return tileBody;
-	}
-
-	private void removeTileBody(Tile tile) {
-		if (!tileBodies.containsKey(tile)) {
-			return;
-		}
-
-		Body body = tileBodies.get(tile);
-
-		physicsWorld.destroyBody(body);
-
-		tileBodies.remove(tile);
 	}
 
 	public void initializeEntity(Entity e) {
@@ -243,17 +160,12 @@ public class PhysicsManager implements ContactListener {
 	}
 
 	public void dispose() {
-		tileBodies.clear();
 		entityBodies.clear();
 		physicsWorld.dispose();
 
 		if (debugRenderer != null) {
 			debugRenderer.dispose();
 		}
-	}
-
-	public int getBodyCount() {
-		return tileBodies.size() + entityBodies.size();
 	}
 
 	@Override
@@ -264,9 +176,7 @@ public class PhysicsManager implements ContactListener {
 		{
 			Object o = fa.getUserData();
 			if (o != null) {
-				if (o instanceof Tile) {
-					Tile tile = (Tile) o;
-
+				if ("tile".equals(o)) {
 				} else if (o instanceof Entity) {
 					Entity entity = (Entity) o;
 
@@ -281,9 +191,7 @@ public class PhysicsManager implements ContactListener {
 		{
 			Object o = fb.getUserData();
 			if (o != null) {
-				if (o instanceof Tile) {
-					Tile tile = (Tile) o;
-
+				if ("tile".equals(o)) {
 				} else if (o instanceof Entity) {
 					Entity entity = (Entity) o;
 
@@ -303,9 +211,7 @@ public class PhysicsManager implements ContactListener {
 		{
 			Object o = fa.getUserData();
 			if (o != null) {
-				if (o instanceof Tile) {
-					Tile tile = (Tile) o;
-
+				if ("tile".equals(o)) {
 				} else if (o instanceof Entity) {
 					Entity entity = (Entity) o;
 
@@ -320,9 +226,7 @@ public class PhysicsManager implements ContactListener {
 		{
 			Object o = fb.getUserData();
 			if (o != null) {
-				if (o instanceof Tile) {
-					Tile tile = (Tile) o;
-
+				if ("tile".equals(o)) {
 				} else if (o instanceof Entity) {
 					Entity entity = (Entity) o;
 
@@ -341,6 +245,10 @@ public class PhysicsManager implements ContactListener {
 
 	@Override
 	public void postSolve(Contact c, ContactImpulse impulse) {
+	}
+
+	public com.badlogic.gdx.physics.box2d.World getPhysicsWorld() {
+		return physicsWorld;
 	}
 
 }

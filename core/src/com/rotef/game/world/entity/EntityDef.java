@@ -53,7 +53,7 @@ public class EntityDef {
 				if (getValue("life") != null) {
 					mob.setLife(Integer.valueOf(getValue("life")));
 				}
-				
+
 				if (entity instanceof Player) {
 					Player player = (Player) mob;
 					if (getValue("miningDistance") != null) {
