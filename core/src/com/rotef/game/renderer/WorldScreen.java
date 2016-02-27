@@ -67,7 +67,11 @@ public class WorldScreen extends BaseScreen {
 		renderer.dispose();
 	}
 
-	private void disposeWorld() {
+	public World getWorld() {
+		return world;
+	}
+
+	public void disposeWorld() {
 		if (world != null) {
 			world.dispose(false);
 

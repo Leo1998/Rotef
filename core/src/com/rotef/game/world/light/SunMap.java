@@ -51,7 +51,7 @@ public class SunMap {
 		for (int x = x0; x < x0 + this.width && x < worldWidth; x++) {
 			float height = heightmap.getHeight(x) / 2f;
 
-			float invHeight = height / (float) (worldHeight / 2f);
+			float invHeight = height / (worldHeight / 2f);
 
 			pixmap.setColor(Color.rgba8888(invHeight, invHeight, invHeight, 1.0f));
 			pixmap.drawPixel(x - x0, 0);

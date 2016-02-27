@@ -72,6 +72,10 @@ public class World {
 				for (int chunkX = 0; chunkX < width / WorldChunk.CHUNK_SIZE; chunkX++) {
 					for (int chunkY = 0; chunkY < height / WorldChunk.CHUNK_SIZE; chunkY++) {
 						loadChunk(chunkX, chunkY);
+
+						float progress = ((float) loadedChunks.size / (float) ((width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)));
+						listener.status("Loading Chunks...", progress);
+
 					}
 				}
 			}
@@ -354,14 +358,19 @@ public class World {
 			unloadAllLoadedChunks(false);
 		}
 
-		if (chunkLoader != null)
-			chunkLoader.dispose();
+		Gdx.app.postRunnable(new Runnable() {
+			@Override
+			public void run() {
+				if (chunkLoader != null)
+					chunkLoader.dispose();
 
-		if (physicsManager != null)
-			physicsManager.dispose();
+				if (physicsManager != null)
+					physicsManager.dispose();
 
-		if (lightManager != null)
-			lightManager.dispose();
+				if (lightManager != null)
+					lightManager.dispose();
+			}
+		});
 
 		Runtime.getRuntime().gc();
 
@@ -380,7 +389,7 @@ public class World {
 
 				Gdx.app.log("World", "saved!");
 			}
-		}, "Save Thread");
+		}, "World Save Thread");
 
 		thread.setDaemon(true);
 		thread.start();

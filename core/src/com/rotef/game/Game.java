@@ -1,6 +1,7 @@
 package com.rotef.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.rotef.game.assets.Assets;
@@ -63,6 +64,42 @@ public class Game extends com.badlogic.gdx.Game {
 		loadingThread.setPriority(Thread.MAX_PRIORITY);
 
 		loadingThread.start();
+	}
+
+	@Override
+	public void setScreen(Screen screen) {
+		if (!(this.screen instanceof WorldScreen)) {
+			super.setScreen(screen);
+			return;
+		}
+
+		WorldScreen worldScreen = (WorldScreen) this.screen;
+
+		final LoadingScreen loadingScreen = new LoadingScreen();
+		this.screen = loadingScreen;
+		this.screen.show();
+		this.screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+		Thread disposeThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				loadingScreen.sendStatus("Saving...", 0f);
+
+				worldScreen.disposeWorld();
+
+				Gdx.app.postRunnable(new Runnable() {
+					@Override
+					public void run() {
+						Game.super.setScreen(screen);
+					}
+				});
+			}
+		}, "Save Thread");
+
+		disposeThread.setDaemon(true);
+		disposeThread.setPriority(Thread.MAX_PRIORITY);
+
+		disposeThread.start();
 	}
 
 	@Override
