@@ -60,14 +60,13 @@ public class World {
 
 			worldLoader = new WorldLoader(this);
 			if (worldLoader.isFirstInit()) {
-				this.width = 1024;
+				this.width = 2048;
 				this.height = 256;
 				this.chunks = new WorldChunk[(width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)];
 
 				generate();
 			} else {
 				WorldData worldData = worldLoader.readWorldData();
-				Gdx.app.log("World", worldData.toString());
 
 				this.width = worldData.width;
 				this.height = worldData.height;
