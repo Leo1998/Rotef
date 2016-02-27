@@ -3,10 +3,10 @@ package com.rotef.game.world;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
+import com.rotef.game.Version;
 import com.rotef.game.renderer.WorldScreen;
 import com.rotef.game.renderer.WorldViewport;
 import com.rotef.game.util.StatusListener;
-import com.rotef.game.util.file.DFAException;
 import com.rotef.game.world.entity.EntityManager;
 import com.rotef.game.world.entity.Player;
 import com.rotef.game.world.entity.PlayerController;
@@ -15,6 +15,8 @@ import com.rotef.game.world.generator.GeneratorException;
 import com.rotef.game.world.generator.OverworldGenerator;
 import com.rotef.game.world.light.Light;
 import com.rotef.game.world.light.LightManager;
+import com.rotef.game.world.loader.WorldData;
+import com.rotef.game.world.loader.WorldLoader;
 import com.rotef.game.world.physics.PhysicsManager;
 import com.rotef.game.world.tile.Tile;
 import com.rotef.game.world.tile.TileRegister;
@@ -36,7 +38,7 @@ public class World {
 	private WorldScreen screen;
 
 	private final WorldDescriptor descriptor;
-	final ChunkLoader chunkLoader;
+	final WorldLoader worldLoader;
 	final TileRegister tileRegister;
 	final EntityManager entityManager;
 	final PhysicsManager physicsManager;
@@ -52,37 +54,36 @@ public class World {
 		try {
 			tileRegister = new TileRegister();
 			entityManager = new EntityManager(this);
+			physicsManager = new PhysicsManager(this);
+			lightManager = new LightManager(this);
+			timeManager = new TimeManager(this);
 
-			chunkLoader = new ChunkLoader(this);
-			if (chunkLoader.isFirstInit()) {
+			worldLoader = new WorldLoader(this);
+			if (worldLoader.isFirstInit()) {
 				this.width = 1024;
 				this.height = 256;
 				this.chunks = new WorldChunk[(width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)];
 
-				chunkLoader.initialize();
-
 				generate();
 			} else {
-				chunkLoader.initialize();
+				WorldData worldData = worldLoader.readWorldData();
+				Gdx.app.log("World", worldData.toString());
 
-				this.width = chunkLoader.readWorldWidth();
-				this.height = chunkLoader.readWorldHeight();
+				this.width = worldData.width;
+				this.height = worldData.height;
 				this.chunks = new WorldChunk[(width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)];
+				this.timeManager.setTotalWorldSeconds(worldData.time);
 
-				for (int chunkX = 0; chunkX < width / WorldChunk.CHUNK_SIZE; chunkX++) {
-					for (int chunkY = 0; chunkY < height / WorldChunk.CHUNK_SIZE; chunkY++) {
-						loadChunk(chunkX, chunkY);
+				Array<WorldChunk> chunks = worldLoader.readChunkData();
+				for (int i = 0; i < chunks.size; i++) {
+					WorldChunk chunk = chunks.get(i);
 
-						float progress = ((float) loadedChunks.size / (float) ((width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)));
-						listener.status("Loading Chunks...", progress);
+					loadChunk(chunk);
 
-					}
+					float progress = ((float) loadedChunks.size / (float) ((width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)));
+					listener.status("Loading Chunks...", progress);
 				}
 			}
-
-			physicsManager = new PhysicsManager(this);
-			lightManager = new LightManager(this);
-			timeManager = new TimeManager(this);
 
 			heightmap = new WorldHeightmap(width);
 			for (int x = 0; x < width; x++) {
@@ -156,20 +157,6 @@ public class World {
 		physicsManager.updatePhysics(delta);
 	}
 
-	public WorldChunk loadChunk(int chunkX, int chunkY) {
-		try {
-			WorldChunkData chunkData = chunkLoader.readChunk(chunkX, chunkY);
-
-			WorldChunk chunk = new WorldChunk(chunkX, chunkY, this, chunkData);
-
-			return loadChunk(chunk);
-		} catch (DFAException e) {
-			return null;
-		} catch (InvalidChunkDataException e) {
-			return null;
-		}
-	}
-
 	private WorldChunk loadChunk(WorldChunk chunk) {
 		chunks[chunk.getChunkX() + chunk.getChunkY() * (width / WorldChunk.CHUNK_SIZE)] = chunk;
 		loadedChunks.add(chunk);
@@ -182,23 +169,11 @@ public class World {
 	}
 
 	public WorldChunk getChunk(int chunkX, int chunkY) {
-		if (!chunkLoader.hasChunk(chunkX, chunkY)) {
+		if (!(chunkX >= 0 && chunkY >= 0 && chunkX < width / WorldChunk.CHUNK_SIZE && chunkY < height / WorldChunk.CHUNK_SIZE)) {
 			return null;
 		}
 
 		return chunks[chunkX + chunkY * (width / WorldChunk.CHUNK_SIZE)];
-	}
-
-	/**
-	 * This unloads a chunk.
-	 * 
-	 * @param chunkX
-	 * @param chunkY
-	 */
-	public void unloadChunk(int chunkX, int chunkY) {
-		WorldChunk chunk = getChunk(chunkX, chunkY);
-
-		unloadChunk(chunk, true);
 	}
 
 	/**
@@ -256,12 +231,8 @@ public class World {
 
 		for (int xi = chunkX0; xi < chunkX1; xi++) {
 			for (int yi = chunkY0; yi < chunkY1; yi++) {
-				if (chunkLoader.hasChunk(xi, yi)) {
-					if (!isChunkLoaded(xi, yi)) {
-						WorldChunk chunk = loadChunk(xi, yi);
-
-						activeChunks.add(chunk);
-					} else {
+				if (xi >= 0 && yi >= 0 && xi < width / WorldChunk.CHUNK_SIZE && yi < height / WorldChunk.CHUNK_SIZE) {
+					if (isChunkLoaded(xi, yi)) {
 						activeChunks.add(getChunk(xi, yi));
 					}
 				}
@@ -294,7 +265,7 @@ public class World {
 		updateHeightmap(xTile);
 	}
 
-	public Tile getTile(int xTile, int yTile, boolean loadChunkIfNessessary) {
+	public Tile getTile(int xTile, int yTile) {
 		if (xTile < 0 || xTile >= width || yTile < 0 || yTile >= height) {
 			return null;
 		}
@@ -305,14 +276,7 @@ public class World {
 		WorldChunk chunk = getChunk(chunkX, chunkY);
 
 		if (chunk == null) {
-			if (loadChunkIfNessessary) {
-				chunk = loadChunk(chunkX, chunkY);
-				if (chunk == null) {
-					return null;
-				}
-			} else {
-				return null;
-			}
+			return null;
 		}
 
 		return chunk.getTile(xTile - chunkX * WorldChunk.CHUNK_SIZE, yTile - chunkY * WorldChunk.CHUNK_SIZE);
@@ -329,10 +293,7 @@ public class World {
 		WorldChunk chunk = getChunk(chunkX, chunkY);
 
 		if (chunk == null) {
-			chunk = loadChunk(chunkX, chunkY);
-			if (chunk == null) {
-				return;
-			}
+			return;
 		}
 
 		Tile tile = tileRegister.createTile(id, this, xTile, yTile);
@@ -361,9 +322,6 @@ public class World {
 		Gdx.app.postRunnable(new Runnable() {
 			@Override
 			public void run() {
-				if (chunkLoader != null)
-					chunkLoader.dispose();
-
 				if (physicsManager != null)
 					physicsManager.dispose();
 
@@ -381,11 +339,9 @@ public class World {
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				for (int i = 0; i < loadedChunks.size; i++) {
-					WorldChunk chunk = loadedChunks.get(i);
+				worldLoader.writeWorldData(createWorldData());
 
-					chunk.save();
-				}
+				worldLoader.writeChunkData(loadedChunks);
 
 				Gdx.app.log("World", "saved!");
 			}
@@ -400,6 +356,17 @@ public class World {
 			} catch (InterruptedException e) {
 			}
 		}
+	}
+
+	private WorldData createWorldData() {
+		WorldData data = new WorldData();
+
+		data.version = Version.gameVersion;
+		data.width = this.width;
+		data.height = this.height;
+		data.time = this.timeManager.getTotalWorldSeconds();
+
+		return data;
 	}
 
 	public WorldDescriptor getDescriptor() {
@@ -426,8 +393,8 @@ public class World {
 		this.screen = screen;
 	}
 
-	public ChunkLoader getChunkLoader() {
-		return chunkLoader;
+	public WorldLoader getWorldLoader() {
+		return worldLoader;
 	}
 
 	public Array<WorldChunk> getLoadedChunks() {
@@ -461,7 +428,7 @@ public class World {
 	private void updateHeightmap(int x) {
 		int h = 0;
 		for (int y = height - 1; y > 0; y--) {
-			if (getTile(x, y, true) != null) {
+			if (getTile(x, y) != null) {
 				h = y;
 				break;
 			}

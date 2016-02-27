@@ -136,7 +136,7 @@ public class WorldRenderer {
 
 		for (int xt = tileX0; xt < tileX1; xt++) {
 			for (int yt = tileY0; yt < tileY1; yt++) {
-				Tile tile = world.getTile(xt, yt, true);
+				Tile tile = world.getTile(xt, yt);
 
 				if (tile != null) {
 					if (tile.hasSprite()) {
@@ -193,7 +193,7 @@ public class WorldRenderer {
 
 		for (int xt = x0; xt < x1; xt++) {
 			for (int yt = y0; yt < y1; yt++) {
-				Tile tile = world.getTile(xt, yt, true);
+				Tile tile = world.getTile(xt, yt);
 
 				if (tile != null) {
 					if (tile.hasSprite()) {

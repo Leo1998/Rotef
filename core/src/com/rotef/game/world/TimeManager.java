@@ -82,6 +82,15 @@ public class TimeManager {
 		return totalWorldSeconds;
 	}
 
+	/**
+	 * Only use for setting saved time!
+	 * 
+	 * @param totalWorldSeconds
+	 */
+	public void setTotalWorldSeconds(float totalWorldSeconds) {
+		this.totalWorldSeconds = totalWorldSeconds;
+	}
+
 	public World getWorld() {
 		return world;
 	}

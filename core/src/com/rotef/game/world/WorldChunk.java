@@ -1,7 +1,6 @@
 package com.rotef.game.world;
 
 import com.badlogic.gdx.Gdx;
-import com.rotef.game.util.file.DFAException;
 import com.rotef.game.world.physics.PhysicsSpatial;
 import com.rotef.game.world.tile.Tile;
 
@@ -17,12 +16,14 @@ public final class WorldChunk {
 
 	private World world;
 
-	public WorldChunk(int chunkX, int chunkY, World world, WorldChunkData data) {
+	private WorldChunkData saveData;
+
+	public WorldChunk(int chunkX, int chunkY, World world, WorldChunkData buildData) {
 		this.chunkX = chunkX;
 		this.chunkY = chunkY;
 		this.world = world;
 
-		build(data);
+		build(buildData);
 	}
 
 	public void build(WorldChunkData data) {
@@ -44,21 +45,18 @@ public final class WorldChunk {
 		}
 	}
 
-	/**
-	 * the same as calling world.unloadChunk(chunkX, chunkY);
-	 */
-	public void unload() {
-		world.unloadChunk(chunkX, chunkY);
-	}
+	public void save() {
+		// TODO only save if nessessary
 
-	public synchronized void save() {
-		ChunkLoader chunkLoader = world.getChunkLoader();
+		int[] rawData = new int[CHUNK_SIZE * CHUNK_SIZE];
 
-		try {
-			chunkLoader.saveChunk(this);
-		} catch (DFAException e) {
-			Gdx.app.error("WorldChunk(x:" + chunkX + " y:" + chunkY + ")", "Failed to save chunk data!");
+		for (int y = 0; y < CHUNK_SIZE; y++) {
+			for (int x = 0; x < CHUNK_SIZE; x++) {
+				rawData[x + y * CHUNK_SIZE] = getTileId(x, y);
+			}
 		}
+
+		this.saveData = new RawChunkData(rawData);
 	}
 
 	public int getTileId(int xTile, int yTile) {
@@ -158,21 +156,12 @@ public final class WorldChunk {
 		return world;
 	}
 
-	/**
-	 * Generates an array storing the tiles as ids.
-	 * 
-	 * @return rawData
-	 */
-	public int[] getRawData() {
-		int[] rawData = new int[CHUNK_SIZE * CHUNK_SIZE];
+	public WorldChunkData getSaveData() {
+		return saveData;
+	}
 
-		for (int y = 0; y < CHUNK_SIZE; y++) {
-			for (int x = 0; x < CHUNK_SIZE; x++) {
-				rawData[x + y * CHUNK_SIZE] = getTileId(x, y);
-			}
-		}
-
-		return rawData;
+	public void clearSaveData() {
+		this.saveData = null;
 	}
 
 }

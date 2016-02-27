@@ -10,7 +10,7 @@ import com.rotef.game.util.StringUtils;
 public class WorldDescriptor {
 
 	public static WorldDescriptor[] getExistingWorlds() {
-		FileHandle[] files = Game.worldRoot.list(new FileFilter() {
+		FileHandle[] files = Game.worldDir.list(new FileFilter() {
 			@Override
 			public boolean accept(File file) {
 				if (file.isDirectory()) {
@@ -37,7 +37,12 @@ public class WorldDescriptor {
 	}
 
 	public FileHandle getDirectory() {
-		return Game.worldRoot.child(getName());
+		return Game.worldDir.child(getName());
+	}
+
+	public void delete() {
+		getDirectory().copyTo(Game.pastebinDir.child(name));
+		getDirectory().deleteDirectory();
 	}
 
 	public String getName() {

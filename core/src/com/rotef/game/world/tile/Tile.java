@@ -35,10 +35,10 @@ public abstract class Tile {
 	 * @param delta
 	 */
 	public void internalUpdate(float delta) {
-		hasTileAbove = world.getTile(xTile, yTile + 1, false) != null;
-		hasTileRight = world.getTile(xTile + 1, yTile, false) != null;
-		hasTileBeneath = world.getTile(xTile, yTile - 1, false) != null;
-		hasTileLeft = world.getTile(xTile - 1, yTile, false) != null;
+		hasTileAbove = world.getTile(xTile, yTile + 1) != null;
+		hasTileRight = world.getTile(xTile + 1, yTile) != null;
+		hasTileBeneath = world.getTile(xTile, yTile - 1) != null;
+		hasTileLeft = world.getTile(xTile - 1, yTile) != null;
 
 		if (this.hasSprite()) {
 			sprite.update();

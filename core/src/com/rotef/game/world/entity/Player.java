@@ -20,7 +20,7 @@ public class Player extends Mob {
 	public void mine(float x, float y) {
 		int xt = (int) (x * 2);
 		int yt = (int) (y * 2);
-		Tile tile = getWorld().getTile(xt, yt, false);
+		Tile tile = getWorld().getTile(xt, yt);
 
 		if (tile != null) {
 			float dst = calcDst(x, y, getX(), getY());

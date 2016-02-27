@@ -22,7 +22,8 @@ public class Game extends com.badlogic.gdx.Game {
 	public static Config config;
 
 	public static FileHandle rootDir;
-	public static FileHandle worldRoot;
+	public static FileHandle worldDir;
+	public static FileHandle pastebinDir;
 
 	public static void openWorld(String name) {
 		final WorldDescriptor descriptor = new WorldDescriptor(name);
@@ -143,8 +144,11 @@ public class Game extends com.badlogic.gdx.Game {
 	public void init(FileHandle rootDirParam) {
 		rootDir = rootDirParam;
 
-		worldRoot = rootDir.child("worlds");
-		worldRoot.mkdirs();
+		worldDir = rootDir.child("worlds");
+		worldDir.mkdirs();
+
+		pastebinDir = rootDir.child(".pastebin");
+		pastebinDir.mkdirs();
 
 		FileHandle configFile = rootDir.child("config.json");
 
