@@ -6,11 +6,11 @@ public class FileUtils {
 
 	private FileUtils() {
 	}
-	
+
 	public static void createBackupFile(FileHandle file) {
 		FileHandle backupFile = file.sibling(file.name() + ".bak");
-		
+
 		file.copyTo(backupFile);
 	}
-	
+
 }

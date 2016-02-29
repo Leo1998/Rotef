@@ -16,6 +16,7 @@ import com.rotef.game.world.WorldChunk;
 public class WorldLoader {
 
 	private ThreadLocal<Kryo> kryos = new ThreadLocal<Kryo>() {
+		@Override
 		protected Kryo initialValue() {
 			Kryo kryo = new Kryo();
 
@@ -203,7 +204,7 @@ public class WorldLoader {
 		}
 
 		output.close();
-		
+
 		FileUtils.createBackupFile(chunksFile);
 	}
 

@@ -1,13 +1,8 @@
 package com.rotef.game;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.JsonWriter;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
 public class Config implements Json.Serializable {
@@ -97,25 +92,17 @@ public class Config implements Json.Serializable {
 	}
 
 	public static Config load(FileHandle file) {
-		return load(file.read());
-	}
-
-	public static Config load(InputStream in) {
 		Json json = new Json(OutputType.json);
 
-		return json.fromJson(Config.class, in);
+		return json.fromJson(Config.class, file);
 	}
 
 	public static void save(FileHandle file, Config config) {
-		save(file.write(false), config);
-	}
-
-	public static void save(OutputStream out, Config config) {
 		Json json = new Json(OutputType.json);
 
-		JsonWriter writer = new JsonWriter(new OutputStreamWriter(out));
+		String jsonText = json.prettyPrint(config);
 
-		json.toJson(config, writer);
+		file.writeString(jsonText, false);
 	}
 
 	@Override
@@ -140,6 +127,6 @@ public class Config implements Json.Serializable {
 		this.uiSize = jsonData.get("uiSize").asFloat();
 		this.debug = jsonData.get("debug").asBoolean();
 		this.usePastebin = jsonData.get("usePastebin").asBoolean();
-}
+	}
 
 }
