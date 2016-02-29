@@ -19,6 +19,7 @@ public class Config implements Json.Serializable {
 	private int lightMapDownScale;
 	private float uiSize;
 	private boolean debug;
+	private boolean usePastebin;
 
 	public Config() {
 		setWidth(800);
@@ -28,6 +29,7 @@ public class Config implements Json.Serializable {
 		setLightMapDownScale(2);
 		setUiSize(1.5f);
 		setDebug(false);
+		setUsePastebin(true);
 	}
 
 	public int getWidth() {
@@ -86,6 +88,14 @@ public class Config implements Json.Serializable {
 		this.debug = debug;
 	}
 
+	public boolean isUsePastebin() {
+		return usePastebin;
+	}
+
+	public void setUsePastebin(boolean usePastebin) {
+		this.usePastebin = usePastebin;
+	}
+
 	public static Config load(FileHandle file) {
 		return load(file.read());
 	}
@@ -117,6 +127,7 @@ public class Config implements Json.Serializable {
 		json.writeValue("lightMapDownScale", lightMapDownScale);
 		json.writeValue("uiSize", uiSize);
 		json.writeValue("debug", debug);
+		json.writeValue("usePastebin", usePastebin);
 	}
 
 	@Override
@@ -128,6 +139,7 @@ public class Config implements Json.Serializable {
 		this.lightMapDownScale = jsonData.get("lightMapDownScale").asInt();
 		this.uiSize = jsonData.get("uiSize").asFloat();
 		this.debug = jsonData.get("debug").asBoolean();
-	}
+		this.usePastebin = jsonData.get("usePastebin").asBoolean();
+}
 
 }

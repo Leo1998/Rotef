@@ -9,6 +9,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.rotef.game.util.FileUtils;
 import com.rotef.game.world.World;
 import com.rotef.game.world.WorldChunk;
 
@@ -173,6 +174,8 @@ public class WorldLoader {
 		kryo.writeObject(output, worldData);
 
 		output.close();
+
+		FileUtils.createBackupFile(worldFile);
 	}
 
 	public WorldData readWorldData() {
@@ -200,6 +203,8 @@ public class WorldLoader {
 		}
 
 		output.close();
+		
+		FileUtils.createBackupFile(chunksFile);
 	}
 
 	public Array<WorldChunk> readChunkData() {
