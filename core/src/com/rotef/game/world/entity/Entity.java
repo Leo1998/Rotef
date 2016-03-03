@@ -14,8 +14,9 @@ import com.rotef.game.world.physics.PhysicsManager;
 public abstract class Entity {
 
 	private final int id;
-	private final long entityID;
 	private final World world;
+
+	private long entityID = -1;
 
 	private EntitySkin skin;
 	/**
@@ -39,7 +40,6 @@ public abstract class Entity {
 	public Entity(int id, World world) {
 		this.id = id;
 		this.world = world;
-		this.entityID = this.getEntityManager().newUnusedEntityID();
 	}
 
 	public void update(float delta) {
@@ -111,6 +111,10 @@ public abstract class Entity {
 
 	public long getEntityID() {
 		return entityID;
+	}
+
+	public void setEntityID(long entityID) {
+		this.entityID = entityID;
 	}
 
 	public Body getBody() {

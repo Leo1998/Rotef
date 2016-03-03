@@ -27,12 +27,13 @@ public class EntityManager {
 		if (entity == null)
 			return null;
 
+		long entityID = newUnusedEntityID();
+		entity.setEntityID(entityID);
+
 		entity.setSpawnPosition(x, y);
 
-		Long l = new Long(entity.getEntityID());
-
-		entities.put(l, entity);
-		givenEntityIDs.add(l);
+		entities.put(entityID, entity);
+		givenEntityIDs.add(entityID);
 
 		PhysicsManager physicsManager = world.getPhysicsManager();
 		physicsManager.initializeEntity(entity);

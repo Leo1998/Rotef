@@ -3,8 +3,6 @@ package com.rotef.game.world.loader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.FloatArray;
-import com.badlogic.gdx.utils.IntArray;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
@@ -23,111 +21,10 @@ public class WorldLoader {
 			kryo.register(WorldData.class, new WorldDataSerializer());
 			kryo.register(WorldChunk.class, new WorldChunkSerializer(world));
 
-			kryo.register(Array.class, new Serializer<Array>() {
-				{
-					setAcceptsNull(true);
-				}
-
-				private Class genericType;
-
-				@Override
-				public void setGenerics(Kryo kryo, Class[] generics) {
-					if (kryo.isFinal(generics[0]))
-						genericType = generics[0];
-				}
-
-				@Override
-				public void write(Kryo kryo, Output output, Array array) {
-					int length = array.size;
-					output.writeInt(length, true);
-					if (length == 0) {
-						genericType = null;
-						return;
-					}
-					if (genericType != null) {
-						Serializer serializer = kryo.getSerializer(genericType);
-						genericType = null;
-						for (Object element : array)
-							kryo.writeObjectOrNull(output, element, serializer);
-					} else {
-						for (Object element : array)
-							kryo.writeClassAndObject(output, element);
-					}
-				}
-
-				@Override
-				public Array read(Kryo kryo, Input input, Class<Array> type) {
-					Array array = new Array();
-					kryo.reference(array);
-					int length = input.readInt(true);
-					array.ensureCapacity(length);
-					if (genericType != null) {
-						Class elementClass = genericType;
-						Serializer serializer = kryo.getSerializer(genericType);
-						genericType = null;
-						for (int i = 0; i < length; i++)
-							array.add(kryo.readObjectOrNull(input, elementClass, serializer));
-					} else {
-						for (int i = 0; i < length; i++)
-							array.add(kryo.readClassAndObject(input));
-					}
-					return array;
-				}
-			});
-
-			kryo.register(IntArray.class, new Serializer<IntArray>() {
-				{
-					setAcceptsNull(true);
-				}
-
-				@Override
-				public void write(Kryo kryo, Output output, IntArray array) {
-					int length = array.size;
-					output.writeInt(length, true);
-					if (length == 0)
-						return;
-					for (int i = 0, n = array.size; i < n; i++)
-						output.writeInt(array.get(i), true);
-				}
-
-				@Override
-				public IntArray read(Kryo kryo, Input input, Class<IntArray> type) {
-					IntArray array = new IntArray();
-					kryo.reference(array);
-					int length = input.readInt(true);
-					array.ensureCapacity(length);
-					for (int i = 0; i < length; i++)
-						array.add(input.readInt(true));
-					return array;
-				}
-			});
-
-			kryo.register(FloatArray.class, new Serializer<FloatArray>() {
-				{
-					setAcceptsNull(true);
-				}
-
-				@Override
-				public void write(Kryo kryo, Output output, FloatArray array) {
-					int length = array.size;
-					output.writeInt(length, true);
-					if (length == 0)
-						return;
-					for (int i = 0, n = array.size; i < n; i++)
-						output.writeFloat(array.get(i));
-				}
-
-				@Override
-				public FloatArray read(Kryo kryo, Input input, Class<FloatArray> type) {
-					FloatArray array = new FloatArray();
-					kryo.reference(array);
-					int length = input.readInt(true);
-					array.ensureCapacity(length);
-					for (int i = 0; i < length; i++)
-						array.add(input.readFloat());
-					return array;
-				}
-			});
+			// output.writeInt(o.getId());
+			// output.writeLong(o.getEntityID());
+			// output.writeFloat(o.getX());
+			// output.writeFloat(o.getY());
 
 			kryo.register(Color.class, new Serializer<Color>() {
 				@Override
