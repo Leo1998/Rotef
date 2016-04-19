@@ -35,7 +35,6 @@ import com.rotef.game.assets.Sprite;
 import com.rotef.game.util.ShaderUtils;
 import com.rotef.game.world.World;
 import com.rotef.game.world.entity.Entity;
-import com.rotef.game.world.entity.skin.EntitySkin;
 import com.rotef.game.world.light.Light;
 import com.rotef.game.world.light.LightManager;
 import com.rotef.game.world.light.LightMap;
@@ -45,8 +44,6 @@ import com.rotef.game.world.tile.Tile;
 public class WorldRenderer {
 
 	private static final int NUM_VERTICES = 20;
-
-	// private Rectangle tmpRect = new Rectangle();
 
 	private ShaderProgram objectShader;
 	private ShaderProgram lightMapRenderShader;
@@ -149,26 +146,12 @@ public class WorldRenderer {
 		}
 		Collection<Entity> entities = world.getEntityManager().getEntities();
 		for (Entity e : entities) {
-			EntitySkin skin = e.getSkin();
-			if (skin != null) {
-				Sprite sprite = skin.getSprite();
+			float x = (e.getX() - e.getWidth() / 2) * PhysicsManager.PPM;
+			float y = (e.getY() - e.getHeight() / 2) * PhysicsManager.PPM;
+			float w = e.getWidth() * PhysicsManager.PPM;
+			float h = e.getHeight() * PhysicsManager.PPM;
 
-				float x = (e.getX() - e.getWidth() / 2) * PhysicsManager.PPM;
-				float y = (e.getY() - e.getHeight() / 2) * PhysicsManager.PPM;
-				float w = e.getWidth() * PhysicsManager.PPM;
-				float h = e.getHeight() * PhysicsManager.PPM;
-
-				if (skin.mirrorX()) {
-					x += w;
-					w *= -1;
-				}
-				if (skin.mirrorY()) {
-					y += h;
-					h *= -1;
-				}
-
-				renderObject(sprite, x, y, w, h);
-			}
+			e.render(this, x, y, w, h);
 		}
 
 		batch.end();
@@ -204,47 +187,11 @@ public class WorldRenderer {
 				}
 			}
 		}
-		// Collection<Entity> entities = world.getEntityManager().getEntities();
-		// for (Entity e : entities) {
-		// Light attached = e.getAttachedLight();
-		// if (attached != null && attached == light) {
-		// continue;
-		// }
-		//
-		// EntitySkin skin = e.getSkin();
-		// if (skin != null) {
-		// Sprite sprite = skin.getSprite();
-		//
-		// float x = (e.getX() - e.getWidth() / 2);
-		// float y = (e.getY() - e.getHeight() / 2);
-		// float w = e.getWidth();
-		// float h = e.getHeight();
-		// Rectangle bounds = new Rectangle(x, y, w, h);
-		//
-		// x *= PhysicsManager.PPM;
-		// y *= PhysicsManager.PPM;
-		// w *= PhysicsManager.PPM;
-		// h *= PhysicsManager.PPM;
-		//
-		// if (lightRect.contains(bounds) || lightRect.overlaps(bounds)) {
-		// if (skin.mirrorX()) {
-		// x += w;
-		// w *= -1;
-		// }
-		// if (skin.mirrorY()) {
-		// y += h;
-		// h *= -1;
-		// }
-		//
-		// renderObject(sprite, x, y, w, h);
-		// }
-		// }
-		// }
 
 		batch.end();
 	}
 
-	private void renderObject(Sprite sprite, float x, float y, float width, float height) {
+	public void renderObject(Sprite sprite, float x, float y, float width, float height) {
 		if (sprite == null)
 			return;
 

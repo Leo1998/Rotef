@@ -1,0 +1,5 @@
+{
+	"type": Player,
+	"name": "Player",
+	"spritePath": "mob/player.png"
+}

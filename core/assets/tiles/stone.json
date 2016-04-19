@@ -1,0 +1,6 @@
+{
+	"id": 3,
+	"type": Solid,
+	"name": "Stone",
+	"spritePath": "tiles/stone.png"
+}

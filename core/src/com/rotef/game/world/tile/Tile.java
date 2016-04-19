@@ -1,29 +1,51 @@
 package com.rotef.game.world.tile;
 
+import com.rotef.game.Game;
 import com.rotef.game.world.World;
+import com.rotef.game.world.tile.textures.DynamicTileSprite;
 import com.rotef.game.world.tile.textures.TileSprite;
 
 public abstract class Tile {
 
+	public enum Type {
+		Solid(TileSolid.class), Fluid(TileFluid.class);
+
+		//
+
+		final Class<? extends Tile> clazz;
+
+		Type(Class<? extends Tile> clazz) {
+			this.clazz = clazz;
+		}
+	}
+
 	public static final int TILE_SIZE = 32;
 	public static final int TILE_TEXTURE_SIZE = 16;
 
-	private final int id;
 	private final World world;
+
+	private TileTemplate template;
+	private int id;
+	private Type type;
+	private String name;
+	private boolean solid = false;
+	private TileSprite sprite;
 
 	private int xTile;
 	private int yTile;
-	private boolean solid = false;
-
-	private TileSprite sprite;
 
 	private boolean hasTileAbove = false;
 	private boolean hasTileRight = false;
 	private boolean hasTileBeneath = false;
 	private boolean hasTileLeft = false;
 
-	Tile(int id, World world, int xTile, int yTile) {
-		this.id = id;
+	Tile(TileTemplate template, World world, int xTile, int yTile) {
+		this.template = template;
+		this.id = template.getId();
+		this.type = template.getType();
+		this.name = template.getName();
+		this.sprite = new DynamicTileSprite(this, Game.assets.getSprite(template.getSpritePath()));
+
 		this.world = world;
 		this.xTile = xTile;
 		this.yTile = yTile;
@@ -47,8 +69,24 @@ public abstract class Tile {
 
 	public abstract void update(float delta);
 
+	public TileTemplate getTemplate() {
+		return template;
+	}
+
 	public int getId() {
 		return id;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public boolean isSolid() {
+		return solid;
 	}
 
 	public World getWorld() {
@@ -91,40 +129,8 @@ public abstract class Tile {
 		return yTile;
 	}
 
-	public boolean isSolid() {
-		return solid;
-	}
-
 	protected void setSolid(boolean solid) {
 		this.solid = solid;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + id;
-		result = prime * result + xTile;
-		result = prime * result + yTile;
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Tile other = (Tile) obj;
-		if (id != other.id)
-			return false;
-		if (xTile != other.xTile)
-			return false;
-		if (yTile != other.yTile)
-			return false;
-		return true;
 	}
 
 }

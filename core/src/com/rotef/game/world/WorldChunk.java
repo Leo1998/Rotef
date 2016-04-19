@@ -40,7 +40,8 @@ public final class WorldChunk {
 
 				int xTile = chunkX * CHUNK_SIZE + x;
 				int yTile = chunkY * CHUNK_SIZE + y;
-				setTile(x, y, world.getTileRegister().createTile(id, world, xTile, yTile), true);
+
+				setTile(x, y, world.getTileManager().createTile(id, world, xTile, yTile), true);
 			}
 		}
 	}

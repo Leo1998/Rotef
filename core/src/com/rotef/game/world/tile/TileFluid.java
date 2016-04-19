@@ -4,8 +4,8 @@ import com.rotef.game.world.World;
 
 public class TileFluid extends Tile {
 
-	public TileFluid(int id, World world, int xTile, int yTile) {
-		super(id, world, xTile, yTile);
+	public TileFluid(TileTemplate template, World world, int xTile, int yTile) {
+		super(template, world, xTile, yTile);
 	}
 
 	@Override

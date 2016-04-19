@@ -8,13 +8,13 @@ public abstract class Mob extends Entity {
 
 	private Array<MobTask> tasks = new Array<MobTask>();
 	private int life = 10;
-	private float walkingSpeed = 0.0f;
+	private float walkingSpeed = 3.6f;
 	private MobDirection direction = MobDirection.Right;
 
 	private float lastJumpTime = 0.0f;
 
-	public Mob(int id, World world) {
-		super(id, world);
+	public Mob(EntityTemplate template, World world) {
+		super(template, world);
 
 		// setup some more friction, 60 kg weight and fix rotation
 		this.physicsProperties = new PhysicsProperties(60.0f, 0.0f, 0.99f, true, true);

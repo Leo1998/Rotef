@@ -4,32 +4,41 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.rotef.game.Game;
 import com.rotef.game.assets.Sprite;
+import com.rotef.game.renderer.WorldRenderer;
 import com.rotef.game.world.World;
-import com.rotef.game.world.entity.skin.BaseEntitySkin;
-import com.rotef.game.world.entity.skin.EntitySkin;
 import com.rotef.game.world.light.Light;
 import com.rotef.game.world.physics.PhysicsManager;
 
 public abstract class Entity {
 
-	private final int id;
+	public enum Type {
+
+		Player(Player.class);
+
+		//
+
+		final Class<? extends Entity> clazz;
+
+		Type(Class<? extends Entity> clazz) {
+			this.clazz = clazz;
+		}
+	}
+
+	private final Type type;
+	private final String name;
+	private Sprite sprite;
+
 	private final World world;
 
 	private long entityID = -1;
 
-	private EntitySkin skin;
-	/**
-	 * The width in meters
-	 */
-	private float width;
-	/**
-	 * The height in meters
-	 */
-	private float height;
-
 	private float spawnX;
 	private float spawnY;
+
+	private float width;
+	private float height;
 
 	private Foot foot = null;
 	protected Body body;
@@ -37,8 +46,14 @@ public abstract class Entity {
 
 	private Light attachedLight = null;
 
-	public Entity(int id, World world) {
-		this.id = id;
+	public Entity(EntityTemplate template, World world) {
+		this.type = template.getType();
+		this.name = template.getName();
+		this.sprite = Game.assets.getSprite(template.getSpritePath());
+
+		this.width = sprite.getWidth() / PhysicsManager.PPM;
+		this.height = sprite.getHeight() / PhysicsManager.PPM;
+
 		this.world = world;
 	}
 
@@ -54,6 +69,10 @@ public abstract class Entity {
 			light.setX(this.getX());
 			light.setY(this.getY());
 		}
+	}
+
+	public void render(WorldRenderer renderer, float x, float y, float w, float h) {
+		renderer.renderObject(sprite, x, y, w, h);
 	}
 
 	void setSpawnPosition(float x, float y) {
@@ -89,6 +108,14 @@ public abstract class Entity {
 		return spawnY;
 	}
 
+	public Type getType() {
+		return type;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 	public World getWorld() {
 		return world;
 	}
@@ -105,10 +132,6 @@ public abstract class Entity {
 		return physicsProperties;
 	}
 
-	public int getId() {
-		return id;
-	}
-
 	public long getEntityID() {
 		return entityID;
 	}
@@ -123,21 +146,6 @@ public abstract class Entity {
 
 	public void setBody(Body body) {
 		this.body = body;
-	}
-
-	public EntitySkin getSkin() {
-		return skin;
-	}
-
-	public void setSkin(EntitySkin skin) {
-		this.skin = skin;
-
-		this.width = skin.getWidth() / PhysicsManager.PPM;
-		this.height = skin.getHeight() / PhysicsManager.PPM;
-	}
-
-	protected void createBaseSkin(Sprite sprite) {
-		setSkin(new BaseEntitySkin(sprite));
 	}
 
 	public boolean isGrounded() {
@@ -175,7 +183,7 @@ public abstract class Entity {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (entityID ^ (entityID >>> 32));
-		result = prime * result + id;
+		result = prime * result + name.hashCode();
 		return result;
 	}
 
@@ -190,7 +198,7 @@ public abstract class Entity {
 		Entity other = (Entity) obj;
 		if (entityID != other.entityID)
 			return false;
-		if (id != other.id)
+		if (!name.equals(other.name))
 			return false;
 		return true;
 	}

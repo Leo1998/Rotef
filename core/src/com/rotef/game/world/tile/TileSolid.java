@@ -4,8 +4,8 @@ import com.rotef.game.world.World;
 
 public class TileSolid extends Tile {
 
-	public TileSolid(int id, World world, int xTile, int yTile) {
-		super(id, world, xTile, yTile);
+	public TileSolid(TileTemplate template, World world, int xTile, int yTile) {
+		super(template, world, xTile, yTile);
 
 		this.setSolid(true);
 	}

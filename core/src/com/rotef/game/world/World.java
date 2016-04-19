@@ -19,27 +19,31 @@ import com.rotef.game.world.loader.WorldData;
 import com.rotef.game.world.loader.WorldLoader;
 import com.rotef.game.world.physics.PhysicsManager;
 import com.rotef.game.world.tile.Tile;
-import com.rotef.game.world.tile.TileRegister;
+import com.rotef.game.world.tile.TileManager;
 
 public class World {
 
 	public static final int WORLD_NAME_MAX_LENGTH = 32;
 
-	private Array<WorldChunk> loadedChunks = new Array<WorldChunk>(4096);
-	private Array<WorldChunk> activeChunks = new Array<WorldChunk>(128);
-	private WorldChunk[] chunks;
+	private final Array<WorldChunk> loadedChunks = new Array<WorldChunk>(4096);
+	private final Array<WorldChunk> activeChunks = new Array<WorldChunk>(128);
+	private final WorldChunk[] chunks;
 
 	private final StatusListener listener;
 
-	private int width;
-	private int height;
-	private WorldHeightmap heightmap;
+	/**
+	 * the width and height in tiles
+	 */
+	private final int width, height;
+	private final WorldHeightmap heightmap;
 
 	private WorldScreen screen;
 
 	private final WorldDescriptor descriptor;
+	
+	//Managers
 	final WorldLoader worldLoader;
-	final TileRegister tileRegister;
+	final TileManager tileManager;
 	final EntityManager entityManager;
 	final PhysicsManager physicsManager;
 	final LightManager lightManager;
@@ -52,7 +56,7 @@ public class World {
 		this.listener = listener;
 
 		try {
-			tileRegister = new TileRegister();
+			tileManager = new TileManager();
 			entityManager = new EntityManager(this);
 			physicsManager = new PhysicsManager(this);
 			lightManager = new LightManager(this);
@@ -93,7 +97,7 @@ public class World {
 			int spawnY = (getHighestTileAt(width / 2) + 5) / 2;
 			lightManager.addLight(new Light(spawnX, spawnY, 6, Color.WHITE));
 
-			player = (Player) entityManager.spawnEntity(1, spawnX, spawnY);
+			player = (Player) entityManager.spawnEntity("Player", spawnX, spawnY);
 			player.addTask(new PlayerController(player));
 		} catch (Exception e) {
 			dispose(true);
@@ -295,7 +299,7 @@ public class World {
 			return;
 		}
 
-		Tile tile = tileRegister.createTile(id, this, xTile, yTile);
+		Tile tile = tileManager.createTile(id, this, xTile, yTile);
 
 		chunk.setTile(xTile - chunkX * WorldChunk.CHUNK_SIZE, yTile - chunkY * WorldChunk.CHUNK_SIZE, tile);
 	}
@@ -404,8 +408,8 @@ public class World {
 		return activeChunks;
 	}
 
-	public TileRegister getTileRegister() {
-		return tileRegister;
+	public TileManager getTileManager() {
+		return tileManager;
 	}
 
 	public Player getPlayer() {

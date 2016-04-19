@@ -5,11 +5,14 @@ import com.rotef.game.world.tile.Tile;
 
 public class Player extends Mob {
 
-	private String name;
-	private float miningDistance;
+	private float miningDistance = 3.5f;
 
-	public Player(int id, World world) {
-		super(id, world);
+	// playerDef.addValue("walkingSpeed", "3.6");
+	// playerDef.addValue("life", "100");
+	// playerDef.addValue("miningDistance", "3.5");
+
+	public Player(EntityTemplate template, World world) {
+		super(template, world);
 	}
 
 	@Override
@@ -36,14 +39,6 @@ public class Player extends Mob {
 		float ky = y0 - y1;
 
 		return (float) Math.sqrt(kx * kx + ky * ky);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	protected void setName(String name) {
-		this.name = name;
 	}
 
 	public float getMiningDistance() {

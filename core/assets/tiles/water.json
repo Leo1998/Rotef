@@ -1,0 +1,6 @@
+{
+	"id": 2,
+	"type": Fluid,
+	"name": "Water",
+	"spritePath": "tiles/water.png"
+}

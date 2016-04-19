@@ -1,9 +1,11 @@
 package com.rotef.game.world.entity;
 
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.rotef.game.world.World;
 import com.rotef.game.world.physics.PhysicsManager;
@@ -14,16 +16,26 @@ public class EntityManager {
 	private Array<Long> givenEntityIDs = new Array<Long>();
 
 	private World world;
-	private EntityRegister register;
+	private Array<EntityTemplate> templates = new Array<EntityTemplate>();
 
 	public EntityManager(World world) {
 		this.world = world;
 
-		this.register = new EntityRegister();
+		loadTemplate("mob/player.json");
 	}
 
-	public Entity spawnEntity(int id, float x, float y) {
-		Entity entity = register.createEntity(id, world);
+	private void loadTemplate(String path) {
+		EntityTemplate template = EntityTemplate.loadTemplate(Gdx.files.internal(path));
+
+		Gdx.app.log("EntityManager", "Loaded EntityTemplate (" + path + ", " + template.getName() + ")");
+
+		templates.add(template);
+	}
+
+	public Entity spawnEntity(String name, float x, float y) {
+		EntityTemplate template = findTemplate(name);
+
+		Entity entity = createEntity(template, world);
 		if (entity == null)
 			return null;
 
@@ -39,6 +51,35 @@ public class EntityManager {
 		physicsManager.initializeEntity(entity);
 
 		return entity;
+	}
+
+	private Entity createEntity(EntityTemplate template, World world) {
+		if (template != null) {
+			try {
+				Class<? extends Entity> clazz = template.getType().clazz;
+
+				Constructor<? extends Entity> c = clazz.getConstructor(EntityTemplate.class, World.class);
+
+				Entity entity = c.newInstance(template, world);
+
+				return entity;
+			} catch (Exception e) {
+				Gdx.app.error("EntityManager", "Failed creating a new Entity!", e);
+				return null;
+			}
+		}
+
+		return null;
+	}
+
+	private EntityTemplate findTemplate(String name) {
+		for (EntityTemplate t : templates) {
+			if (t.getName().equals(name)) {
+				return t;
+			}
+		}
+
+		return null;
 	}
 
 	public void removeEntity(long entityID) {

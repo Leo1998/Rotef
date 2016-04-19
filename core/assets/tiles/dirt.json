@@ -1,0 +1,6 @@
+{
+	"id": 1,
+	"type": Solid,
+	"name": "Dirt",
+	"spritePath": "tiles/dirt.png"
+}
