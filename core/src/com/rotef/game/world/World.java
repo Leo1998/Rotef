@@ -40,8 +40,8 @@ public class World {
 	private WorldScreen screen;
 
 	private final WorldDescriptor descriptor;
-	
-	//Managers
+
+	// Managers
 	final WorldLoader worldLoader;
 	final TileManager tileManager;
 	final EntityManager entityManager;

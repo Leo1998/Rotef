@@ -1,6 +1,7 @@
 package com.rotef.game.world.tile;
 
 import com.rotef.game.Game;
+import com.rotef.game.template.Template;
 import com.rotef.game.world.World;
 import com.rotef.game.world.tile.textures.DynamicTileSprite;
 import com.rotef.game.world.tile.textures.TileSprite;
@@ -24,7 +25,7 @@ public abstract class Tile {
 
 	private final World world;
 
-	private TileTemplate template;
+	private Template template;
 	private int id;
 	private Type type;
 	private String name;
@@ -39,12 +40,12 @@ public abstract class Tile {
 	private boolean hasTileBeneath = false;
 	private boolean hasTileLeft = false;
 
-	Tile(TileTemplate template, World world, int xTile, int yTile) {
+	Tile(Template template, World world, int xTile, int yTile) {
 		this.template = template;
-		this.id = template.getId();
-		this.type = template.getType();
-		this.name = template.getName();
-		this.sprite = new DynamicTileSprite(this, Game.assets.getSprite(template.getSpritePath()));
+		this.id = template.getInteger("id");
+		this.type = Type.valueOf(template.getString("type"));
+		this.name = template.getString("name");
+		this.sprite = new DynamicTileSprite(this, Game.assets.getSprite(template.getString("spritePath")));
 
 		this.world = world;
 		this.xTile = xTile;
@@ -69,7 +70,7 @@ public abstract class Tile {
 
 	public abstract void update(float delta);
 
-	public TileTemplate getTemplate() {
+	public Template getTemplate() {
 		return template;
 	}
 

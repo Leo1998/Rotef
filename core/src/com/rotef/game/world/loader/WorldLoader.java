@@ -97,7 +97,8 @@ public class WorldLoader {
 		for (int i = 0; i < l; i++) {
 			WorldChunk chunk = chunks.get(i);
 
-			kryo.writeObject(output, chunk);
+			if (chunk != null)
+				kryo.writeObject(output, chunk);
 		}
 
 		output.close();

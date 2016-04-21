@@ -4,11 +4,12 @@ import java.lang.reflect.Constructor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
+import com.rotef.game.template.Template;
 import com.rotef.game.world.World;
 
 public class TileManager {
 
-	private Array<TileTemplate> templates = new Array<TileTemplate>();
+	private Array<Template> templates = new Array<Template>();
 
 	public TileManager() {
 		loadTemplate("tiles/dirt.json");
@@ -36,9 +37,9 @@ public class TileManager {
 	}
 
 	private void loadTemplate(String path) {
-		TileTemplate template = TileTemplate.loadTemplate(Gdx.files.internal(path));
+		Template template = Template.loadTemplate(Gdx.files.internal(path));
 
-		Gdx.app.log("TileManager", "Loaded TileTemplate (" + path + ", " + template.getName() + ")");
+		Gdx.app.log("TileManager", "Loaded Template (" + path + ", " + template.get("name") + ")");
 
 		templates.add(template);
 	}
@@ -51,12 +52,12 @@ public class TileManager {
 		return createTile(findTemplate(name), world, xTile, yTile);
 	}
 
-	public Tile createTile(TileTemplate template, World world, int xTile, int yTile) {
+	public Tile createTile(Template template, World world, int xTile, int yTile) {
 		if (template != null) {
 			try {
-				Class<? extends Tile> clazz = template.getType().clazz;
+				Class<? extends Tile> clazz = Tile.Type.valueOf(template.getString("type")).clazz;
 
-				Constructor<? extends Tile> c = clazz.getConstructor(TileTemplate.class, World.class, int.class, int.class);
+				Constructor<? extends Tile> c = clazz.getConstructor(Template.class, World.class, int.class, int.class);
 
 				Tile tile = c.newInstance(template, world, xTile, yTile);
 
@@ -69,9 +70,9 @@ public class TileManager {
 		return null;
 	}
 
-	private TileTemplate findTemplate(String name) {
-		for (TileTemplate t : templates) {
-			if (t.getName().equals(name)) {
+	private Template findTemplate(String name) {
+		for (Template t : templates) {
+			if (t.getString("name").equals(name)) {
 				return t;
 			}
 		}
@@ -79,9 +80,9 @@ public class TileManager {
 		return null;
 	}
 
-	private TileTemplate findTemplate(int id) {
-		for (TileTemplate t : templates) {
-			if (t.getId() == id) {
+	private Template findTemplate(int id) {
+		for (Template t : templates) {
+			if (t.getInteger("id") == id) {
 				return t;
 			}
 		}
