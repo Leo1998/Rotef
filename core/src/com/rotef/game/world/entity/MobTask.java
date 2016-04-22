@@ -2,9 +2,9 @@ package com.rotef.game.world.entity;
 
 public abstract class MobTask {
 
-	protected Mob mob;
+	protected LivingEntity mob;
 
-	public MobTask(Mob mob) {
+	public MobTask(LivingEntity mob) {
 		this.mob = mob;
 	}
 

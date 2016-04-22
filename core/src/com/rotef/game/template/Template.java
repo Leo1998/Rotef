@@ -77,7 +77,7 @@ public class Template implements Serializable {
 	public short getShort(String key) {
 		Object object = get(key);
 		if (object != null && (object instanceof Long || object instanceof Double)) {
-			return (short) object;
+			return ((Long) object).shortValue();
 		} else {
 			throw new IllegalArgumentException("The Object is not a Short!");
 		}
@@ -104,7 +104,7 @@ public class Template implements Serializable {
 	public float getFloat(String key) {
 		Object object = get(key);
 		if (object != null && (object instanceof Long || object instanceof Double)) {
-			return (float) object;
+			return ((Double) object).floatValue();
 		} else {
 			throw new IllegalArgumentException("The Object is not a Float!");
 		}

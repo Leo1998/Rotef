@@ -15,7 +15,7 @@ public class DesktopLauncher {
 		config.addIcon("icon/icon-16.png", FileType.Internal);
 		
 		config.width = 800;
-		config.height = 480;
+		config.height = 600;
 		config.title = "Rise Of The Endless Fire";
 
 		config.foregroundFPS = 0;

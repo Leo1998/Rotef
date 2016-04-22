@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.rotef.game.Game;
 import com.rotef.game.assets.Sprite;
 import com.rotef.game.renderer.WorldRenderer;
+import com.rotef.game.template.Template;
 import com.rotef.game.world.World;
 import com.rotef.game.world.light.Light;
 import com.rotef.game.world.physics.PhysicsManager;
@@ -26,6 +27,7 @@ public abstract class Entity {
 		}
 	}
 
+	private Template template;
 	private final Type type;
 	private final String name;
 	private Sprite sprite;
@@ -46,10 +48,11 @@ public abstract class Entity {
 
 	private Light attachedLight = null;
 
-	public Entity(EntityTemplate template, World world) {
-		this.type = template.getType();
-		this.name = template.getName();
-		this.sprite = Game.assets.getSprite(template.getSpritePath());
+	public Entity(Template template, World world) {
+		this.template = template;
+		this.type = Entity.Type.valueOf(template.getString("type"));
+		this.name = template.getString("name");
+		this.sprite = Game.assets.getSprite(template.getString("spritePath"));
 
 		this.width = sprite.getWidth() / PhysicsManager.PPM;
 		this.height = sprite.getHeight() / PhysicsManager.PPM;
@@ -106,6 +109,10 @@ public abstract class Entity {
 
 	public float getSpawnY() {
 		return spawnY;
+	}
+
+	public Template getTemplate() {
+		return template;
 	}
 
 	public Type getType() {

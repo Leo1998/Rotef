@@ -1,5 +1,7 @@
 {
 	"type": Player,
 	"name": "Player",
-	"spritePath": "mob/player.png"
+	"spritePath": "mob/player.png",
+	"life": 100,
+	"walkingSpeed": 3.6
 }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
+import com.rotef.game.template.Template;
 import com.rotef.game.world.World;
 import com.rotef.game.world.physics.PhysicsManager;
 
@@ -16,7 +17,7 @@ public class EntityManager {
 	private Array<Long> givenEntityIDs = new Array<Long>();
 
 	private World world;
-	private Array<EntityTemplate> templates = new Array<EntityTemplate>();
+	private Array<Template> templates = new Array<Template>();
 
 	public EntityManager(World world) {
 		this.world = world;
@@ -25,15 +26,15 @@ public class EntityManager {
 	}
 
 	private void loadTemplate(String path) {
-		EntityTemplate template = EntityTemplate.loadTemplate(Gdx.files.internal(path));
+		Template template = Template.loadTemplate(Gdx.files.internal(path));
 
-		Gdx.app.log("EntityManager", "Loaded EntityTemplate (" + path + ", " + template.getName() + ")");
+		Gdx.app.log("EntityManager", "Loaded Template (" + path + ", " + template.getString("name") + ")");
 
 		templates.add(template);
 	}
 
 	public Entity spawnEntity(String name, float x, float y) {
-		EntityTemplate template = findTemplate(name);
+		Template template = findTemplate(name);
 
 		Entity entity = createEntity(template, world);
 		if (entity == null)
@@ -53,12 +54,12 @@ public class EntityManager {
 		return entity;
 	}
 
-	private Entity createEntity(EntityTemplate template, World world) {
+	private Entity createEntity(Template template, World world) {
 		if (template != null) {
 			try {
-				Class<? extends Entity> clazz = template.getType().clazz;
+				Class<? extends Entity> clazz = Entity.Type.valueOf(template.getString("type")).clazz;
 
-				Constructor<? extends Entity> c = clazz.getConstructor(EntityTemplate.class, World.class);
+				Constructor<? extends Entity> c = clazz.getConstructor(Template.class, World.class);
 
 				Entity entity = c.newInstance(template, world);
 
@@ -72,9 +73,9 @@ public class EntityManager {
 		return null;
 	}
 
-	private EntityTemplate findTemplate(String name) {
-		for (EntityTemplate t : templates) {
-			if (t.getName().equals(name)) {
+	private Template findTemplate(String name) {
+		for (Template t : templates) {
+			if (t.getString("name").equals(name)) {
 				return t;
 			}
 		}
@@ -115,8 +116,8 @@ public class EntityManager {
 	public void update(float delta) {
 		for (Entity e : entities.values()) {
 			e.update(delta);
-			if (e instanceof Mob) {
-				Mob mob = (Mob) e;
+			if (e instanceof LivingEntity) {
+				LivingEntity mob = (LivingEntity) e;
 				mob.processTasks(delta);
 			}
 		}

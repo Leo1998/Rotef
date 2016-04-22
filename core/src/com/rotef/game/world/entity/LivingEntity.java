@@ -2,19 +2,27 @@ package com.rotef.game.world.entity;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.rotef.game.template.Template;
 import com.rotef.game.world.World;
 
-public abstract class Mob extends Entity {
+public abstract class LivingEntity extends Entity {
+
+	public enum Direction {
+		Right(), Left();
+	}
 
 	private Array<MobTask> tasks = new Array<MobTask>();
 	private int life = 10;
 	private float walkingSpeed = 3.6f;
-	private MobDirection direction = MobDirection.Right;
+	private Direction direction = Direction.Right;
 
 	private float lastJumpTime = 0.0f;
 
-	public Mob(EntityTemplate template, World world) {
+	public LivingEntity(Template template, World world) {
 		super(template, world);
+
+		this.life = template.getInteger("life");
+		this.walkingSpeed = template.getFloat("walkingSpeed");
 
 		// setup some more friction, 60 kg weight and fix rotation
 		this.physicsProperties = new PhysicsProperties(60.0f, 0.0f, 0.99f, true, true);
@@ -24,9 +32,9 @@ public abstract class Mob extends Entity {
 		Vector2 vel = body.getLinearVelocity();
 
 		if (val > 0) {
-			direction = MobDirection.Right;
+			direction = Direction.Right;
 		} else if (val < 0) {
-			direction = MobDirection.Left;
+			direction = Direction.Left;
 		}
 
 		body.setLinearVelocity(val * walkingSpeed, vel.y);
@@ -81,7 +89,7 @@ public abstract class Mob extends Entity {
 		this.walkingSpeed = walkingSpeed;
 	}
 
-	public MobDirection getDirection() {
+	public Direction getDirection() {
 		return direction;
 	}
 

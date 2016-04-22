@@ -1,9 +1,10 @@
 package com.rotef.game.world.entity;
 
+import com.rotef.game.template.Template;
 import com.rotef.game.world.World;
 import com.rotef.game.world.tile.Tile;
 
-public class Player extends Mob {
+public class Player extends LivingEntity {
 
 	private float miningDistance = 3.5f;
 
@@ -11,7 +12,7 @@ public class Player extends Mob {
 	// playerDef.addValue("life", "100");
 	// playerDef.addValue("miningDistance", "3.5");
 
-	public Player(EntityTemplate template, World world) {
+	public Player(Template template, World world) {
 		super(template, world);
 	}
 
