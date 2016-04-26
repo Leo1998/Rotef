@@ -24,12 +24,9 @@ public class Assets {
 		try {
 			while ((line = reader.readLine()) != null) {
 				if (line.startsWith("SPRITE ")) {
-					String c = line.substring(7);
+					String key = line.substring(7);
 
-					FileHandle file = assetFile.sibling(c);
-					Gdx.app.log("Assets", "Loading: " + file);
-
-					loadSprite(file);
+					loadSprite(assetFile, key);
 				}
 			}
 		} catch (IOException e) {
@@ -37,16 +34,19 @@ public class Assets {
 		}
 	}
 
-	private Sprite loadSprite(FileHandle file) {
-		if (cache.canLocate(file.path())) {
-			return cache.locate(file.path());
+	private Sprite loadSprite(FileHandle assetFile, String key) {
+		if (cache.canLocate(key)) {
+			return cache.locate(key);
 		}
+
+		FileHandle file = assetFile.sibling(key);
+		Gdx.app.log("Assets", "Loading: " + file);
 
 		TextureRegion tex = new TextureRegion(new Texture(file));
 		setupTexture(tex);
 		Sprite sprite = new Sprite(tex);
 
-		cache.add(file.path(), sprite);
+		cache.add(key, sprite);
 
 		return sprite;
 	}

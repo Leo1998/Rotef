@@ -38,7 +38,7 @@ public class UI {
 	private static Map<String, TextureRegion> atlas = new HashMap<String, TextureRegion>();
 
 	public static void load() {
-		font = loadTTFFont("ui/font.ttf");
+		font = loadTTFFont("common/ui/font.ttf");
 
 		loadUITexture("pane.png");
 		loadUITexture("button-up.png");
@@ -102,7 +102,7 @@ public class UI {
 	}
 
 	private static void loadUITexture(String filename) {
-		FileHandle file = Gdx.files.internal("ui/" + filename);
+		FileHandle file = Gdx.files.internal("common/ui/" + filename);
 
 		TextureRegion texture = new TextureRegion(new Texture(file));
 

@@ -3,6 +3,7 @@ package com.rotef.game.ui;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.rotef.game.Game;
 
 public class LoadingScreen extends BaseScreen {
 
@@ -28,7 +29,7 @@ public class LoadingScreen extends BaseScreen {
 	protected void makeContent() {
 		Table t = new Table();
 
-		Label label = new Label("Loading", UI.labelStyle);
+		Label label = new Label(Game.language.get("loading_label"), UI.labelStyle);
 		label.setFontScale(2.5f);
 		t.add(label).center();
 

@@ -1,4 +1,4 @@
-SPRITE mob/player.png
+SPRITE entity/player.png
 
 SPRITE tiles/dirt.png
 SPRITE tiles/water.png

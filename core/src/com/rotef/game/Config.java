@@ -15,6 +15,7 @@ public class Config implements Json.Serializable {
 	private float uiSize;
 	private boolean debug;
 	private boolean usePastebin;
+	private String languageFile;
 
 	public Config() {
 		setWidth(800);
@@ -25,6 +26,7 @@ public class Config implements Json.Serializable {
 		setUiSize(1.5f);
 		setDebug(false);
 		setUsePastebin(true);
+		setLanguageFile("en_US.lang");
 	}
 
 	public int getWidth() {
@@ -91,6 +93,14 @@ public class Config implements Json.Serializable {
 		this.usePastebin = usePastebin;
 	}
 
+	public String getLanguageFile() {
+		return languageFile;
+	}
+
+	public void setLanguageFile(String languageFile) {
+		this.languageFile = languageFile;
+	}
+
 	public static Config load(FileHandle file) {
 		Json json = new Json(OutputType.json);
 
@@ -115,6 +125,7 @@ public class Config implements Json.Serializable {
 		json.writeValue("uiSize", uiSize);
 		json.writeValue("debug", debug);
 		json.writeValue("usePastebin", usePastebin);
+		json.writeValue("languageFile", languageFile);
 	}
 
 	@Override
@@ -127,6 +138,7 @@ public class Config implements Json.Serializable {
 		this.uiSize = jsonData.get("uiSize").asFloat();
 		this.debug = jsonData.get("debug").asBoolean();
 		this.usePastebin = jsonData.get("usePastebin").asBoolean();
+		this.languageFile = jsonData.get("languageFile").asString();
 	}
 
 }

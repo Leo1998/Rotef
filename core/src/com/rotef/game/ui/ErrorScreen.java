@@ -47,7 +47,7 @@ public class ErrorScreen extends BaseScreen {
 
 		// ok button
 
-		TextButton okButton = new TextButton("OK", UI.textButtonStyle);
+		TextButton okButton = new TextButton(Game.language.get("ok"), UI.textButtonStyle);
 		okButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {

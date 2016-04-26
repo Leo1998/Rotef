@@ -22,13 +22,13 @@ public class EntityManager {
 	public EntityManager(World world) {
 		this.world = world;
 
-		loadTemplate("mob/player.json");
+		loadTemplate("common/entity/player.entity");
 	}
 
 	private void loadTemplate(String path) {
 		Template template = Template.loadTemplate(Gdx.files.internal(path));
 
-		Gdx.app.log("EntityManager", "Loaded Template (" + path + ", " + template.getString("name") + ")");
+		Gdx.app.log("EntityManager", "Loaded EntityTemplate (" + path + ", " + template.getString("name") + ")");
 
 		templates.add(template);
 	}

@@ -10,9 +10,9 @@ public class DesktopLauncher {
 	public static void main(String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
-		config.addIcon("icon/icon-128.png", FileType.Internal);
-		config.addIcon("icon/icon-32.png", FileType.Internal);
-		config.addIcon("icon/icon-16.png", FileType.Internal);
+		config.addIcon("common/icon/icon-128.png", FileType.Internal);
+		config.addIcon("common/icon/icon-32.png", FileType.Internal);
+		config.addIcon("common/icon/icon-16.png", FileType.Internal);
 		
 		config.width = 800;
 		config.height = 600;

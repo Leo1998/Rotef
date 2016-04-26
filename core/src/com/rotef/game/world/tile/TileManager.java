@@ -12,28 +12,9 @@ public class TileManager {
 	private Array<Template> templates = new Array<Template>();
 
 	public TileManager() {
-		loadTemplate("tiles/dirt.json");
-		loadTemplate("tiles/water.json");
-		loadTemplate("tiles/stone.json");
-
-		// {
-		// TileDef dirtDef = new TileDef(TileSolid.class, 1);
-		// dirtDef.addValue("sprite", "tiles/dirt.png");
-		//
-		// tileDefs.put(dirtDef.getId(), dirtDef);
-		// }
-		// {
-		// TileDef waterDef = new TileDef(TileFluid.class, 2);
-		// waterDef.addValue("tex", "tiles/water.png");
-		//
-		// tileDefs.put(waterDef.getId(), waterDef);
-		// }
-		// {
-		// TileDef stoneDef = new TileDef(TileSolid.class, 3);
-		// stoneDef.addValue("sprite", "tiles/stone.png");
-		//
-		// tileDefs.put(stoneDef.getId(), stoneDef);
-		// }
+		loadTemplate("common/tiles/dirt.tile");
+		loadTemplate("common/tiles/water.tile");
+		loadTemplate("common/tiles/stone.tile");
 	}
 
 	private void loadTemplate(String path) {

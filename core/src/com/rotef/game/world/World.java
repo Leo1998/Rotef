@@ -3,6 +3,7 @@ package com.rotef.game.world;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
+import com.rotef.game.Game;
 import com.rotef.game.Version;
 import com.rotef.game.renderer.WorldScreen;
 import com.rotef.game.renderer.WorldViewport;
@@ -22,8 +23,6 @@ import com.rotef.game.world.tile.Tile;
 import com.rotef.game.world.tile.TileManager;
 
 public class World {
-
-	public static final int WORLD_NAME_MAX_LENGTH = 32;
 
 	private final Array<WorldChunk> loadedChunks = new Array<WorldChunk>(4096);
 	private final Array<WorldChunk> activeChunks = new Array<WorldChunk>(128);
@@ -84,7 +83,7 @@ public class World {
 					loadChunk(chunk);
 
 					float progress = ((float) loadedChunks.size / (float) ((width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)));
-					listener.status("Loading Chunks...", progress);
+					listener.status(Game.language.get("loadingChunksMessage"), progress);
 				}
 			}
 
@@ -117,7 +116,6 @@ public class World {
 		});
 		int[] map = generator.generateMap(width, height);
 
-		Gdx.app.log("World", "generating chunks...");
 		{
 			int loadedChunks = 0;
 			for (int chunkX = 0; chunkX < width / WorldChunk.CHUNK_SIZE; chunkX++) {
@@ -137,7 +135,7 @@ public class World {
 					loadChunk(chunk);
 
 					float progress = ((float) loadedChunks / (float) ((width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)));
-					listener.status("Generating Chunks...", progress);
+					listener.status(Game.language.get("generatingChunksMessage"), progress);
 					loadedChunks++;
 				}
 			}

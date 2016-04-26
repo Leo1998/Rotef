@@ -20,6 +20,7 @@ public class Game extends com.badlogic.gdx.Game {
 	public static Game game;
 	public static Assets assets;
 	public static Config config;
+	public static Language language;
 
 	public static FileHandle rootDir;
 	public static FileHandle worldDir;
@@ -84,7 +85,7 @@ public class Game extends com.badlogic.gdx.Game {
 		Thread disposeThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				loadingScreen.sendStatus("Saving...", 0f);
+				loadingScreen.sendStatus(Game.language.get("saving"), 0f);
 
 				worldScreen.disposeWorld();
 
@@ -110,8 +111,10 @@ public class Game extends com.badlogic.gdx.Game {
 
 		init(Gdx.files.local("save"));
 
+		language = Language.load(Gdx.files.internal("lang/" + config.getLanguageFile()));
+
 		assets = new Assets();
-		assets.loadFromAssetFile(Gdx.files.internal("assets.dat"));
+		assets.loadFromAssetFile(Gdx.files.internal("common/assets.dat"));
 
 		UI.load();
 

@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.rotef.game.Game;
 
 public class OptionsScreen extends BaseScreen {
@@ -18,7 +19,7 @@ public class OptionsScreen extends BaseScreen {
 		rootTable.top();
 		rootTable.columnDefaults(0).padRight(20f);
 
-		final TextButton backButton = new TextButton("Back", UI.textButtonStyle);
+		final TextButton backButton = new TextButton(Game.language.get("back"), UI.textButtonStyle);
 		backButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -27,7 +28,7 @@ public class OptionsScreen extends BaseScreen {
 		});
 		rootTable.add(backButton).left();
 
-		final Label titleLabel = new Label("Options", UI.labelStyle);
+		final Label titleLabel = new Label(Game.language.get("options"), UI.labelStyle);
 		titleLabel.setFontScale(3.5f);
 		rootTable.add(titleLabel).center().expandX().padTop(padding).padBottom(padding);
 		rootTable.row();
@@ -35,7 +36,7 @@ public class OptionsScreen extends BaseScreen {
 		Table t1 = new Table();
 		rootTable.add(t1).colspan(2).padTop(35f);
 
-		final CheckBox fullscreenCheckbox = new CheckBox("Fullscreen", UI.checkBoxStyle);
+		final CheckBox fullscreenCheckbox = new CheckBox(Game.language.get("fullscreen"), UI.checkBoxStyle);
 		fullscreenCheckbox.setChecked(Game.config.isFullscreen());
 		fullscreenCheckbox.addListener(new ChangeListener() {
 			@Override
@@ -44,10 +45,10 @@ public class OptionsScreen extends BaseScreen {
 				Game.applyConfig();
 			}
 		});
-		t1.add(fullscreenCheckbox).padBottom(25f);
+		t1.add(fullscreenCheckbox).align(Align.left).padBottom(25f);
 		t1.row();
 
-		final CheckBox vSyncCheckbox = new CheckBox("VSync", UI.checkBoxStyle);
+		final CheckBox vSyncCheckbox = new CheckBox(Game.language.get("vsync"), UI.checkBoxStyle);
 		vSyncCheckbox.setChecked(Game.config.isVSync());
 		vSyncCheckbox.addListener(new ChangeListener() {
 			@Override
@@ -56,10 +57,10 @@ public class OptionsScreen extends BaseScreen {
 				Game.applyConfig();
 			}
 		});
-		t1.add(vSyncCheckbox).padBottom(25f);
+		t1.add(vSyncCheckbox).align(Align.left).padBottom(25f);
 		t1.row();
 
-		final CheckBox debugCheckbox = new CheckBox("Debug", UI.checkBoxStyle);
+		final CheckBox debugCheckbox = new CheckBox(Game.language.get("debugMode"), UI.checkBoxStyle);
 		debugCheckbox.setChecked(Game.config.isDebug());
 		debugCheckbox.addListener(new ChangeListener() {
 			@Override
@@ -68,7 +69,7 @@ public class OptionsScreen extends BaseScreen {
 				Game.applyConfig();
 			}
 		});
-		t1.add(debugCheckbox).padBottom(25f);
+		t1.add(debugCheckbox).align(Align.left).padBottom(25f);
 		t1.row();
 
 		final Label lightMapDownScaleSliderLabel = new Label("LightMapDownScale: " + Game.config.getLightMapDownScale(), UI.labelStyle);
@@ -83,11 +84,11 @@ public class OptionsScreen extends BaseScreen {
 				lightMapDownScaleSliderLabel.setText("LightMapDownScale: " + Game.config.getLightMapDownScale());
 			}
 		});
-		t1.add(lightMapResSlider);
+		t1.add(lightMapResSlider).align(Align.left);
 		t1.add(lightMapDownScaleSliderLabel).padLeft(5f);
 		t1.row();
 
-		final Label uiSizeSliderLabel = new Label("UI Size: " + Game.config.getUiSize(), UI.labelStyle);
+		final Label uiSizeSliderLabel = new Label(Game.language.get("uiSize") + ": " + Game.config.getUiSize(), UI.labelStyle);
 		final Slider uiSizeSlider = new Slider(1.0f, 2.5f, 0.2f, false, UI.sliderStyle);
 		uiSizeSlider.setValue(Game.config.getUiSize());
 		uiSizeSlider.addListener(new ChangeListener() {
@@ -95,7 +96,7 @@ public class OptionsScreen extends BaseScreen {
 			public void changed(ChangeEvent event, Actor actor) {
 				Game.config.setUiSize(uiSizeSlider.getValue());
 
-				uiSizeSliderLabel.setText("UI Size: " + Game.config.getUiSize());
+				uiSizeSliderLabel.setText(Game.language.get("uiSize") + ": " + Game.config.getUiSize());
 			}
 		});
 		t1.add(uiSizeSlider);

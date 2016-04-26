@@ -142,6 +142,7 @@ public class Template implements Serializable {
 			Object out = null;
 
 			if (object.isObject()) {
+
 				// nothing
 			} else if (object.isArray()) {
 				// read(object);

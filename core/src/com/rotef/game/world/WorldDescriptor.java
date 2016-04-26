@@ -5,7 +5,6 @@ import java.io.FileFilter;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.rotef.game.Game;
-import com.rotef.game.util.StringUtils;
 
 public class WorldDescriptor {
 
@@ -33,7 +32,7 @@ public class WorldDescriptor {
 	private final String name;
 
 	public WorldDescriptor(String name) {
-		this.name = StringUtils.limitLength(name, World.WORLD_NAME_MAX_LENGTH);
+		this.name = name;
 	}
 
 	public FileHandle getDirectory() {

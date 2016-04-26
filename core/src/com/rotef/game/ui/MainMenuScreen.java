@@ -19,7 +19,7 @@ public class MainMenuScreen extends BaseScreen {
 
 	@Override
 	protected void makeContent() {
-		Label titleLabel = new Label("Rise Of The Endless Fire", UI.labelStyle);
+		Label titleLabel = new Label(Game.language.get("title"), UI.labelStyle);
 		titleLabel.setFontScale(1.6f);
 		rootTable.add(titleLabel).top().center().pad(40f);
 
@@ -43,7 +43,7 @@ public class MainMenuScreen extends BaseScreen {
 			Label label = new Label(worldName, UI.labelStyle);
 			t.add(label).left().padRight(padding);
 
-			TextButton enterButton = new TextButton("Enter", UI.textButtonStyle);
+			TextButton enterButton = new TextButton(Game.language.get("enterWorld"), UI.textButtonStyle);
 			enterButton.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
@@ -52,7 +52,7 @@ public class MainMenuScreen extends BaseScreen {
 			});
 			t.add(enterButton).center().padLeft(padding).padRight(padding);
 
-			TextButton deleteButton = new TextButton("Delete", UI.textButtonStyle);
+			TextButton deleteButton = new TextButton(Game.language.get("deleteWorld"), UI.textButtonStyle);
 			deleteButton.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
@@ -66,7 +66,7 @@ public class MainMenuScreen extends BaseScreen {
 			scrollTable.row();
 		}
 
-		TextButton createButton = new TextButton("Create New World", UI.textButtonStyle);
+		TextButton createButton = new TextButton(Game.language.get("createNewWorld"), UI.textButtonStyle);
 		createButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -76,7 +76,7 @@ public class MainMenuScreen extends BaseScreen {
 		rootTable.row();
 		rootTable.add(createButton).padTop(10f).center();
 
-		TextButton optionsButton = new TextButton("Options", UI.textButtonStyle);
+		TextButton optionsButton = new TextButton(Game.language.get("options"), UI.textButtonStyle);
 		optionsButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -87,7 +87,7 @@ public class MainMenuScreen extends BaseScreen {
 
 		rootTable.add(optionsButton).padTop(10f).center();
 
-		TextButton exitButton = new TextButton("Exit", UI.textButtonStyle);
+		TextButton exitButton = new TextButton(Game.language.get("exit"), UI.textButtonStyle);
 		exitButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {

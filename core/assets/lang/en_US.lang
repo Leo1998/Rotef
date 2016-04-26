@@ -1,0 +1,30 @@
+{
+	"title": "Rise Of The Endless Fire",
+	"enterWorld": "Enter",
+	"deleteWorld": "Delete",
+	"createNewWorld": "Create New World",
+	"options": "Options",
+	"exit": "Exit",
+	
+	"loading_label": "Loading",
+	
+	"cancel": "Cancel",
+	"create": "Create World",
+	"worldAlreadyExists_error": "This World already exists!",
+	"defaultWorldName": "New World",
+	
+	"back": "Back",
+	"fullscreen": "Fullscreen",
+	"vsync": "vSync",
+	"debugMode": "Enable Debug Mode",
+	"uiSize": "UI Size",
+	
+	"loadingChunksMessage": "Loading Chunks...",
+	"generatingChunksMessage": "Generating Chunks...",
+	
+	"ok": "OK",
+	
+	"saving": "Saving...",
+	
+	
+}
