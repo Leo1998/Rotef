@@ -1,11 +1,8 @@
 package com.rotef.game.world.light;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
-import com.rotef.game.Game;
 import com.rotef.game.renderer.WorldRenderer;
 import com.rotef.game.renderer.WorldViewport;
 import com.rotef.game.world.World;
@@ -14,69 +11,109 @@ import com.rotef.game.world.tile.Tile;
 
 public class LightManager {
 
-	private Rectangle tmpRect = new Rectangle();
-	private SpriteBatch shadowRenderBatch;
+	public class LightingState {
+		public float r = 0f;
+		public float g = 0f;
+		public float b = 0f;
+
+		public void set(float r, float g, float b) {
+			this.r = r;
+			this.g = g;
+			this.b = b;
+		}
+	}
+
+	private LightingState[][] states;
+	private int offScreenTiles = 6;
+	private int tileWidth;
+	private int tileHeight;
+	private int startX;
+	private int startY;
 
 	private LightArray lights = new LightArray();
 	private LightArray visibleLights = new LightArray();
 	private World world;
 
-	private final int downScale;
 	private LightMap lightMap;
-	private SunMap sunMap;
-	private Color ambientLight = new Color(0.01f, 0.01f, 0.01f, 1.0f);
+
+	private Rectangle tmpRect = new Rectangle();
 
 	public LightManager(World world) {
 		this.world = world;
-		this.downScale = Game.config.getLightMapDownScale();
 	}
 
 	public void resize(int width, int height) {
-		if (lightMap != null) {
-			this.lightMap.init(width / downScale, height / downScale);
+		this.tileWidth = (width / Tile.TILE_SIZE) + offScreenTiles * 2;
+		this.tileHeight = (height / Tile.TILE_SIZE) + offScreenTiles * 2;
+
+		this.states = new LightingState[tileWidth][tileHeight];
+		for (int x = 0; x < tileWidth; x++) {
+			for (int y = 0; y < tileHeight; y++) {
+				states[x][y] = new LightingState();
+			}
 		}
-		if (sunMap != null) {
-			this.sunMap.init((width / Tile.TILE_SIZE) + 1);
+
+		if (lightMap == null) {
+			this.lightMap = new LightMap(tileWidth, tileHeight);
 		}
+		this.lightMap.init(tileWidth, tileHeight);
+
 	}
 
 	public LightMap getLightMap() {
 		return lightMap;
 	}
 
-	public SunMap getSunMap() {
-		return sunMap;
+	public void renderLightMap(SpriteBatch batch, float x, float y, float w, float h) {
+		float tileXFloat = x / Tile.TILE_SIZE;
+		float tileYFloat = y / Tile.TILE_SIZE;
+		float difX = tileXFloat - (int) tileXFloat;
+		float difY = tileYFloat - (int) tileYFloat;
+
+		float x0 = x - offScreenTiles * Tile.TILE_SIZE;
+		float y0 = y - offScreenTiles * Tile.TILE_SIZE;
+		float w0 = tileWidth * Tile.TILE_SIZE;
+		float h0 = tileHeight * Tile.TILE_SIZE;
+
+		x0 -= difX * Tile.TILE_SIZE;
+		y0 -= difY * Tile.TILE_SIZE;
+
+		// w0 -= difX * 2 * Tile.TILE_SIZE;
+		// h0 -= difY * 2 * Tile.TILE_SIZE;
+
+		batch.draw(lightMap.getMap(), x0, y0, w0, h0, 0, 0, tileWidth, tileHeight, false, true);
 	}
 
-	public void update(WorldRenderer renderer, WorldViewport viewport, float sunIntensity, ShaderProgram lightMapShader, ShaderProgram shadowMapShader) {
-		if (shadowRenderBatch == null) {
-			shadowRenderBatch = new SpriteBatch();
-		}
-		int w = Gdx.graphics.getWidth();
-		int h = Gdx.graphics.getHeight();
+	public void update(WorldRenderer renderer, WorldViewport viewport) {
 		if (lightMap == null) {
-			this.lightMap = new LightMap(w / downScale, h / downScale);
-		}
-		if (sunMap == null) {
-			this.sunMap = new SunMap((w / Tile.TILE_SIZE) + 1);
+			int w = Gdx.graphics.getWidth();
+			int h = Gdx.graphics.getHeight();
+			resize(w, h);
 		}
 
 		updateVisibleLights(viewport);
 
-		sunMap.update(viewport, world);
-		updateShadowMaps(renderer, shadowMapShader);
+		startX = (int) (viewport.getX() / Tile.TILE_SIZE) - offScreenTiles;
+		startY = (int) (viewport.getY() / Tile.TILE_SIZE) - offScreenTiles;
 
-		float xMap = viewport.getX() / PhysicsManager.PPM;
-		float yMap = viewport.getY() / PhysicsManager.PPM;
+		// float wMap = viewport.getWidth() / PhysicsManager.PPM;
+		// float hMap = viewport.getHeight() / PhysicsManager.PPM;
 
-		float wMap = viewport.getWidth() / PhysicsManager.PPM;
-		float hMap = viewport.getHeight() / PhysicsManager.PPM;
+		for (int x = 0; x < tileWidth; x++) {
+			for (int y = 0; y < tileHeight; y++) {
+				LightingState state = states[x][y];
 
-		float sunMapX = (int) (viewport.getX() / Tile.TILE_SIZE) / 2f;
-		float sunMapW = sunMap.getWidth() / 2f;
-		float worldHeight = world.getHeight() / 2f;
+				Tile tile = world.getTile(startX + x, startY + y);
 
-		lightMap.render(lightMapShader, downScale, xMap, yMap, wMap, hMap, ambientLight, visibleLights, sunMap, sunIntensity, sunMapX, sunMapW, worldHeight);
+				if (tile != null && tile.isSolid()) {
+					state.set(0.1f, 0.1f, 0.1f);
+				} else {
+					state.set(1.0f, 1.0f, 1.0f);
+				}
+			}
+		}
+
+		lightMap.setLightData(states);
 	}
 
 	private void updateVisibleLights(WorldViewport viewport) {
@@ -87,22 +124,6 @@ public class LightManager {
 			if (lightVisible(light, viewport)) {
 				visibleLights.add(light);
 			}
-		}
-	}
-
-	private void updateShadowMaps(WorldRenderer renderer, ShaderProgram shadowMapShader) {
-		for (int i = 0; i < visibleLights.size; i++) {
-			Light light = visibleLights.get(i);
-			if (light.getShadowMap() == null) {
-				light.setShadowMap(new ShadowMap(light));
-			}
-			ShadowMap map = light.getShadowMap();
-
-			map.begin();
-
-			renderer.renderOccluders(light, map.getCam());
-
-			map.end(shadowRenderBatch, shadowMapShader);
 		}
 	}
 
@@ -117,14 +138,8 @@ public class LightManager {
 	}
 
 	public void dispose() {
-		if (shadowRenderBatch != null) {
-			shadowRenderBatch.dispose();
-		}
 		if (lightMap != null) {
 			lightMap.dispose();
-		}
-		if (sunMap != null) {
-			sunMap.dispose();
 		}
 	}
 
@@ -134,7 +149,6 @@ public class LightManager {
 
 	public void removeLight(Light light) {
 		lights.removeValue(light, true);
-		light.disposeShadowMap();
 	}
 
 	public int getLightCount() {
@@ -147,6 +161,10 @@ public class LightManager {
 
 	public World getWorld() {
 		return world;
+	}
+
+	public LightingState[][] getStates() {
+		return states;
 	}
 
 }

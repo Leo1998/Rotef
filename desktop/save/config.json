@@ -1,8 +1,8 @@
 {
-"width": 1837,
-"height": 1045,
-"fullscreen": false,
-"vSync": true,
+"width": 1920,
+"height": 1080,
+"fullscreen": true,
+"vSync": false,
 "lightMapDownScale": 2,
 "uiSize": 1.5,
 "debug": false,

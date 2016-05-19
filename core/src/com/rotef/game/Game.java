@@ -21,6 +21,7 @@ public class Game extends com.badlogic.gdx.Game {
 	public static Assets assets;
 	public static Config config;
 	public static Language language;
+	public static EnviromentInfo enviroment;
 
 	public static FileHandle rootDir;
 	public static FileHandle worldDir;
@@ -107,7 +108,9 @@ public class Game extends com.badlogic.gdx.Game {
 	@Override
 	public void create() {
 		Gdx.app.log("Game", "Bootstrapping...");
-		Gdx.app.log("Game", new GPUInfo(Gdx.gl).toString());
+
+		enviroment = new EnviromentInfo(Gdx.gl);
+		Gdx.app.log("Game", enviroment.toString());
 
 		init(Gdx.files.local("save"));
 

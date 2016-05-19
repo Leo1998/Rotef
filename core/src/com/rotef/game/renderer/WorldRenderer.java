@@ -30,14 +30,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Rectangle;
 import com.rotef.game.assets.Sprite;
 import com.rotef.game.util.ShaderUtils;
 import com.rotef.game.world.World;
 import com.rotef.game.world.entity.Entity;
-import com.rotef.game.world.light.Light;
 import com.rotef.game.world.light.LightManager;
-import com.rotef.game.world.light.LightMap;
 import com.rotef.game.world.physics.PhysicsManager;
 import com.rotef.game.world.tile.Tile;
 
@@ -47,8 +44,6 @@ public class WorldRenderer {
 
 	private ShaderProgram objectShader;
 	private ShaderProgram lightMapRenderShader;
-	private ShaderProgram lightMapShader;
-	private ShaderProgram shadowMapShader;
 
 	private SpriteBatch batch;
 
@@ -70,12 +65,8 @@ public class WorldRenderer {
 
 		this.objectShader = new ShaderProgram(Gdx.files.internal("shader/object.vert"), Gdx.files.internal("shader/object.frag"));
 		ShaderUtils.validateShader(objectShader);
-		this.lightMapRenderShader = new ShaderProgram(Gdx.files.internal("shader/lightmap_render.vert"), Gdx.files.internal("shader/lightmap_render.frag"));
-		ShaderUtils.validateShader(lightMapRenderShader);
-		this.lightMapShader = new ShaderProgram(Gdx.files.internal("shader/lightmap.vert"), Gdx.files.internal("shader/lightmap.frag"));
-		ShaderUtils.validateShader(lightMapShader);
-		this.shadowMapShader = new ShaderProgram(Gdx.files.internal("shader/shadowmap.vert"), Gdx.files.internal("shader/shadowmap.frag"));
-		ShaderUtils.validateShader(shadowMapShader);
+
+		this.lightMapRenderShader = SpriteBatch.createDefaultShader();
 	}
 
 	public void setView(OrthographicCamera camera, WorldViewport viewport) {
@@ -91,7 +82,7 @@ public class WorldRenderer {
 		renderObjects();
 
 		LightManager lightManager = world.getLightManager();
-		lightManager.update(this, viewport, world.getTimeManager().getSunIntensity(), lightMapShader, shadowMapShader);
+		lightManager.update(this, viewport);
 
 		renderLightMap(lightManager, batch);
 
@@ -109,8 +100,7 @@ public class WorldRenderer {
 		float w = viewport.getWidth();
 		float h = viewport.getHeight();
 
-		LightMap lightMap = lightManager.getLightMap();
-		batch.draw(lightMap.getTexture(), x, y + h, w, -h);
+		lightManager.renderLightMap(batch, x, y, w, h);
 
 		batch.end();
 	}
@@ -157,39 +147,41 @@ public class WorldRenderer {
 		batch.end();
 	}
 
-	public void renderOccluders(Light light, OrthographicCamera shadowMapCamera) {
-		float lx = light.getX();
-		float ly = light.getY();
-		float ld = light.getDistance();
-		Rectangle lightRect = new Rectangle(lx - ld, ly - ld, ld * 2, ld * 2);
-
-		batch.setShader(objectShader);
-		batch.setProjectionMatrix(shadowMapCamera.combined);
-		batch.begin();
-		batch.enableBlending();
-		batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-		int x0 = (int) (lightRect.x * 2);
-		int y0 = (int) (lightRect.y * 2);
-		int x1 = (int) (x0 + (lightRect.width * 2));
-		int y1 = (int) (y0 + (lightRect.height * 2));
-
-		for (int xt = x0; xt < x1; xt++) {
-			for (int yt = y0; yt < y1; yt++) {
-				Tile tile = world.getTile(xt, yt);
-
-				if (tile != null) {
-					if (tile.hasSprite()) {
-						int x = xt * Tile.TILE_SIZE;
-						int y = yt * Tile.TILE_SIZE;
-						renderObject(tile.getSprite().getSprite(), x, y, Tile.TILE_SIZE, Tile.TILE_SIZE);
-					}
-				}
-			}
-		}
-
-		batch.end();
-	}
+	// public void renderOccluders(Light light, OrthographicCamera
+	// shadowMapCamera) {
+	// float lx = light.getX();
+	// float ly = light.getY();
+	// float ld = light.getDistance();
+	// Rectangle lightRect = new Rectangle(lx - ld, ly - ld, ld * 2, ld * 2);
+	//
+	// batch.setShader(objectShader);
+	// batch.setProjectionMatrix(shadowMapCamera.combined);
+	// batch.begin();
+	// batch.enableBlending();
+	// batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+	//
+	// int x0 = (int) (lightRect.x * 2);
+	// int y0 = (int) (lightRect.y * 2);
+	// int x1 = (int) (x0 + (lightRect.width * 2));
+	// int y1 = (int) (y0 + (lightRect.height * 2));
+	//
+	// for (int xt = x0; xt < x1; xt++) {
+	// for (int yt = y0; yt < y1; yt++) {
+	// Tile tile = world.getTile(xt, yt);
+	//
+	// if (tile != null) {
+	// if (tile.hasSprite()) {
+	// int x = xt * Tile.TILE_SIZE;
+	// int y = yt * Tile.TILE_SIZE;
+	// renderObject(tile.getSprite().getSprite(), x, y, Tile.TILE_SIZE,
+	// Tile.TILE_SIZE);
+	// }
+	// }
+	// }
+	// }
+	//
+	// batch.end();
+	// }
 
 	public void renderObject(Sprite sprite, float x, float y, float width, float height) {
 		if (sprite == null)
@@ -247,8 +239,6 @@ public class WorldRenderer {
 
 		objectShader.dispose();
 		lightMapRenderShader.dispose();
-		lightMapShader.dispose();
-		shadowMapShader.dispose();
 	}
 
 	public void setWorld(World world) {

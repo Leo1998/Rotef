@@ -7,6 +7,7 @@ import com.esotericsoftware.kryo.io.Output;
 import com.rotef.game.world.RawChunkData;
 import com.rotef.game.world.World;
 import com.rotef.game.world.WorldChunk;
+import com.rotef.game.world.WorldChunkData;
 
 public class WorldChunkSerializer extends Serializer<WorldChunk> {
 
@@ -22,7 +23,12 @@ public class WorldChunkSerializer extends Serializer<WorldChunk> {
 		output.writeInt(o.getChunkY());
 
 		o.save();
-		output.writeInts(o.getSaveData().getData());
+		WorldChunkData data = o.getSaveData();
+		if (data != null) {
+			output.writeInts(data.getData());
+		} else {
+			output.writeInts(new int[WorldChunk.CHUNK_SIZE * WorldChunk.CHUNK_SIZE]);
+		}
 		o.clearSaveData();
 	}
 
