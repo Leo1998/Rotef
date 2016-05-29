@@ -3,44 +3,18 @@ package com.rotef.game.world.light;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import com.rotef.game.Game;
 import com.rotef.game.renderer.WorldRenderer;
 import com.rotef.game.renderer.WorldViewport;
 import com.rotef.game.util.MathHelper;
 import com.rotef.game.world.World;
-import com.rotef.game.world.physics.PhysicsManager;
 import com.rotef.game.world.tile.Tile;
 
 public class LightManager {
 
-	public class LightingState {
-		public float r = 0f;
-		public float g = 0f;
-		public float b = 0f;
-		public boolean lit = false;
-		public final int x;
-		public final int y;
-
-		public LightingState(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-
-		public void set(float r, float g, float b) {
-			this.r = r;
-			this.g = g;
-			this.b = b;
-		}
-	}
-
-	// public class LightingSwipe {
-	// public LightingState[][] states;
-	// }
-
 	private LightingMode lightingMode = LightingMode.Low;
 	private int resolution = lightingMode.resolution;
-	
+
 	private LightingState[][] states;
 	private int stateWidth;
 	private int stateHeight;
@@ -50,13 +24,9 @@ public class LightManager {
 
 	private Color sunColor = Color.WHITE;
 
-	private LightArray lights = new LightArray();
-	private LightArray visibleLights = new LightArray();
 	private World world;
 
 	private LightMap lightMap;
-
-	private Rectangle tmpRect = new Rectangle();
 
 	public LightManager(World world) {
 		this.world = world;
@@ -66,7 +36,7 @@ public class LightManager {
 		this.lightingMode = Game.config.getLightingMode();
 		this.resolution = lightingMode.resolution;
 		boolean smoothFiltering = lightingMode.smoothFiltering;
-		
+
 		this.stateWidth = ((width / Tile.TILE_SIZE) + offScreenTiles * 2) * resolution;
 		this.stateHeight = ((height / Tile.TILE_SIZE) + offScreenTiles * 2) * resolution;
 
@@ -112,8 +82,6 @@ public class LightManager {
 			init(w, h);
 		}
 
-		updateVisibleLights(viewport);
-
 		startX = (int) (viewport.getX() / Tile.TILE_SIZE) - offScreenTiles;
 		startY = (int) (viewport.getY() / Tile.TILE_SIZE) - offScreenTiles;
 
@@ -126,16 +94,23 @@ public class LightManager {
 
 				Tile tile = world.getTile(worldX, worldY);
 
-				if (tile != null && tile.isSolid()) {
-					state.set(0.0f, 0.0f, 0.0f);
-					state.lit = false;
+				if (tile != null) {
+					Color lightColor = tile.getLightColor();
+					if (!lightColor.equals(Color.BLACK)) {
+						state.set(lightColor.r, lightColor.g, lightColor.b);
+						state.lit = true;
+					} else {
+						state.set(0.0f, 0.0f, 0.0f);
+						state.lit = false;
+					}
 				} else {
 					int a = 10;
 					float brightness = MathHelper.ensureRange(worldY - world.getSurface(), 0, a) / (float) a;
 					brightness *= world.getTimeManager().getSunIntensity();
-					
-					state.set(sunColor.r * brightness, sunColor.g * brightness, sunColor.b * brightness);
+					brightness = MathHelper.ensureRange(brightness, 0.065f, 1.0f);
+
 					state.lit = brightness > 0.0f;
+					state.set(sunColor.r * brightness, sunColor.g * brightness, sunColor.b * brightness);
 				}
 			}
 		}
@@ -144,13 +119,13 @@ public class LightManager {
 			for (int y = 0; y < stateHeight; y++) {
 				LightingState state = states[x][y];
 
-				int worldX = startX + (x / resolution);
-				int worldY = startY + (y / resolution);
+//				int worldX = startX + (x / resolution);
+//				int worldY = startY + (y / resolution);
 
-				Tile tile = world.getTile(worldX, worldY);
+//				Tile tile = world.getTile(worldX, worldY);
 
-				if (tile != null && tile.isSolid()) {
-					float lit = 0.05f;
+				if (!state.lit) {
+					float lit = 0.0f;
 
 					int shineDist = 4 * resolution;
 
@@ -174,7 +149,7 @@ public class LightManager {
 
 					if (s != null) {
 						lit += 1.0f - (float) (Math.min(dist, shineDist) / shineDist);
-						lit = MathHelper.ensureRange(lit, 0.0f, 1.0f);
+						lit = MathHelper.ensureRange(lit, 0.04f, 1.0f);
 
 						state.set(s.r * lit, s.g * lit, s.b * lit);
 					}
@@ -185,47 +160,10 @@ public class LightManager {
 		lightMap.setLightData(states);
 	}
 
-	private void updateVisibleLights(WorldViewport viewport) {
-		visibleLights.clear();
-
-		for (int i = 0; i < lights.size; i++) {
-			Light light = lights.get(i);
-			if (lightVisible(light, viewport)) {
-				visibleLights.add(light);
-			}
-		}
-	}
-
-	private boolean lightVisible(Light light, WorldViewport viewport) {
-		float x = light.getX() * PhysicsManager.PPM;
-		float y = light.getY() * PhysicsManager.PPM;
-		float dist = light.getDistance() * PhysicsManager.PPM;
-
-		tmpRect.set(x - dist, y - dist, dist * 2, dist * 2);
-
-		return viewport.contains(tmpRect);
-	}
-
 	public void dispose() {
 		if (lightMap != null) {
 			lightMap.dispose();
 		}
-	}
-
-	public void addLight(Light light) {
-		lights.add(light);
-	}
-
-	public void removeLight(Light light) {
-		lights.removeValue(light, true);
-	}
-
-	public int getLightCount() {
-		return lights.size;
-	}
-
-	public int getVisibleLightCount() {
-		return visibleLights.size;
 	}
 
 	public World getWorld() {
