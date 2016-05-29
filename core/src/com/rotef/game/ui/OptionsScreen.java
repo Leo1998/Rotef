@@ -72,22 +72,6 @@ public class OptionsScreen extends BaseScreen {
 		t1.add(debugCheckbox).align(Align.left).padBottom(25f);
 		t1.row();
 
-		final Label lightMapDownScaleSliderLabel = new Label("LightMapDownScale: " + Game.config.getLightMapDownScale(), UI.labelStyle);
-		final Slider lightMapResSlider = new Slider(1, 4, 1, false, UI.sliderStyle);
-		lightMapResSlider.setValue(Game.config.getLightMapDownScale());
-		lightMapResSlider.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				Game.config.setLightMapDownScale((int) lightMapResSlider.getValue());
-				Game.applyConfig();
-
-				lightMapDownScaleSliderLabel.setText("LightMapDownScale: " + Game.config.getLightMapDownScale());
-			}
-		});
-		t1.add(lightMapResSlider).align(Align.left);
-		t1.add(lightMapDownScaleSliderLabel).padLeft(5f);
-		t1.row();
-
 		final Label uiSizeSliderLabel = new Label(Game.language.get("uiSize") + ": " + Game.config.getUiSize(), UI.labelStyle);
 		final Slider uiSizeSlider = new Slider(1.0f, 2.5f, 0.2f, false, UI.sliderStyle);
 		uiSizeSlider.setValue(Game.config.getUiSize());

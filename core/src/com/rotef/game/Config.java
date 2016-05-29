@@ -11,7 +11,6 @@ public class Config implements Json.Serializable {
 	private int height;
 	private boolean fullscreen;
 	private boolean vSync;
-	private int lightMapDownScale;
 	private float uiSize;
 	private boolean debug;
 	private boolean usePastebin;
@@ -22,7 +21,6 @@ public class Config implements Json.Serializable {
 		setHeight(600);
 		setFullscreen(false);
 		setVSync(true);
-		setLightMapDownScale(2);
 		setUiSize(1.5f);
 		setDebug(false);
 		setUsePastebin(true);
@@ -59,14 +57,6 @@ public class Config implements Json.Serializable {
 
 	public void setVSync(boolean vSync) {
 		this.vSync = vSync;
-	}
-
-	public int getLightMapDownScale() {
-		return lightMapDownScale;
-	}
-
-	public void setLightMapDownScale(int lightMapDownScale) {
-		this.lightMapDownScale = lightMapDownScale;
 	}
 
 	public float getUiSize() {
@@ -121,7 +111,6 @@ public class Config implements Json.Serializable {
 		json.writeValue("height", height);
 		json.writeValue("fullscreen", fullscreen);
 		json.writeValue("vSync", vSync);
-		json.writeValue("lightMapDownScale", lightMapDownScale);
 		json.writeValue("uiSize", uiSize);
 		json.writeValue("debug", debug);
 		json.writeValue("usePastebin", usePastebin);
@@ -134,7 +123,6 @@ public class Config implements Json.Serializable {
 		this.height = jsonData.get("height").asInt();
 		this.fullscreen = jsonData.get("fullscreen").asBoolean();
 		this.vSync = jsonData.get("vSync").asBoolean();
-		this.lightMapDownScale = jsonData.get("lightMapDownScale").asInt();
 		this.uiSize = jsonData.get("uiSize").asFloat();
 		this.debug = jsonData.get("debug").asBoolean();
 		this.usePastebin = jsonData.get("usePastebin").asBoolean();
