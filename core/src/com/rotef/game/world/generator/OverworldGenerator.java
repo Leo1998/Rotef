@@ -10,14 +10,13 @@ public class OverworldGenerator extends Generator {
 	}
 
 	@Override
-	public int[] generateMap(int width, int height) {
+	public int[] generateMap(int width, int height, int surface) {
 		int[] map = new int[width * height];
 
 		double xScale = 32D;
 		int featureSize = 32;
-		int groundLevel = 170;
 
-		int oceanLevel = groundLevel - 10;
+		int oceanLevel = surface - 10;
 
 		double caveScale = 11D;
 		double caveOffset = 0.25D;
@@ -29,7 +28,8 @@ public class OverworldGenerator extends Generator {
 			sendProgress("Generating World...", (float) (x / width));
 
 			double heightVal = heightNoise.noise(x / xScale, 4, 0.25, true);
-			int yLevel = groundLevel + Math.round((float) heightVal * featureSize);
+			int yLevel = surface + featureSize + Math.round((float) heightVal * featureSize);
+			// TODO: might be under the surface
 
 			// generate basic world
 			for (int y = 0; y < yLevel; y++) {

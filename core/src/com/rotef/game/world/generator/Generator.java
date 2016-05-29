@@ -27,7 +27,7 @@ public abstract class Generator {
 		this.random = new Random();
 	}
 
-	public abstract int[] generateMap(int width, int height);
+	public abstract int[] generateMap(int width, int height, int surface);
 
 	protected synchronized void sendProgress(String msg, float progress) {
 		listener.status(msg, progress);

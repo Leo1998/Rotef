@@ -3,7 +3,7 @@
 "height": 1080,
 "fullscreen": true,
 "vSync": false,
-"lightMapDownScale": 2,
+"lightMapDownScale": 1,
 "uiSize": 1.5,
 "debug": false,
 "usePastebin": true,

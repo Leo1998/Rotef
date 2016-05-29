@@ -38,6 +38,7 @@ public abstract class BaseScreen implements Screen {
 		rootTable.setFillParent(true);
 		ui.addActor(rootTable);
 
+		rootTable.addListener(new AnimatedListener());
 		makeContent();
 	}
 
