@@ -19,11 +19,11 @@ public class LightMap {
 	private Texture map;
 	private ByteBuffer buffer;
 
-	public LightMap(int width, int height) {
-		init(width, height);
+	public LightMap(int width, int height, boolean smoothFiltering) {
+		init(width, height, smoothFiltering);
 	}
 
-	public void init(int width, int height) {
+	public void init(int width, int height, boolean smoothFiltering) {
 		if (map != null) {
 			map.dispose();
 		}
@@ -40,8 +40,12 @@ public class LightMap {
 		this.buffer = BufferUtils.newByteBuffer(width * height * 3);
 
 		this.map = new Texture(width, height, Format.RGB888);
-		map.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		map.setWrap(TextureWrap.ClampToEdge, TextureWrap.ClampToEdge);
+		if (smoothFiltering) {
+			map.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		} else {
+			map.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		}
 	}
 
 	public void setLightData(LightingState[][] states) {

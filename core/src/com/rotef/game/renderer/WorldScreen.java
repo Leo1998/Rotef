@@ -126,7 +126,7 @@ public class WorldScreen extends BaseScreen {
 
 		worldCamera.setToOrtho(false, width, height);
 		if (world != null) {
-			world.getLightManager().resize(width, height);
+			world.getLightManager().init(width, height);
 		}
 	}
 

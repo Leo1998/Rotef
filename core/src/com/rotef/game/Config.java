@@ -4,6 +4,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
+import com.rotef.game.world.light.LightingMode;
 
 public class Config implements Json.Serializable {
 
@@ -15,16 +16,18 @@ public class Config implements Json.Serializable {
 	private boolean debug;
 	private boolean usePastebin;
 	private String languageFile;
+	private LightingMode lightingMode;
 
 	public Config() {
 		setWidth(800);
 		setHeight(600);
 		setFullscreen(false);
 		setVSync(true);
-		setUiSize(1.5f);
+		setUiSize(1.2f);
 		setDebug(false);
 		setUsePastebin(true);
 		setLanguageFile("en_US.lang");
+		setLightingMode(LightingMode.High);
 	}
 
 	public int getWidth() {
@@ -91,6 +94,14 @@ public class Config implements Json.Serializable {
 		this.languageFile = languageFile;
 	}
 
+	public LightingMode getLightingMode() {
+		return lightingMode;
+	}
+
+	public void setLightingMode(LightingMode lightingMode) {
+		this.lightingMode = lightingMode;
+	}
+
 	public static Config load(FileHandle file) {
 		Json json = new Json(OutputType.json);
 
@@ -115,6 +126,7 @@ public class Config implements Json.Serializable {
 		json.writeValue("debug", debug);
 		json.writeValue("usePastebin", usePastebin);
 		json.writeValue("languageFile", languageFile);
+		json.writeValue("lightingMode", lightingMode);
 	}
 
 	@Override
@@ -127,6 +139,7 @@ public class Config implements Json.Serializable {
 		this.debug = jsonData.get("debug").asBoolean();
 		this.usePastebin = jsonData.get("usePastebin").asBoolean();
 		this.languageFile = jsonData.get("languageFile").asString();
+		this.lightingMode = LightingMode.valueOf(jsonData.get("lightingMode").asString());
 	}
 
 }

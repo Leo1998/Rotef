@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.rotef.game.Game;
 import com.rotef.game.renderer.WorldRenderer;
 import com.rotef.game.renderer.WorldViewport;
 import com.rotef.game.util.MathHelper;
@@ -37,14 +38,17 @@ public class LightManager {
 	// public LightingState[][] states;
 	// }
 
+	private LightingMode lightingMode = LightingMode.Low;
+	private int resolution = lightingMode.resolution;
+	
 	private LightingState[][] states;
-	private int offScreenTiles = 10;
-	private int tileWidth;
-	private int tileHeight;
+	private int stateWidth;
+	private int stateHeight;
 	private int startX;
 	private int startY;
+	private int offScreenTiles = 10;
 
-	private Color sunColor = new Color(0xF0F8FF);
+	private Color sunColor = Color.WHITE;
 
 	private LightArray lights = new LightArray();
 	private LightArray visibleLights = new LightArray();
@@ -58,21 +62,25 @@ public class LightManager {
 		this.world = world;
 	}
 
-	public void resize(int width, int height) {
-		this.tileWidth = (width / Tile.TILE_SIZE) + offScreenTiles * 2;
-		this.tileHeight = (height / Tile.TILE_SIZE) + offScreenTiles * 2;
+	public void init(int width, int height) {
+		this.lightingMode = Game.config.getLightingMode();
+		this.resolution = lightingMode.resolution;
+		boolean smoothFiltering = lightingMode.smoothFiltering;
+		
+		this.stateWidth = ((width / Tile.TILE_SIZE) + offScreenTiles * 2) * resolution;
+		this.stateHeight = ((height / Tile.TILE_SIZE) + offScreenTiles * 2) * resolution;
 
-		this.states = new LightingState[tileWidth][tileHeight];
-		for (int x = 0; x < tileWidth; x++) {
-			for (int y = 0; y < tileHeight; y++) {
+		this.states = new LightingState[stateWidth][stateHeight];
+		for (int x = 0; x < stateWidth; x++) {
+			for (int y = 0; y < stateHeight; y++) {
 				states[x][y] = new LightingState(x, y);
 			}
 		}
 
 		if (lightMap == null) {
-			this.lightMap = new LightMap(tileWidth, tileHeight);
+			this.lightMap = new LightMap(stateWidth, stateHeight, smoothFiltering);
 		}
-		this.lightMap.init(tileWidth, tileHeight);
+		this.lightMap.init(stateWidth, stateHeight, smoothFiltering);
 
 	}
 
@@ -88,20 +96,20 @@ public class LightManager {
 
 		float x0 = x - offScreenTiles * Tile.TILE_SIZE;
 		float y0 = y - offScreenTiles * Tile.TILE_SIZE;
-		float w0 = tileWidth * Tile.TILE_SIZE;
-		float h0 = tileHeight * Tile.TILE_SIZE;
+		float w0 = (stateWidth / resolution) * Tile.TILE_SIZE;
+		float h0 = (stateHeight / resolution) * Tile.TILE_SIZE;
 
 		x0 -= difX * Tile.TILE_SIZE;
 		y0 -= difY * Tile.TILE_SIZE;
 
-		batch.draw(lightMap.getMap(), x0, y0, w0, h0, 0, 0, tileWidth, tileHeight, false, true);
+		batch.draw(lightMap.getMap(), x0, y0, w0, h0, 0, 0, stateWidth, stateHeight, false, true);
 	}
 
 	public void update(WorldRenderer renderer, WorldViewport viewport) {
 		if (lightMap == null) {
 			int w = Gdx.graphics.getWidth();
 			int h = Gdx.graphics.getHeight();
-			resize(w, h);
+			init(w, h);
 		}
 
 		updateVisibleLights(viewport);
@@ -109,12 +117,12 @@ public class LightManager {
 		startX = (int) (viewport.getX() / Tile.TILE_SIZE) - offScreenTiles;
 		startY = (int) (viewport.getY() / Tile.TILE_SIZE) - offScreenTiles;
 
-		for (int x = 0; x < tileWidth; x++) {
-			for (int y = 0; y < tileHeight; y++) {
+		for (int x = 0; x < stateWidth; x++) {
+			for (int y = 0; y < stateHeight; y++) {
 				LightingState state = states[x][y];
 
-				int worldX = startX + x;
-				int worldY = startY + y;
+				int worldX = startX + (x / resolution);
+				int worldY = startY + (y / resolution);
 
 				Tile tile = world.getTile(worldX, worldY);
 
@@ -124,32 +132,33 @@ public class LightManager {
 				} else {
 					int a = 10;
 					float brightness = MathHelper.ensureRange(worldY - world.getSurface(), 0, a) / (float) a;
+					brightness *= world.getTimeManager().getSunIntensity();
+					
 					state.set(sunColor.r * brightness, sunColor.g * brightness, sunColor.b * brightness);
-
 					state.lit = brightness > 0.0f;
 				}
 			}
 		}
 
-		for (int x = 0; x < tileWidth; x++) {
-			for (int y = 0; y < tileHeight; y++) {
+		for (int x = 0; x < stateWidth; x++) {
+			for (int y = 0; y < stateHeight; y++) {
 				LightingState state = states[x][y];
 
-				int worldX = startX + x;
-				int worldY = startY + y;
+				int worldX = startX + (x / resolution);
+				int worldY = startY + (y / resolution);
 
 				Tile tile = world.getTile(worldX, worldY);
 
 				if (tile != null && tile.isSolid()) {
 					float lit = 0.05f;
 
-					int shineDist = 4;
+					int shineDist = 4 * resolution;
 
 					LightingState s = null;
 					double dist = Double.MAX_VALUE;
 					for (int x0 = x - shineDist; x0 < x + shineDist; x0++) {
 						for (int y0 = y - shineDist; y0 < y + shineDist; y0++) {
-							if (x0 >= 0 && x0 < tileWidth && y0 >= 0 && y0 < tileHeight) {
+							if (x0 >= 0 && x0 < stateWidth && y0 >= 0 && y0 < stateHeight) {
 								LightingState s0 = states[x0][y0];
 
 								if (s0.lit) {

@@ -3,8 +3,9 @@
 "height": 1080,
 "fullscreen": true,
 "vSync": false,
-"uiSize": 1.4,
+"uiSize": 1.2,
 "debug": false,
 "usePastebin": true,
-"languageFile": "en_US.lang"
+"languageFile": "en_US.lang",
+"lightingMode": "High"
 }
