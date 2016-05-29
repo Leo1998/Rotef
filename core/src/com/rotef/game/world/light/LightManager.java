@@ -1,9 +1,9 @@
 package com.rotef.game.world.light;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Array;
 import com.rotef.game.renderer.WorldRenderer;
 import com.rotef.game.renderer.WorldViewport;
 import com.rotef.game.util.MathHelper;
@@ -17,7 +17,7 @@ public class LightManager {
 		public float r = 0f;
 		public float g = 0f;
 		public float b = 0f;
-
+		public boolean lit = false;
 		public final int x;
 		public final int y;
 
@@ -33,13 +33,18 @@ public class LightManager {
 		}
 	}
 
-	private Array<LightingState> litStates = new Array<>();
+	// public class LightingSwipe {
+	// public LightingState[][] states;
+	// }
+
 	private LightingState[][] states;
 	private int offScreenTiles = 10;
 	private int tileWidth;
 	private int tileHeight;
 	private int startX;
 	private int startY;
+
+	private Color sunColor = new Color(0xF0F8FF);
 
 	private LightArray lights = new LightArray();
 	private LightArray visibleLights = new LightArray();
@@ -101,13 +106,8 @@ public class LightManager {
 
 		updateVisibleLights(viewport);
 
-		litStates.clear();
-
 		startX = (int) (viewport.getX() / Tile.TILE_SIZE) - offScreenTiles;
 		startY = (int) (viewport.getY() / Tile.TILE_SIZE) - offScreenTiles;
-
-		// float wMap = viewport.getWidth() / PhysicsManager.PPM;
-		// float hMap = viewport.getHeight() / PhysicsManager.PPM;
 
 		for (int x = 0; x < tileWidth; x++) {
 			for (int y = 0; y < tileHeight; y++) {
@@ -120,14 +120,13 @@ public class LightManager {
 
 				if (tile != null && tile.isSolid()) {
 					state.set(0.0f, 0.0f, 0.0f);
+					state.lit = false;
 				} else {
 					int a = 10;
 					float brightness = MathHelper.ensureRange(worldY - world.getSurface(), 0, a) / (float) a;
-					state.set(brightness, brightness, brightness);
+					state.set(sunColor.r * brightness, sunColor.g * brightness, sunColor.b * brightness);
 
-					if (brightness > 0.0f) {
-						litStates.add(state);
-					}
+					state.lit = brightness > 0.0f;
 				}
 			}
 		}
@@ -142,19 +141,34 @@ public class LightManager {
 				Tile tile = world.getTile(worldX, worldY);
 
 				if (tile != null && tile.isSolid()) {
-					float lit = 0.0f;
+					float lit = 0.05f;
 
+					int shineDist = 4;
+
+					LightingState s = null;
 					double dist = Double.MAX_VALUE;
-					for (LightingState s : litStates) {
-						double dist0 = MathHelper.distance(x, y, s.x, s.y);
-						if (dist0 < dist) {
-							dist = dist0;
+					for (int x0 = x - shineDist; x0 < x + shineDist; x0++) {
+						for (int y0 = y - shineDist; y0 < y + shineDist; y0++) {
+							if (x0 >= 0 && x0 < tileWidth && y0 >= 0 && y0 < tileHeight) {
+								LightingState s0 = states[x0][y0];
+
+								if (s0.lit) {
+									double dist0 = MathHelper.distance(x, y, s0.x, s0.y);
+									if (dist0 < dist) {
+										s = s0;
+										dist = dist0;
+									}
+								}
+							}
 						}
 					}
 
-					lit = (float) (1 / dist);
+					if (s != null) {
+						lit += 1.0f - (float) (Math.min(dist, shineDist) / shineDist);
+						lit = MathHelper.ensureRange(lit, 0.0f, 1.0f);
 
-					state.set(lit, lit, lit);
+						state.set(s.r * lit, s.g * lit, s.b * lit);
+					}
 				}
 			}
 		}

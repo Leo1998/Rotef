@@ -3,7 +3,7 @@
 "height": 1080,
 "fullscreen": true,
 "vSync": false,
-"uiSize": 1.5,
+"uiSize": 1.4,
 "debug": false,
 "usePastebin": true,
 "languageFile": "en_US.lang"

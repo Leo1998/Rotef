@@ -9,8 +9,12 @@ public class MathHelper {
 		return Math.min(Math.max(value, min), max);
 	}
 
-	public static boolean inRange(int value, int min, int max) {
-		return (value >= min) && (value <= max);
+	public static float ensureRange(float value, float min, float max) {
+		return Math.min(Math.max(value, min), max);
+	}
+
+	public static double ensureRange(double value, double min, double max) {
+		return Math.min(Math.max(value, min), max);
 	}
 
 	public static double distance(int x0, int y0, int x1, int y1) {

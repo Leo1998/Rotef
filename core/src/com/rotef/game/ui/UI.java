@@ -88,12 +88,15 @@ public class UI {
 	private static BitmapFont loadTTFFont(String path) {
 		FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal(path));
 
-		int dp = 16;
+		int dp = 19;
 		int fontSize = Math.round(dp * Gdx.graphics.getDensity());
 
 		FreeTypeFontParameter param = new FreeTypeFontParameter();
 		param.size = fontSize;
 		param.genMipMaps = true;
+		param.gamma = 2;
+		param.magFilter = Texture.TextureFilter.MipMapLinearLinear;
+		param.minFilter = Texture.TextureFilter.MipMapLinearLinear;
 
 		BitmapFont font = gen.generateFont(param);
 
