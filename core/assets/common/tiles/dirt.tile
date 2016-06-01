@@ -2,5 +2,6 @@
 	"id": 1,
 	"type": Solid,
 	"name": "Dirt",
-	"spritePath": "tiles/dirt.png"
+	"spritePath": "tiles/dirt.png",
+	"lightColor": [0.0, 0.0, 0.0]
 }

@@ -1,0 +1,7 @@
+{
+	"id": 4,
+	"type": Fluid,
+	"name": "Lava",
+	"spritePath": "tiles/lava.png",
+	"lightColor": [1.0, 0.64, 0.0]
+}

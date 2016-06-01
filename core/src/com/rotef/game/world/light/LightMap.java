@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.rotef.game.util.BufferDisposer;
-import com.rotef.game.world.light.LightManager.LightingState;
 
 public class LightMap {
 
@@ -48,15 +47,13 @@ public class LightMap {
 		}
 	}
 
-	public void setLightData(LightingState[][] states) {
+	public void setLightData(LightingState[] states) {
 		map.bind();
-
-		assert (states.length == width * height);
 
 		buffer.position(0);
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				LightingState state = states[x][y];
+				LightingState state = states[x + y * width];
 
 				buffer.put(convertColorChannel(state.r));
 				buffer.put(convertColorChannel(state.g));
@@ -81,6 +78,12 @@ public class LightMap {
 	public void dispose() {
 		if (map != null) {
 			map.dispose();
+		}
+		if (buffer != null) {
+			try {
+				BufferDisposer.disposeDirectBuffer(buffer);
+			} catch (Exception e) {
+			}
 		}
 	}
 

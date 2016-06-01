@@ -17,6 +17,7 @@ public class OverworldGenerator extends Generator {
 		int featureSize = 32;
 
 		int oceanLevel = surface - 10;
+		int lavaLevel = 45;
 
 		double caveScale = 11D;
 		double caveOffset = 0.25D;
@@ -48,6 +49,10 @@ public class OverworldGenerator extends Generator {
 				}
 				if (caveVal < caveOffset + localCaveOffset) {
 					map[(int) (x + y * width)] = tile;
+				} else {
+					if (y < lavaLevel) {
+						map[(int) (x + y * width)] = 4;
+					}
 				}
 			}
 

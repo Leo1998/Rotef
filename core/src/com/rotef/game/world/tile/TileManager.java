@@ -15,6 +15,7 @@ public class TileManager {
 		loadTemplate("common/tiles/dirt.tile");
 		loadTemplate("common/tiles/water.tile");
 		loadTemplate("common/tiles/stone.tile");
+		loadTemplate("common/tiles/lava.tile");
 	}
 
 	private void loadTemplate(String path) {

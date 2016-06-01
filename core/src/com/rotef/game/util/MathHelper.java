@@ -17,9 +17,9 @@ public class MathHelper {
 		return Math.min(Math.max(value, min), max);
 	}
 
-	public static double distance(int x0, int y0, int x1, int y1) {
-		int kx = (x0 - x1);
-		int ky = (y0 - y1);
+	public static double distance(double x0, double y0, double x1, double y1) {
+		double kx = (x0 - x1);
+		double ky = (y0 - y1);
 		return Math.abs(Math.sqrt((kx * kx) + (ky * ky)));
 	}
 }

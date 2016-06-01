@@ -34,7 +34,7 @@ public class AnimatedListener extends ClickListener {
 	}
 
 	private boolean shouldAnimate(Actor target) {
-		return false;// TODO
+		return false;
 	}
 
 }

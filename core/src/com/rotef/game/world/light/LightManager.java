@@ -15,18 +15,107 @@ public class LightManager {
 	private LightingMode lightingMode = LightingMode.Low;
 	private int resolution = lightingMode.resolution;
 
-	private LightingState[][] states;
+	private LightingState[] states;
 	private int stateWidth;
 	private int stateHeight;
 	private int startX;
 	private int startY;
-	private int offScreenTiles = 10;
+	private int offScreenTiles = 6;
 
 	private Color sunColor = Color.WHITE;
+	private float ambient = 0.053f;
 
 	private World world;
-
 	private LightMap lightMap;
+
+	private LightingSwipeExecuter executer;
+
+	private LightingSwipeProcessor.Task lightingPass1 = new LightingSwipeProcessor.Task() {
+		@Override
+		public void process(LightingSwipe swipe) {
+			for (int x = swipe.x; x < swipe.x + swipe.width; x++) {
+				for (int y = swipe.y; y < swipe.y + swipe.height; y++) {
+					LightingState state = states[x + y * stateWidth];
+
+					int worldX = startX + (x / resolution);
+					int worldY = startY + (y / resolution);
+
+					Tile tile = world.getTile(worldX, worldY);
+
+					if (tile != null) {
+						Color lightColor = tile.getLightColor();
+						if (!lightColor.equals(Color.BLACK)) {
+							state.set(lightColor.r, lightColor.g, lightColor.b);
+							state.lit = true;
+						} else {
+							state.set(0.0f, 0.0f, 0.0f);
+							state.lit = false;
+						}
+					} else {
+						int a = 10;
+						float brightness = MathHelper.ensureRange(worldY - world.getSurface(), 0, a) / (float) a;
+						brightness *= world.getTimeManager().getSunIntensity();
+						brightness = MathHelper.ensureRange(brightness, 0.0f, 1.0f);
+
+						state.lit = brightness > 0.0f;
+						state.set(sunColor.r * brightness, sunColor.g * brightness, sunColor.b * brightness);
+					}
+				}
+			}
+		}
+	};
+
+	private LightingSwipeProcessor.Task lightingPass2 = new LightingSwipeProcessor.Task() {
+		@Override
+		public void process(LightingSwipe swipe) {
+			for (int x = swipe.x; x < swipe.x + swipe.width; x++) {
+				for (int y = swipe.y; y < swipe.y + swipe.height; y++) {
+					LightingState state = states[x + y * stateWidth];
+
+					if (!state.lit) {
+						float r = 0.0f;
+						float g = 0.0f;
+						float b = 0.0f;
+
+						int shineDist = 3 * resolution;
+
+						LightingState s = null;
+						double dist = Double.MAX_VALUE;
+						for (int x0 = x - shineDist; x0 < x + shineDist; x0++) {
+							for (int y0 = y - shineDist; y0 < y + shineDist; y0++) {
+								if (x0 >= 0 && x0 < stateWidth && y0 >= 0 && y0 < stateHeight) {
+									LightingState s0 = states[x0 + y0 * stateWidth];
+
+									if (s0.lit) {
+										double dist0 = MathHelper.distance(x, y, s0.x, s0.y);
+
+										if (dist0 < dist) {
+											s = s0;
+											dist = dist0;
+										}
+									}
+								}
+							}
+						}
+
+						if (s != null) {
+							float lit = 1.0f - (float) (Math.min(dist, shineDist) / shineDist);
+							lit = MathHelper.ensureRange(lit, 0.0f, 1.0f);
+
+							r += s.r * lit;
+							g += s.g * lit;
+							b += s.b * lit;
+						}
+
+						r = MathHelper.ensureRange(r, ambient, 1.0f);
+						g = MathHelper.ensureRange(g, ambient, 1.0f);
+						b = MathHelper.ensureRange(b, ambient, 1.0f);
+						state.set(r, g, b);
+					}
+				}
+			}
+		}
+	};
 
 	public LightManager(World world) {
 		this.world = world;
@@ -36,16 +125,22 @@ public class LightManager {
 		this.lightingMode = Game.config.getLightingMode();
 		this.resolution = lightingMode.resolution;
 		boolean smoothFiltering = lightingMode.smoothFiltering;
+		int lightingCores = 2;// TODO
 
 		this.stateWidth = ((width / Tile.TILE_SIZE) + offScreenTiles * 2) * resolution;
 		this.stateHeight = ((height / Tile.TILE_SIZE) + offScreenTiles * 2) * resolution;
 
-		this.states = new LightingState[stateWidth][stateHeight];
+		this.states = new LightingState[stateWidth * stateHeight];
 		for (int x = 0; x < stateWidth; x++) {
 			for (int y = 0; y < stateHeight; y++) {
-				states[x][y] = new LightingState(x, y);
+				states[x + y * stateWidth] = new LightingState(x, y);
 			}
 		}
+
+		if (executer != null) {
+			executer.dispose();
+		}
+		this.executer = new LightingSwipeExecuter(stateWidth, stateHeight, lightingCores);
 
 		if (lightMap == null) {
 			this.lightMap = new LightMap(stateWidth, stateHeight, smoothFiltering);
@@ -85,77 +180,42 @@ public class LightManager {
 		startX = (int) (viewport.getX() / Tile.TILE_SIZE) - offScreenTiles;
 		startY = (int) (viewport.getY() / Tile.TILE_SIZE) - offScreenTiles;
 
-		for (int x = 0; x < stateWidth; x++) {
-			for (int y = 0; y < stateHeight; y++) {
-				LightingState state = states[x][y];
+		executer.executeLightingPass(lightingPass1);
 
-				int worldX = startX + (x / resolution);
-				int worldY = startY + (y / resolution);
+		executer.executeLightingPass(lightingPass2);
 
-				Tile tile = world.getTile(worldX, worldY);
-
-				if (tile != null) {
-					Color lightColor = tile.getLightColor();
-					if (!lightColor.equals(Color.BLACK)) {
-						state.set(lightColor.r, lightColor.g, lightColor.b);
-						state.lit = true;
-					} else {
-						state.set(0.0f, 0.0f, 0.0f);
-						state.lit = false;
-					}
-				} else {
-					int a = 10;
-					float brightness = MathHelper.ensureRange(worldY - world.getSurface(), 0, a) / (float) a;
-					brightness *= world.getTimeManager().getSunIntensity();
-					brightness = MathHelper.ensureRange(brightness, 0.065f, 1.0f);
-
-					state.lit = brightness > 0.0f;
-					state.set(sunColor.r * brightness, sunColor.g * brightness, sunColor.b * brightness);
-				}
-			}
-		}
-
-		for (int x = 0; x < stateWidth; x++) {
-			for (int y = 0; y < stateHeight; y++) {
-				LightingState state = states[x][y];
-
-//				int worldX = startX + (x / resolution);
-//				int worldY = startY + (y / resolution);
-
-//				Tile tile = world.getTile(worldX, worldY);
-
-				if (!state.lit) {
-					float lit = 0.0f;
-
-					int shineDist = 4 * resolution;
-
-					LightingState s = null;
-					double dist = Double.MAX_VALUE;
-					for (int x0 = x - shineDist; x0 < x + shineDist; x0++) {
-						for (int y0 = y - shineDist; y0 < y + shineDist; y0++) {
-							if (x0 >= 0 && x0 < stateWidth && y0 >= 0 && y0 < stateHeight) {
-								LightingState s0 = states[x0][y0];
-
-								if (s0.lit) {
-									double dist0 = MathHelper.distance(x, y, s0.x, s0.y);
-									if (dist0 < dist) {
-										s = s0;
-										dist = dist0;
-									}
-								}
-							}
-						}
-					}
-
-					if (s != null) {
-						lit += 1.0f - (float) (Math.min(dist, shineDist) / shineDist);
-						lit = MathHelper.ensureRange(lit, 0.04f, 1.0f);
-
-						state.set(s.r * lit, s.g * lit, s.b * lit);
-					}
-				}
-			}
-		}
+		// for (int x = 0; x < stateWidth; x++) {
+		// for (int y = 0; y < stateHeight; y++) {
+		// LightingState state = states[x][y];
+		//
+		// if (state.lit) {
+		// int shineDist = 2 * resolution;
+		//
+		// for (int x0 = x - shineDist; x0 < x + shineDist; x0++) {
+		// for (int y0 = y - shineDist; y0 < y + shineDist; y0++) {
+		// if (x0 >= 0 && x0 < stateWidth && y0 >= 0 && y0 < stateHeight) {
+		// LightingState s0 = states[x0][y0];
+		//
+		// if (!s0.lit) {
+		// double dist0 = MathHelper.distance(x, y, s0.x, s0.y);
+		//
+		// float lit = 1.0f - (float) (Math.min(dist0, shineDist) / shineDist);
+		// lit = MathHelper.ensureRange(lit, 0.0f, 1.0f);
+		//
+		// s0.r += state.r * lit;
+		// s0.g += state.g * lit;
+		// s0.b += state.b * lit;
+		//
+		// s0.r = MathHelper.ensureRange(s0.r, 0.0f, 1.0f);
+		// s0.g = MathHelper.ensureRange(s0.g, 0.0f, 1.0f);
+		// s0.b = MathHelper.ensureRange(s0.b, 0.0f, 1.0f);
+		// }
+		// }
+		// }
+		// }
+		// }
+		// }
+		// }
 
 		lightMap.setLightData(states);
 	}
@@ -170,7 +230,7 @@ public class LightManager {
 		return world;
 	}
 
-	public LightingState[][] getStates() {
+	public LightingState[] getStates() {
 		return states;
 	}
 

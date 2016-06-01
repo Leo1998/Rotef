@@ -1,7 +1,7 @@
 {
-"width": 1920,
-"height": 1080,
-"fullscreen": true,
+"width": 1914,
+"height": 1001,
+"fullscreen": false,
 "vSync": false,
 "uiSize": 1.2,
 "debug": false,

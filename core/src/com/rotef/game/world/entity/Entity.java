@@ -1,6 +1,5 @@
 package com.rotef.game.world.entity;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -9,7 +8,6 @@ import com.rotef.game.assets.Sprite;
 import com.rotef.game.renderer.WorldRenderer;
 import com.rotef.game.template.Template;
 import com.rotef.game.world.World;
-import com.rotef.game.world.light.Light;
 import com.rotef.game.world.physics.PhysicsManager;
 
 public abstract class Entity {
@@ -46,8 +44,6 @@ public abstract class Entity {
 	protected Body body;
 	protected PhysicsProperties physicsProperties = new PhysicsProperties();
 
-	private Light attachedLight = null;
-
 	public Entity(Template template, World world) {
 		this.template = template;
 		this.type = Entity.Type.valueOf(template.getString("type"));
@@ -65,12 +61,6 @@ public abstract class Entity {
 			for (Fixture f : body.getFixtureList()) {
 				f.setFriction(isGrounded() ? physicsProperties.getFriction() : 0f);
 			}
-		}
-
-		if (hasAttachedLight()) {
-			Light light = getAttachedLight();
-			light.setX(this.getX());
-			light.setY(this.getY());
 		}
 	}
 
@@ -169,20 +159,6 @@ public abstract class Entity {
 
 	public void setFoot(Foot foot) {
 		this.foot = foot;
-	}
-
-	public Light getAttachedLight() {
-		return attachedLight;
-	}
-
-	public boolean hasAttachedLight() {
-		return getAttachedLight() != null;
-	}
-
-	protected void attachLight(Color color, float distance) {
-		this.attachedLight = new Light(getSpawnX(), getSpawnY(), distance, color);
-
-		getWorld().getLightManager().addLight(attachedLight);
 	}
 
 	@Override

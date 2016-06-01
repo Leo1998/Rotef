@@ -2,12 +2,10 @@ package com.rotef.game.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.rotef.game.Game;
 import com.rotef.game.world.WorldDescriptor;
 
@@ -49,9 +47,9 @@ public class CreateWorldScreen extends BaseScreen {
 		rootTable.row();
 
 		final TextButton createButton = new TextButton(Game.language.get("create"), UI.textButtonStyle);
-		createButton.addListener(new ClickListener() {
+		createButton.addListener(new ChangeListener() {
 			@Override
-			public void clicked(InputEvent event, float x, float y) {
+			public void changed(ChangeEvent event, Actor actor) {
 				String worldName = nameTextField.getText();
 				nameTextField.getOnscreenKeyboard().show(false);
 

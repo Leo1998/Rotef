@@ -1,9 +1,11 @@
 package com.rotef.game.template;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.JsonValue.ValueType;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.SerializationException;
@@ -119,6 +121,28 @@ public class Template implements Serializable {
 		}
 	}
 
+	public Color getColor(String key) {
+		Object object = get(key);
+		if (object != null) {
+			Object[] objectArray = (Object[]) object;
+			float[] array = new float[objectArray.length];
+			for (int i = 0; i < objectArray.length; i++) {
+				double d = (double) objectArray[i];
+				array[i] = (float) d;
+			}
+
+			if (array.length == 4) {
+				return new Color(array[0], array[1], array[2], array[3]);
+			} else if (array.length == 3) {
+				return new Color(array[0], array[1], array[2], 1.0f);
+			} else {
+				throw new IllegalArgumentException("The Object is not a Color!");
+			}
+		} else {
+			throw new IllegalArgumentException("The Object is not a Color!");
+		}
+	}
+
 	@Override
 	public String toString() {
 		return map.toString();
@@ -145,7 +169,7 @@ public class Template implements Serializable {
 
 				// nothing
 			} else if (object.isArray()) {
-				// read(object);
+				out = toArray(object);
 			} else if (object.isString()) {
 				out = object.asString();
 			} else if (object.isDouble()) {
@@ -164,6 +188,35 @@ public class Template implements Serializable {
 
 			map.put(key, out);
 		}
+	}
+
+	public Object[] toArray(JsonValue object) {
+		if (object.type() != ValueType.array)
+			throw new IllegalStateException("Value is not an array: " + object.type());
+
+		Object[] array = new Object[object.size];
+		int i = 0;
+		for (JsonValue value = object.child; value != null; value = value.next, i++) {
+			Object v;
+			switch (value.type()) {
+			case stringValue:
+				v = value.asString();
+				break;
+			case doubleValue:
+				v = value.asDouble();
+				break;
+			case longValue:
+				v = value.asLong();
+				break;
+			case booleanValue:
+				v = value.asBoolean();
+				break;
+			default:
+				throw new IllegalStateException("Value cannot be converted to boolean: " + value.type());
+			}
+			array[i] = v;
+		}
+		return array;
 	}
 
 }

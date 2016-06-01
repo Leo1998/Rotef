@@ -1,7 +1,6 @@
 package com.rotef.game.world;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.rotef.game.Game;
 import com.rotef.game.Version;
@@ -14,7 +13,6 @@ import com.rotef.game.world.entity.PlayerController;
 import com.rotef.game.world.generator.Generator;
 import com.rotef.game.world.generator.GeneratorException;
 import com.rotef.game.world.generator.OverworldGenerator;
-import com.rotef.game.world.light.Light;
 import com.rotef.game.world.light.LightManager;
 import com.rotef.game.world.loader.WorldData;
 import com.rotef.game.world.loader.WorldLoader;
@@ -97,7 +95,6 @@ public class World {
 
 			int spawnX = (width / 4);
 			int spawnY = (getHighestTileAt(width / 2) + 5) / 2;
-			lightManager.addLight(new Light(spawnX, spawnY, 6, Color.WHITE));
 
 			player = (Player) entityManager.spawnEntity("Player", spawnX, spawnY);
 			player.addTask(new PlayerController(player));

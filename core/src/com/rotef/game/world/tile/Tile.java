@@ -1,5 +1,6 @@
 package com.rotef.game.world.tile;
 
+import com.badlogic.gdx.graphics.Color;
 import com.rotef.game.Game;
 import com.rotef.game.template.Template;
 import com.rotef.game.world.World;
@@ -31,6 +32,7 @@ public abstract class Tile {
 	private String name;
 	private boolean solid = false;
 	private TileSprite sprite;
+	private Color lightColor = null;
 
 	private int xTile;
 	private int yTile;
@@ -46,6 +48,7 @@ public abstract class Tile {
 		this.type = Type.valueOf(template.getString("type"));
 		this.name = template.getString("name");
 		this.sprite = new DynamicTileSprite(this, Game.assets.getSprite(template.getString("spritePath")));
+		this.lightColor = template.getColor("lightColor");
 
 		this.world = world;
 		this.xTile = xTile;
@@ -132,6 +135,10 @@ public abstract class Tile {
 
 	protected void setSolid(boolean solid) {
 		this.solid = solid;
+	}
+
+	public Color getLightColor() {
+		return lightColor != null ? lightColor : Color.BLACK;
 	}
 
 }

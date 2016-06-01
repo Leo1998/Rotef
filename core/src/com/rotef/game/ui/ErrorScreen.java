@@ -1,11 +1,11 @@
 package com.rotef.game.ui;
 
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.rotef.game.Game;
 import com.rotef.game.util.ExceptionUtils;
 
@@ -48,9 +48,9 @@ public class ErrorScreen extends BaseScreen {
 		// ok button
 
 		TextButton okButton = new TextButton(Game.language.get("ok"), UI.textButtonStyle);
-		okButton.addListener(new ClickListener() {
+		okButton.addListener(new ChangeListener() {
 			@Override
-			public void clicked(InputEvent event, float x, float y) {
+			public void changed(ChangeEvent event, Actor actor) {
 				Game.game.setScreen(new MainMenuScreen());
 			}
 		});

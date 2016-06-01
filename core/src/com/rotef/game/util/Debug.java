@@ -14,8 +14,7 @@ public class Debug {
 				+ "Native Heap: " + Gdx.app.getNativeHeap() + "\n"//
 				+ "Daytime: " + world.getTimeManager().getDaytime() + " (Time: " + world.getTimeManager().getTime() + ")" + "\n"//
 				+ "Loaded Chunks: " + world.getLoadedChunks().size + "\n"//
-				+ "Active Chunks: " + world.getActiveChunks().size + "\n"//
-				+ "Lights: " + world.getLightManager().getLightCount() + ", Visible Lights: " + world.getLightManager().getVisibleLightCount() + "\n";//
+				+ "Active Chunks: " + world.getActiveChunks().size + "\n";//
 
 		UI.renderString(batch, msg, 10, 7 * 15);
 	}

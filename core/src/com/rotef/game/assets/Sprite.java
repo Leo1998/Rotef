@@ -16,6 +16,10 @@ public class Sprite {
 		return tex;
 	}
 
+	public void setTex(TextureRegion tex) {
+		this.tex = tex;
+	}
+
 	public int getWidth() {
 		return tex.getRegionWidth();
 	}

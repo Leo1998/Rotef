@@ -4,12 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.rotef.game.renderer.WorldScreen;
 import com.rotef.game.renderer.WorldViewport;
 import com.rotef.game.world.entity.Player;
-import com.rotef.game.world.light.Light;
 import com.rotef.game.world.physics.PhysicsManager;
 
 public class WorldInput implements InputProcessor {
@@ -53,8 +51,6 @@ public class WorldInput implements InputProcessor {
 		}
 
 		if (interact) {
-			Light light = new Light(player.getX(), player.getY(), 5, Color.WHITE);
-			player.getWorld().getLightManager().addLight(light);
 		}
 
 		if (mining) {

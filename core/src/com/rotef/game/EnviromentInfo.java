@@ -4,13 +4,13 @@ import com.badlogic.gdx.graphics.GL20;
 
 public class EnviromentInfo {
 
-	final String userName;
-	final String osName;
-	final String gl_version;
-	final String gl_vendor;
-	final String gl_renderer;
-	final long maxMemory;
-	final int availableProcessors;
+	public final String userName;
+	public final String osName;
+	public final String gl_version;
+	public final String gl_vendor;
+	public final String gl_renderer;
+	public final long maxMemory;
+	public final int availableProcessors;
 
 	public EnviromentInfo(GL20 gl) {
 		this.userName = System.getProperty("user.name");

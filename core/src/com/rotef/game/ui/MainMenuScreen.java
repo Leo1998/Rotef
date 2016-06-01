@@ -1,12 +1,12 @@
 package com.rotef.game.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.rotef.game.Game;
 import com.rotef.game.world.WorldDescriptor;
 
@@ -45,18 +45,18 @@ public class MainMenuScreen extends BaseScreen {
 			t.add(label).left().padRight(padding);
 
 			TextButton enterButton = new TextButton(Game.language.get("enterWorld"), UI.textButtonStyle);
-			enterButton.addListener(new ClickListener() {
+			enterButton.addListener(new ChangeListener() {
 				@Override
-				public void clicked(InputEvent event, float x, float y) {
+				public void changed(ChangeEvent event, Actor actor) {
 					Game.openWorld(worldName);
 				}
 			});
 			t.add(enterButton).center().padLeft(padding).padRight(padding);
 
 			TextButton deleteButton = new TextButton(Game.language.get("deleteWorld"), UI.textButtonStyle);
-			deleteButton.addListener(new ClickListener() {
+			deleteButton.addListener(new ChangeListener() {
 				@Override
-				public void clicked(InputEvent event, float x, float y) {
+				public void changed(ChangeEvent event, Actor actor) {
 					desc.delete();
 					scrollTable.removeActor(t);
 				}
@@ -68,9 +68,9 @@ public class MainMenuScreen extends BaseScreen {
 		}
 
 		TextButton createButton = new TextButton(Game.language.get("createNewWorld"), UI.textButtonStyle);
-		createButton.addListener(new ClickListener() {
+		createButton.addListener(new ChangeListener() {
 			@Override
-			public void clicked(InputEvent event, float x, float y) {
+			public void changed(ChangeEvent event, Actor actor) {
 				Game.game.setScreen(new CreateWorldScreen());
 			}
 		});
@@ -78,9 +78,9 @@ public class MainMenuScreen extends BaseScreen {
 		rootTable.add(createButton).padTop(10f).center();
 
 		TextButton optionsButton = new TextButton(Game.language.get("options"), UI.textButtonStyle);
-		optionsButton.addListener(new ClickListener() {
+		optionsButton.addListener(new ChangeListener() {
 			@Override
-			public void clicked(InputEvent event, float x, float y) {
+			public void changed(ChangeEvent event, Actor actor) {
 				Game.game.setScreen(new OptionsScreen());
 			}
 		});
@@ -89,9 +89,9 @@ public class MainMenuScreen extends BaseScreen {
 		rootTable.add(optionsButton).padTop(10f).center();
 
 		TextButton exitButton = new TextButton(Game.language.get("exit"), UI.textButtonStyle);
-		exitButton.addListener(new ClickListener() {
+		exitButton.addListener(new ChangeListener() {
 			@Override
-			public void clicked(InputEvent event, float x, float y) {
+			public void changed(ChangeEvent event, Actor actor) {
 				Gdx.app.exit();
 			}
 		});
