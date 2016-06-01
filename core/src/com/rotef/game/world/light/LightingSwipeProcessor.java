@@ -45,6 +45,7 @@ public class LightingSwipeProcessor {
 			}
 		}, "LightingSwipeProcessor-Thread");
 
+		thread.setPriority(Thread.MAX_PRIORITY);
 		thread.start();
 	}
 

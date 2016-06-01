@@ -2,16 +2,28 @@ package com.rotef.game.world.light;
 
 public class LightingState {
 
-	public float r = 0f;
-	public float g = 0f;
-	public float b = 0f;
-	public boolean lit = false;
-	public final int x;
-	public final int y;
+	private float r = 0f;
+	private float g = 0f;
+	private float b = 0f;
+	private boolean lit = false;
+	private final int x;
+	private final int y;
 
 	public LightingState(int x, int y) {
 		this.x = x;
 		this.y = y;
+	}
+
+	public float getR() {
+		return r;
+	}
+
+	public float getG() {
+		return g;
+	}
+
+	public float getB() {
+		return b;
 	}
 
 	public void set(float r, float g, float b) {
@@ -19,4 +31,21 @@ public class LightingState {
 		this.g = g;
 		this.b = b;
 	}
+
+	public boolean isLit() {
+		return lit;
+	}
+
+	public void setLit(boolean lit) {
+		this.lit = lit;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
 }

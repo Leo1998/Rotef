@@ -46,10 +46,10 @@ public class LightManager {
 						Color lightColor = tile.getLightColor();
 						if (!lightColor.equals(Color.BLACK)) {
 							state.set(lightColor.r, lightColor.g, lightColor.b);
-							state.lit = true;
+							state.setLit(true);
 						} else {
 							state.set(0.0f, 0.0f, 0.0f);
-							state.lit = false;
+							state.setLit(false);
 						}
 					} else {
 						int a = 10;
@@ -57,7 +57,7 @@ public class LightManager {
 						brightness *= world.getTimeManager().getSunIntensity();
 						brightness = MathHelper.ensureRange(brightness, 0.0f, 1.0f);
 
-						state.lit = brightness > 0.0f;
+						state.setLit(brightness > 0.0f);
 						state.set(sunColor.r * brightness, sunColor.g * brightness, sunColor.b * brightness);
 					}
 				}
@@ -72,7 +72,7 @@ public class LightManager {
 				for (int y = swipe.y; y < swipe.y + swipe.height; y++) {
 					LightingState state = states[x + y * stateWidth];
 
-					if (!state.lit) {
+					if (!state.isLit()) {
 						float r = 0.0f;
 						float g = 0.0f;
 						float b = 0.0f;
@@ -86,8 +86,8 @@ public class LightManager {
 								if (x0 >= 0 && x0 < stateWidth && y0 >= 0 && y0 < stateHeight) {
 									LightingState s0 = states[x0 + y0 * stateWidth];
 
-									if (s0.lit) {
-										double dist0 = MathHelper.distance(x, y, s0.x, s0.y);
+									if (s0.isLit()) {
+										double dist0 = MathHelper.distance(x, y, s0.getX(), s0.getY());
 
 										if (dist0 < dist) {
 											s = s0;
@@ -102,9 +102,9 @@ public class LightManager {
 							float lit = 1.0f - (float) (Math.min(dist, shineDist) / shineDist);
 							lit = MathHelper.ensureRange(lit, 0.0f, 1.0f);
 
-							r += s.r * lit;
-							g += s.g * lit;
-							b += s.b * lit;
+							r += s.getR() * lit;
+							g += s.getG() * lit;
+							b += s.getB() * lit;
 						}
 
 						r = MathHelper.ensureRange(r, ambient, 1.0f);
@@ -125,7 +125,7 @@ public class LightManager {
 		this.lightingMode = Game.config.getLightingMode();
 		this.resolution = lightingMode.resolution;
 		boolean smoothFiltering = lightingMode.smoothFiltering;
-		int lightingCores = 2;// TODO
+		int lightingCores = Game.config.getLightingCores();
 
 		this.stateWidth = ((width / Tile.TILE_SIZE) + offScreenTiles * 2) * resolution;
 		this.stateHeight = ((height / Tile.TILE_SIZE) + offScreenTiles * 2) * resolution;

@@ -1,11 +1,12 @@
 {
-"width": 1914,
-"height": 1001,
-"fullscreen": false,
+"width": 1920,
+"height": 1080,
+"fullscreen": true,
 "vSync": false,
 "uiSize": 1.2,
 "debug": false,
 "usePastebin": true,
 "languageFile": "en_US.lang",
-"lightingMode": "High"
+"lightingMode": "High",
+"lightingCores": 4
 }

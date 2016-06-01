@@ -2,11 +2,10 @@ package com.rotef.game;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.rotef.game.world.light.LightingMode;
 
-public class Config implements Json.Serializable {
+public class Config {
 
 	private int width;
 	private int height;
@@ -17,6 +16,7 @@ public class Config implements Json.Serializable {
 	private boolean usePastebin;
 	private String languageFile;
 	private LightingMode lightingMode;
+	private int lightingCores;
 
 	public Config() {
 		setWidth(800);
@@ -28,6 +28,7 @@ public class Config implements Json.Serializable {
 		setUsePastebin(true);
 		setLanguageFile("en_US.lang");
 		setLightingMode(LightingMode.High);
+		setLightingCores(Game.enviroment.availableProcessors);
 	}
 
 	public int getWidth() {
@@ -102,6 +103,14 @@ public class Config implements Json.Serializable {
 		this.lightingMode = lightingMode;
 	}
 
+	public int getLightingCores() {
+		return lightingCores;
+	}
+
+	public void setLightingCores(int lightingCores) {
+		this.lightingCores = lightingCores;
+	}
+
 	public static Config load(FileHandle file) {
 		Json json = new Json(OutputType.json);
 
@@ -110,36 +119,10 @@ public class Config implements Json.Serializable {
 
 	public static void save(FileHandle file, Config config) {
 		Json json = new Json(OutputType.json);
+		json.setUsePrototypes(false);
 
 		String jsonText = json.prettyPrint(config);
 
 		file.writeString(jsonText, false);
 	}
-
-	@Override
-	public void write(Json json) {
-		json.writeValue("width", width);
-		json.writeValue("height", height);
-		json.writeValue("fullscreen", fullscreen);
-		json.writeValue("vSync", vSync);
-		json.writeValue("uiSize", uiSize);
-		json.writeValue("debug", debug);
-		json.writeValue("usePastebin", usePastebin);
-		json.writeValue("languageFile", languageFile);
-		json.writeValue("lightingMode", lightingMode);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		this.width = jsonData.get("width").asInt();
-		this.height = jsonData.get("height").asInt();
-		this.fullscreen = jsonData.get("fullscreen").asBoolean();
-		this.vSync = jsonData.get("vSync").asBoolean();
-		this.uiSize = jsonData.get("uiSize").asFloat();
-		this.debug = jsonData.get("debug").asBoolean();
-		this.usePastebin = jsonData.get("usePastebin").asBoolean();
-		this.languageFile = jsonData.get("languageFile").asString();
-		this.lightingMode = LightingMode.valueOf(jsonData.get("lightingMode").asString());
-	}
-
 }

@@ -9,7 +9,7 @@ public class TimeManager {
 	/**
 	 * How many seconds a single day take
 	 */
-	private static final int SECONDS_PER_DAY = 120;
+	private static final int SECONDS_PER_DAY = 4 * 60;
 
 	private static final int SUNSET_TIME = 7000;
 	private static final int SUNRISE_TIME = 19000;

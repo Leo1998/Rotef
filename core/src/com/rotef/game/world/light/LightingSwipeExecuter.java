@@ -1,12 +1,14 @@
 package com.rotef.game.world.light;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.rotef.game.util.ThreadUtils;
 
 public class LightingSwipeExecuter {
 
 	private LightingSwipe[] swipes;
 	private LightingSwipeProcessor[] processors;
-	private volatile int workingProcessors = 0;
+	private AtomicInteger workingProcessors = new AtomicInteger(0);
 
 	public LightingSwipeExecuter(int stateWidth, int stateHeight, int lightingCores) {
 		this.swipes = new LightingSwipe[lightingCores];
@@ -31,15 +33,11 @@ public class LightingSwipeExecuter {
 	}
 
 	public void onStart(LightingSwipeProcessor processor) {
-		workingProcessors++;
+		workingProcessors.incrementAndGet();
 	}
 
 	public void onEnd(LightingSwipeProcessor processor) {
-		workingProcessors--;
-
-		// if (workingProcessors == 0) {
-		//
-		// }
+		workingProcessors.decrementAndGet();
 	}
 
 	public void executeLightingPass(LightingSwipeProcessor.Task pass) {
@@ -52,7 +50,7 @@ public class LightingSwipeExecuter {
 		ThreadUtils.sleep(1);
 		Thread.yield();
 
-		while (workingProcessors > 0) {
+		while (workingProcessors.get() > 0) {
 			ThreadUtils.sleep(1);
 		}
 	}
@@ -67,7 +65,7 @@ public class LightingSwipeExecuter {
 		return swipes;
 	}
 
-	public int getWorkingProcessors() {
+	public AtomicInteger getWorkingProcessors() {
 		return workingProcessors;
 	}
 
