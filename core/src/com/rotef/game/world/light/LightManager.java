@@ -52,8 +52,8 @@ public class LightManager {
 							state.setLit(false);
 						}
 					} else {
-						int a = 10;
-						float brightness = MathHelper.ensureRange(worldY - world.getSurface(), 0, a) / (float) a;
+						int a = 25;
+						float brightness = 1.0f - MathHelper.ensureRange(world.getHighestTileAt(worldX) - worldY, 0, a) / (float) a;
 						brightness *= world.getTimeManager().getSunIntensity();
 						brightness = MathHelper.ensureRange(brightness, 0.0f, 1.0f);
 

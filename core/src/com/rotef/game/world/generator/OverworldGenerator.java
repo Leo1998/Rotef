@@ -10,8 +10,10 @@ public class OverworldGenerator extends Generator {
 	}
 
 	@Override
-	public int[] generateMap(int width, int height, int surface) {
+	public int[] generateMap(int width, int height) {
 		int[] map = new int[width * height];
+
+		int surface = height / 2;
 
 		double xScale = 32D;
 		int featureSize = 32;

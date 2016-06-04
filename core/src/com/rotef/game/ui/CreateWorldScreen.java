@@ -2,6 +2,7 @@ package com.rotef.game.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -23,7 +24,7 @@ public class CreateWorldScreen extends BaseScreen {
 		rootTable.top();
 		rootTable.columnDefaults(0).padRight(20f);
 
-		final TextButton cancelButton = new TextButton(Game.language.get("cancel"), UI.textButtonStyle);
+		final TextButton cancelButton = new TextButton(Game.language.get("cancel"), UI.skin);
 		cancelButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -32,21 +33,21 @@ public class CreateWorldScreen extends BaseScreen {
 		});
 		rootTable.add(cancelButton).left();
 
-		final Label titleLabel = new Label(Game.language.get("createNewWorld"), UI.labelStyle);
+		final Label titleLabel = new Label(Game.language.get("createNewWorld"), UI.skin);
 		titleLabel.setFontScale(2.5f);
 		rootTable.add(titleLabel).center().expandX().padTop(10f).padBottom(10f);
 		rootTable.row();
 
-		final TextField nameTextField = new TextField(findUnusedWorldName(), UI.textFieldStyle);
+		final TextField nameTextField = new TextField(findUnusedWorldName(), UI.skin);
 		rootTable.add(nameTextField).width(width / 2 / uiScale).center().colspan(2).padTop(100f);
 		rootTable.row();
 
-		final Label errorLabel = new Label("", UI.labelStyle);
+		final Label errorLabel = new Label("", UI.skin);
 		errorLabel.setColor(Color.RED);
 		rootTable.add(errorLabel).center().colspan(2).padTop(8f);
 		rootTable.row();
 
-		final TextButton createButton = new TextButton(Game.language.get("create"), UI.textButtonStyle);
+		final TextButton createButton = new TextButton(Game.language.get("create"), UI.skin);
 		createButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -68,6 +69,8 @@ public class CreateWorldScreen extends BaseScreen {
 					Game.openWorld(worldName);
 				} else {
 					errorLabel.setText(errorMessage);
+					errorLabel.getColor().a = 0.0f;
+					errorLabel.addAction(Actions.fadeIn(0.5f));
 				}
 			}
 		});

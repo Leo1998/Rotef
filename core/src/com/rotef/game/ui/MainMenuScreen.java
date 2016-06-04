@@ -19,7 +19,7 @@ public class MainMenuScreen extends BaseScreen {
 
 	@Override
 	protected void makeContent() {
-		Label titleLabel = new Label(Game.language.get("title"), UI.labelStyle);
+		Label titleLabel = new Label(Game.language.get("title"), UI.skin);
 		titleLabel.setFontScale(1.6f);
 
 		rootTable.add(titleLabel).top().center().pad(40f);
@@ -28,7 +28,7 @@ public class MainMenuScreen extends BaseScreen {
 
 		final Table scrollTable = new Table();
 
-		ScrollPane scrollPane = new ScrollPane(scrollTable, UI.scrollPaneStyle);
+		ScrollPane scrollPane = new ScrollPane(scrollTable, UI.skin);
 		rootTable.add(scrollPane).width(width / 2 / uiScale).height(height / 2 / uiScale).center().expandX();
 
 		WorldDescriptor[] worlds = WorldDescriptor.getExistingWorlds();
@@ -41,10 +41,10 @@ public class MainMenuScreen extends BaseScreen {
 			final Table t = new Table();
 			float padding = 3.0f;
 
-			Label label = new Label(worldName, UI.labelStyle);
+			Label label = new Label(worldName, UI.skin);
 			t.add(label).left().padRight(padding);
 
-			TextButton enterButton = new TextButton(Game.language.get("enterWorld"), UI.textButtonStyle);
+			TextButton enterButton = new TextButton(Game.language.get("enterWorld"), UI.skin);
 			enterButton.addListener(new ChangeListener() {
 				@Override
 				public void changed(ChangeEvent event, Actor actor) {
@@ -53,7 +53,7 @@ public class MainMenuScreen extends BaseScreen {
 			});
 			t.add(enterButton).center().padLeft(padding).padRight(padding);
 
-			TextButton deleteButton = new TextButton(Game.language.get("deleteWorld"), UI.textButtonStyle);
+			TextButton deleteButton = new TextButton(Game.language.get("deleteWorld"), UI.skin);
 			deleteButton.addListener(new ChangeListener() {
 				@Override
 				public void changed(ChangeEvent event, Actor actor) {
@@ -67,7 +67,7 @@ public class MainMenuScreen extends BaseScreen {
 			scrollTable.row();
 		}
 
-		TextButton createButton = new TextButton(Game.language.get("createNewWorld"), UI.textButtonStyle);
+		TextButton createButton = new TextButton(Game.language.get("createNewWorld"), UI.skin);
 		createButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -77,7 +77,7 @@ public class MainMenuScreen extends BaseScreen {
 		rootTable.row();
 		rootTable.add(createButton).padTop(10f).center();
 
-		TextButton optionsButton = new TextButton(Game.language.get("options"), UI.textButtonStyle);
+		TextButton optionsButton = new TextButton(Game.language.get("options"), UI.skin);
 		optionsButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -88,7 +88,7 @@ public class MainMenuScreen extends BaseScreen {
 
 		rootTable.add(optionsButton).padTop(10f).center();
 
-		TextButton exitButton = new TextButton(Game.language.get("exit"), UI.textButtonStyle);
+		TextButton exitButton = new TextButton(Game.language.get("exit"), UI.skin);
 		exitButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {

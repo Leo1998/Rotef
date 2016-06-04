@@ -19,7 +19,7 @@ public class OptionsScreen extends BaseScreen {
 		rootTable.top();
 		rootTable.columnDefaults(0).padRight(20f);
 
-		final TextButton backButton = new TextButton(Game.language.get("back"), UI.textButtonStyle);
+		final TextButton backButton = new TextButton(Game.language.get("back"), UI.skin);
 		backButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -28,7 +28,7 @@ public class OptionsScreen extends BaseScreen {
 		});
 		rootTable.add(backButton).left();
 
-		final Label titleLabel = new Label(Game.language.get("options"), UI.labelStyle);
+		final Label titleLabel = new Label(Game.language.get("options"), UI.skin);
 		titleLabel.setFontScale(3.5f);
 		rootTable.add(titleLabel).center().expandX().padTop(padding).padBottom(padding);
 		rootTable.row();
@@ -36,7 +36,7 @@ public class OptionsScreen extends BaseScreen {
 		Table t1 = new Table();
 		rootTable.add(t1).colspan(2).padTop(35f);
 
-		final CheckBox fullscreenCheckbox = new CheckBox(Game.language.get("fullscreen"), UI.checkBoxStyle);
+		final CheckBox fullscreenCheckbox = new CheckBox(Game.language.get("fullscreen"), UI.skin);
 		fullscreenCheckbox.setChecked(Game.config.isFullscreen());
 		fullscreenCheckbox.addListener(new ChangeListener() {
 			@Override
@@ -48,7 +48,7 @@ public class OptionsScreen extends BaseScreen {
 		t1.add(fullscreenCheckbox).align(Align.left).padBottom(25f);
 		t1.row();
 
-		final CheckBox vSyncCheckbox = new CheckBox(Game.language.get("vsync"), UI.checkBoxStyle);
+		final CheckBox vSyncCheckbox = new CheckBox(Game.language.get("vsync"), UI.skin);
 		vSyncCheckbox.setChecked(Game.config.isVSync());
 		vSyncCheckbox.addListener(new ChangeListener() {
 			@Override
@@ -60,7 +60,7 @@ public class OptionsScreen extends BaseScreen {
 		t1.add(vSyncCheckbox).align(Align.left).padBottom(25f);
 		t1.row();
 
-		final CheckBox debugCheckbox = new CheckBox(Game.language.get("debugMode"), UI.checkBoxStyle);
+		final CheckBox debugCheckbox = new CheckBox(Game.language.get("debugMode"), UI.skin);
 		debugCheckbox.setChecked(Game.config.isDebug());
 		debugCheckbox.addListener(new ChangeListener() {
 			@Override
@@ -72,8 +72,8 @@ public class OptionsScreen extends BaseScreen {
 		t1.add(debugCheckbox).align(Align.left).padBottom(25f);
 		t1.row();
 
-		final Label uiSizeSliderLabel = new Label(Game.language.get("uiSize") + ": " + Game.config.getUiSize(), UI.labelStyle);
-		final Slider uiSizeSlider = new Slider(1.0f, 2.5f, 0.2f, false, UI.sliderStyle);
+		final Label uiSizeSliderLabel = new Label(Game.language.get("uiSize") + ": " + Game.config.getUiSize(), UI.skin);
+		final Slider uiSizeSlider = new Slider(1.0f, 2.5f, 0.2f, false, UI.skin);
 		uiSizeSlider.setValue(Game.config.getUiSize());
 		uiSizeSlider.addListener(new ChangeListener() {
 			@Override

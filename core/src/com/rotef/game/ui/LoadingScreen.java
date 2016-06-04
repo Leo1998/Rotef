@@ -29,19 +29,19 @@ public class LoadingScreen extends BaseScreen {
 	protected void makeContent() {
 		Table t = new Table();
 
-		Label label = new Label(Game.language.get("loading_label"), UI.labelStyle);
+		Label label = new Label(Game.language.get("loading_label"), UI.skin);
 		label.setFontScale(2.5f);
 		t.add(label).center();
 
 		t.row();
 
-		msgLabel = new Label("", UI.labelStyle);
+		msgLabel = new Label("", UI.skin);
 		msgLabel.setFontScale(1.25f);
 		t.add(msgLabel).center();
 
 		t.row();
 
-		progressBar = new ProgressBar(0f, 1f, 0.01f, false, UI.progressBarStyle);
+		progressBar = new ProgressBar(0f, 1f, 0.01f, false, UI.skin);
 		progressBar.setValue(0.0f);
 		t.add(progressBar).center().padTop(20f);
 

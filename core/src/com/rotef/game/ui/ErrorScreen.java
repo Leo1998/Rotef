@@ -37,17 +37,17 @@ public class ErrorScreen extends BaseScreen {
 	@Override
 	protected void makeContent() {
 		final Table scrollTable = new Table();
-		ScrollPane scrollPane = new ScrollPane(scrollTable, UI.scrollPaneStyle);
+		ScrollPane scrollPane = new ScrollPane(scrollTable, UI.skin);
 		rootTable.add(scrollPane).width(width / 2 / uiScale).height(height / 2 / uiScale).center();
 
-		Label label = new Label(msg, UI.labelStyle);
+		Label label = new Label(msg, UI.skin);
 		scrollTable.add(label).center();
 
 		scrollTable.row();
 
 		// ok button
 
-		TextButton okButton = new TextButton(Game.language.get("ok"), UI.textButtonStyle);
+		TextButton okButton = new TextButton(Game.language.get("ok"), UI.skin);
 		okButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {

@@ -32,7 +32,6 @@ public class World {
 	 * the width and height in tiles
 	 */
 	private final int width, height;
-	private final int surface;
 	private final WorldHeightmap heightmap;
 
 	private WorldScreen screen;
@@ -64,7 +63,6 @@ public class World {
 			if (worldLoader.isFirstInit()) {
 				this.width = 2048;
 				this.height = 256;
-				this.surface = height / 2;
 				this.chunks = new WorldChunk[(width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)];
 
 				generate();
@@ -73,7 +71,6 @@ public class World {
 
 				this.width = worldData.width;
 				this.height = worldData.height;
-				this.surface = height / 2;
 				this.chunks = new WorldChunk[(width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)];
 				this.timeManager.setTotalWorldSeconds(worldData.time);
 
@@ -114,7 +111,7 @@ public class World {
 				listener.status(msg, progress);
 			}
 		});
-		int[] map = generator.generateMap(width, height, surface);
+		int[] map = generator.generateMap(width, height);
 
 		{
 			int loadedChunks = 0;
@@ -420,10 +417,6 @@ public class World {
 
 	public int getHeight() {
 		return height;
-	}
-
-	public int getSurface() {
-		return surface;
 	}
 
 	public WorldHeightmap getHeightmap() {
