@@ -4,8 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.rotef.game.Game;
 import com.rotef.game.Version;
-import com.rotef.game.renderer.WorldScreen;
+import com.rotef.game.chat.ChatManager;
 import com.rotef.game.renderer.WorldViewport;
+import com.rotef.game.ui.WorldScreen;
 import com.rotef.game.util.StatusListener;
 import com.rotef.game.world.entity.EntityManager;
 import com.rotef.game.world.entity.Player;
@@ -45,6 +46,7 @@ public class World {
 	final PhysicsManager physicsManager;
 	final LightManager lightManager;
 	final TimeManager timeManager;
+	final ChatManager chatManager;
 
 	private Player player;
 
@@ -58,6 +60,7 @@ public class World {
 			physicsManager = new PhysicsManager(this);
 			lightManager = new LightManager(this);
 			timeManager = new TimeManager(this);
+			chatManager = new ChatManager(this);
 
 			worldLoader = new WorldLoader(this);
 			if (worldLoader.isFirstInit()) {
@@ -441,6 +444,10 @@ public class World {
 
 	public float getWorldTime() {
 		return timeManager.getTotalWorldSeconds();
+	}
+
+	public ChatManager getChatManager() {
+		return chatManager;
 	}
 
 }

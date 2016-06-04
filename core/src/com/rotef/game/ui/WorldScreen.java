@@ -1,14 +1,15 @@
-package com.rotef.game.renderer;
+package com.rotef.game.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.utils.Array;
 import com.rotef.game.Game;
+import com.rotef.game.chat.ChatView;
 import com.rotef.game.input.WorldInput;
-import com.rotef.game.ui.BaseScreen;
-import com.rotef.game.ui.MainMenuScreen;
-import com.rotef.game.util.Debug;
+import com.rotef.game.renderer.WorldRenderer;
+import com.rotef.game.renderer.WorldViewport;
 import com.rotef.game.world.World;
 import com.rotef.game.world.entity.Player;
 import com.rotef.game.world.physics.PhysicsManager;
@@ -21,6 +22,8 @@ public class WorldScreen extends BaseScreen {
 	private World world;
 	private WorldViewport viewport = new WorldViewport();
 	private WorldInput input;
+
+	private Array<WorldView> views = new Array<>();
 
 	public WorldScreen(World world) {
 		this.world = world;
@@ -42,6 +45,8 @@ public class WorldScreen extends BaseScreen {
 		Gdx.input.setInputProcessor(multiplexer);
 
 		this.worldCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		
+//		showChatView();
 	}
 
 	@Override
@@ -115,9 +120,10 @@ public class WorldScreen extends BaseScreen {
 
 	@Override
 	public void renderAdditionalUI(float delta) {
-		if (Game.config.isDebug() && world != null) {
-			Debug.renderDebug(batch, world);
-		}
+		// if (Game.config.isDebug() && world != null) {
+		// Debug.renderDebug(batch, world);
+		// }
+		// TODO
 	}
 
 	@Override
@@ -154,6 +160,15 @@ public class WorldScreen extends BaseScreen {
 
 	public WorldInput getInput() {
 		return input;
+	}
+
+	private void showWorldView(WorldView view) {
+		this.rootTable.add(view.getRootTable()).size(view.getWidth(), view.getHeight()).center();
+		this.views.add(view);
+	}
+	
+	public void showChatView() {
+		this.showWorldView(new ChatView(world.getChatManager()));
 	}
 
 }

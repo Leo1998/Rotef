@@ -5,8 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
-import com.rotef.game.renderer.WorldScreen;
 import com.rotef.game.renderer.WorldViewport;
+import com.rotef.game.ui.WorldScreen;
 import com.rotef.game.world.entity.Player;
 import com.rotef.game.world.physics.PhysicsManager;
 
