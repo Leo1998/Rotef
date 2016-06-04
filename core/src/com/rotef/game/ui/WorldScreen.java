@@ -45,8 +45,6 @@ public class WorldScreen extends BaseScreen {
 		Gdx.input.setInputProcessor(multiplexer);
 
 		this.worldCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		
-//		showChatView();
 	}
 
 	@Override
@@ -163,10 +161,12 @@ public class WorldScreen extends BaseScreen {
 	}
 
 	private void showWorldView(WorldView view) {
+		view.makeContent(this.ui);
+
 		this.rootTable.add(view.getRootTable()).size(view.getWidth(), view.getHeight()).center();
 		this.views.add(view);
 	}
-	
+
 	public void showChatView() {
 		this.showWorldView(new ChatView(world.getChatManager()));
 	}

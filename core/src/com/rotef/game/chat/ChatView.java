@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -24,9 +25,9 @@ public class ChatView extends WorldView {
 
 	public ChatView(ChatManager manager) {
 		super(250, 400);
-		
+
 		this.chatManager = manager;
-		
+
 		this.chatManager.addChatListener(new ChatListener() {
 			@Override
 			public void onReceive(ChatMessage message) {
@@ -36,7 +37,7 @@ public class ChatView extends WorldView {
 	}
 
 	@Override
-	protected void makeContent() {
+	public void makeContent(Stage stage) {
 		rootTable.top();
 
 		messageList = new List<>(UI.skin);
@@ -69,6 +70,8 @@ public class ChatView extends WorldView {
 			}
 		});
 		rootTable.add(enterButton).padTop(5).padLeft(5).right();
+
+		stage.setKeyboardFocus(messageTextField);
 	}
 
 	private void send() {

@@ -76,6 +76,12 @@ public class WorldInput implements InputProcessor {
 
 	@Override
 	public boolean keyUp(int keycode) {
+		if (keycode == Input.Keys.ENTER) {
+			screen.showChatView();
+
+			return true;
+		}
+
 		return false;
 	}
 

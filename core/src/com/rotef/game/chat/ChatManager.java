@@ -8,7 +8,7 @@ public class ChatManager {
 	private Array<ChatMessage> chatMessages;
 	private Array<ChatListener> chatListeners;
 
-	private final  World world;
+	private final World world;
 
 	public ChatManager(World world) {
 		this.world = world;
@@ -19,12 +19,12 @@ public class ChatManager {
 
 	public void send(ChatMessage message) {
 		chatMessages.add(message);
-		
-		for (ChatListener listener : chatListeners ) {
+
+		for (ChatListener listener : chatListeners) {
 			listener.onReceive(message);
 		}
 	}
-	
+
 	public Array<ChatMessage> getChatMessages() {
 		return chatMessages;
 	}
@@ -32,7 +32,7 @@ public class ChatManager {
 	public void addChatListener(ChatListener listener) {
 		chatListeners.add(listener);
 	}
-	
+
 	public void removeChatListener(ChatListener listener) {
 		chatListeners.removeValue(listener, true);
 	}

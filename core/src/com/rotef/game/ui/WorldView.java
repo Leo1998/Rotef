@@ -1,22 +1,22 @@
 package com.rotef.game.ui;
 
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 public abstract class WorldView {
 
 	protected Table rootTable;
-	protected int width;
-	protected int height;
+	private int width;
+	private int height;
 
 	public WorldView(int width, int height) {
 		this.width = width;
 		this.height = height;
 		this.rootTable = new Table();
 
-		makeContent();
 	}
 
-	protected abstract void makeContent();
+	public abstract void makeContent(Stage stage);
 
 	public Table getRootTable() {
 		return rootTable;
