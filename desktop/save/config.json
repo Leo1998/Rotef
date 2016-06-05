@@ -1,9 +1,9 @@
 {
-"width": 1914,
-"height": 1045,
-"fullscreen": false,
+"width": 1920,
+"height": 1080,
+"fullscreen": true,
 "vSync": true,
-"uiSize": 1.6,
+"uiSize": 1.42,
 "debug": false,
 "usePastebin": true,
 "languageFile": "en_US.lang",

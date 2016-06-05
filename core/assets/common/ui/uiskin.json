@@ -10,8 +10,6 @@
   red: {a: 1, b: 0, g: 0, r: 1 },
   blue: {a: 1, b: 1, g: 0, r: 0 },
   grey: {a: 1, b: 0.32, g: 0.32, r: 0.32 },
-  vis-blue: {a: 1, b: 0.886, g: 0.631, r: 0.105 },
-  vis-red: {a: 1, b: 0.047, g: 0, r: 0.862 },
   menuitem: {a: 1, b: 0.65, g: 0.65, r: 0.65 },
   link-label: {a: 1, b: 0.886, g: 0.631, r: 0.105 }
 },
@@ -78,7 +76,7 @@
   radio: {checkboxOn: radio-on, checkboxOff: radio-off, font: default-font, fontColor: white, disabledFontColor: grey }
 },
   com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
-  default: {fontColorUnselected: white, selection: padded-list-selection, fontColorSelected: white, font: default-font }
+  default: {fontColorUnselected: white, selection: padded-list-selection, fontColorSelected: white, font: small-font }
 },
   com.badlogic.gdx.scenes.scene2d.ui.Touchpad$TouchpadStyle: {
   default: {background: default-pane, knob: touchpad-knob }

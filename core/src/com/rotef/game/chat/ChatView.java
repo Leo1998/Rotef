@@ -7,11 +7,13 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.rotef.game.Game;
 import com.rotef.game.ui.UI;
+import com.rotef.game.ui.WorldScreen;
 import com.rotef.game.ui.WorldView;
 
 public class ChatView extends WorldView {
@@ -22,22 +24,23 @@ public class ChatView extends WorldView {
 	private TextButton enterButton;
 
 	private ChatManager chatManager;
+	private ChatListener chatListener;
 
-	public ChatView(ChatManager manager) {
-		super(250, 400);
+	public ChatView(WorldScreen screen, ChatManager manager) {
+		super(screen, 250, 400, "Chat");
 
 		this.chatManager = manager;
 
-		this.chatManager.addChatListener(new ChatListener() {
+		this.chatListener = new ChatListener() {
 			@Override
 			public void onReceive(ChatMessage message) {
 				updateMessageList();
 			}
-		});
+		};
 	}
 
 	@Override
-	public void makeContent(Stage stage) {
+	protected void makeContentInternal(Stage stage, Table rootTable) {
 		rootTable.top();
 
 		messageList = new List<>(UI.skin);
@@ -72,6 +75,15 @@ public class ChatView extends WorldView {
 		rootTable.add(enterButton).padTop(5).padLeft(5).right();
 
 		stage.setKeyboardFocus(messageTextField);
+
+		this.chatManager.addChatListener(chatListener);
+
+		updateMessageList();
+	}
+
+	@Override
+	public void dispose() {
+		chatManager.removeChatListener(chatListener);
 	}
 
 	private void send() {
@@ -90,6 +102,7 @@ public class ChatView extends WorldView {
 
 		scrollPane.invalidate();
 		scrollPane.validate();
+		scrollPane.setScrollPercentX(0.0f);
 		scrollPane.setScrollPercentY(1.0f);
 	}
 

@@ -76,6 +76,7 @@ public class World {
 				this.height = worldData.height;
 				this.chunks = new WorldChunk[(width / WorldChunk.CHUNK_SIZE) * (height / WorldChunk.CHUNK_SIZE)];
 				this.timeManager.setTotalWorldSeconds(worldData.time);
+				this.chatManager.getChatMessages().addAll(worldData.chatMessages);
 
 				Array<WorldChunk> chunks = worldLoader.readChunkData();
 				for (int i = 0; i < chunks.size; i++) {
@@ -366,6 +367,7 @@ public class World {
 		data.width = this.width;
 		data.height = this.height;
 		data.time = this.timeManager.getTotalWorldSeconds();
+		data.chatMessages.addAll(chatManager.getChatMessages());
 
 		return data;
 	}

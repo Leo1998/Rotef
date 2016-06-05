@@ -22,7 +22,7 @@ public class MainMenuScreen extends BaseScreen {
 		Label titleLabel = new Label(Game.language.get("title"), UI.skin);
 		titleLabel.setFontScale(1.6f);
 
-		rootTable.add(titleLabel).top().center().pad(40f);
+		rootTable.add(titleLabel).center().pad(40f);
 
 		rootTable.row();
 

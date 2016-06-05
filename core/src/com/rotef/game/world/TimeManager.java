@@ -103,8 +103,16 @@ public class TimeManager {
 		return daytime / 24000;
 	}
 
+	/**
+	 * This increases totalWorldSeconds!
+	 * 
+	 * @param daytime
+	 */
 	public void setDaytime(int daytime) {
-		this.daytime = daytime;
+		int t = getDaytime();
+		int dif = daytime - t;
+
+		totalWorldSeconds += (dif / (24000 / SECONDS_PER_DAY));
 	}
 
 	public Time getTime() {

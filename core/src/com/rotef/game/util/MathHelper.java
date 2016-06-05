@@ -22,4 +22,10 @@ public class MathHelper {
 		double ky = (y0 - y1);
 		return Math.abs(Math.sqrt((kx * kx) + (ky * ky)));
 	}
+
+	public static float round(float value, int places) {
+		float m = (float) Math.pow(10, places);
+
+		return Math.round(value * m) / m;
+	}
 }

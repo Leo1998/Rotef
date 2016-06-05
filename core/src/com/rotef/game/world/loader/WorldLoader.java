@@ -7,6 +7,8 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.rotef.game.chat.ChatMessage;
+import com.rotef.game.chat.ChatMessageSerializer;
 import com.rotef.game.util.FileUtils;
 import com.rotef.game.world.World;
 import com.rotef.game.world.WorldChunk;
@@ -20,11 +22,7 @@ public class WorldLoader {
 
 			kryo.register(WorldData.class, new WorldDataSerializer());
 			kryo.register(WorldChunk.class, new WorldChunkSerializer(world));
-
-			// output.writeInt(o.getId());
-			// output.writeLong(o.getEntityID());
-			// output.writeFloat(o.getX());
-			// output.writeFloat(o.getY());
+			kryo.register(ChatMessage.class, new ChatMessageSerializer());
 
 			kryo.register(Color.class, new Serializer<Color>() {
 				@Override

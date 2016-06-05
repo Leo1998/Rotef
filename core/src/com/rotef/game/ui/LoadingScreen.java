@@ -43,6 +43,7 @@ public class LoadingScreen extends BaseScreen {
 
 		progressBar = new ProgressBar(0f, 1f, 0.01f, false, UI.skin);
 		progressBar.setValue(0.0f);
+		progressBar.setAnimateDuration(0.1f);
 		t.add(progressBar).center().padTop(20f);
 
 		rootTable.add(t).center();

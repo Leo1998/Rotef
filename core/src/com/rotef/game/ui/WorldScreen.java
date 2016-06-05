@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
 import com.rotef.game.Game;
 import com.rotef.game.chat.ChatView;
@@ -163,12 +164,28 @@ public class WorldScreen extends BaseScreen {
 	private void showWorldView(WorldView view) {
 		view.makeContent(this.ui);
 
-		this.rootTable.add(view.getRootTable()).size(view.getWidth(), view.getHeight()).center();
+		this.rootTable.addActor(view.getRootTable());
+		view.getRootTable().getColor().a = 0.0f;
+		view.getRootTable().addAction(Actions.fadeIn(0.4f));
+
 		this.views.add(view);
 	}
 
 	public void showChatView() {
-		this.showWorldView(new ChatView(world.getChatManager()));
+		this.showWorldView(new ChatView(this, world.getChatManager()));
+	}
+
+	public Array<WorldView> getViews() {
+		return views;
+	}
+
+	public void closeView(WorldView worldView) {
+		if (views.contains(worldView, true)) {
+			views.removeValue(worldView, true);
+
+			worldView.dispose();
+			worldView.getRootTable().addAction(Actions.sequence(Actions.fadeOut(0.4f), Actions.removeActor()));
+		}
 	}
 
 }

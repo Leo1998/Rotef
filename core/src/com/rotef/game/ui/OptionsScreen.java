@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.rotef.game.Game;
+import com.rotef.game.util.MathHelper;
 
 public class OptionsScreen extends BaseScreen {
 
@@ -73,12 +74,13 @@ public class OptionsScreen extends BaseScreen {
 		t1.row();
 
 		final Label uiSizeSliderLabel = new Label(Game.language.get("uiSize") + ": " + Game.config.getUiSize(), UI.skin);
-		final Slider uiSizeSlider = new Slider(1.0f, 2.5f, 0.2f, false, UI.skin);
+		final Slider uiSizeSlider = new Slider(1.0f, 2.0f, 0.01f, false, UI.skin);
 		uiSizeSlider.setValue(Game.config.getUiSize());
+		uiSizeSlider.setAnimateDuration(0.1f);
 		uiSizeSlider.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				Game.config.setUiSize(uiSizeSlider.getValue());
+				Game.config.setUiSize(MathHelper.round(uiSizeSlider.getValue(), 2));
 
 				uiSizeSliderLabel.setText(Game.language.get("uiSize") + ": " + Game.config.getUiSize());
 			}

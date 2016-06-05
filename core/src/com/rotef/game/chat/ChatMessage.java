@@ -17,7 +17,7 @@ public class ChatMessage {
 		if (message.startsWith("/") && tokens.length > 0 && !tokens[0].isEmpty()) {
 			command = true;
 
-			commandRoot = tokens[0];
+			commandRoot = tokens[0].substring(1);
 
 			commandArgs = new String[tokens.length - 1];
 			for (int i = 1; i < tokens.length; i++) {
@@ -52,7 +52,11 @@ public class ChatMessage {
 
 	@Override
 	public String toString() {
-		return sender + ": " + message;
+		if (sender != null && !sender.isEmpty()) {
+			return sender + ": " + message;
+		} else {
+			return message;
+		}
 	}
 
 }

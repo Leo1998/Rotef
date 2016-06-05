@@ -7,6 +7,7 @@ public class ChatManager {
 
 	private Array<ChatMessage> chatMessages;
 	private Array<ChatListener> chatListeners;
+	private Array<Command> commands;
 
 	private final World world;
 
@@ -15,13 +16,32 @@ public class ChatManager {
 
 		this.chatMessages = new Array<>();
 		this.chatListeners = new Array<>();
+		this.commands = new Array<>();
+
+		commands.add(new CommandDebug(this));
+		commands.add(new CommandTime(this));
 	}
 
 	public void send(ChatMessage message) {
-		chatMessages.add(message);
+		if (message.isCommand()) {
+			String cmd = message.getCommandRoot();
+			String[] args = message.getCommandArgs();
 
-		for (ChatListener listener : chatListeners) {
-			listener.onReceive(message);
+			for (Command c : commands) {
+				if (c.getCmd().equals(cmd)) {
+					c.execute(args);
+
+					return;
+				}
+			}
+
+			send(new ChatMessage(null, "Command not found!"));
+		} else {
+			chatMessages.add(message);
+
+			for (ChatListener listener : chatListeners) {
+				listener.onReceive(message);
+			}
 		}
 	}
 
