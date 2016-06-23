@@ -1,7 +1,7 @@
 {
 	"type": Player,
 	"name": "Player",
-	"spritePath": "entity/player.png",
+	"spritePath": "common/entity/player.png",
 	"life": 100,
 	"walkingSpeed": 3.6
 }

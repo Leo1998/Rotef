@@ -1,8 +1,5 @@
 package com.rotef.game.assets;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,29 +14,15 @@ public class Assets {
 		this.cache = new AssetCache();
 	}
 
-	public void loadFromAssetFile(FileHandle assetFile) {
-		BufferedReader reader = new BufferedReader(assetFile.reader());
-
-		String line = null;
-		try {
-			while ((line = reader.readLine()) != null) {
-				if (line.startsWith("SPRITE ")) {
-					String key = line.substring(7);
-
-					loadSprite(assetFile, key);
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public Sprite loadSprite(FileHandle file) {
+		return loadSprite(file, file.path());
 	}
 
-	private Sprite loadSprite(FileHandle assetFile, String key) {
+	public Sprite loadSprite(FileHandle file, String key) {
 		if (cache.canLocate(key)) {
 			return cache.locate(key);
 		}
 
-		FileHandle file = assetFile.sibling(key);
 		Gdx.app.log("Assets", "Loading: " + file);
 
 		TextureRegion tex = new TextureRegion(new Texture(file));
@@ -54,9 +37,9 @@ public class Assets {
 	public Sprite getSprite(String key) {
 		if (cache.canLocate(key)) {
 			return cache.locate(key);
+		} else {
+			return loadSprite(Gdx.files.internal(key));
 		}
-
-		return null;
 	}
 
 	private static void setupTexture(TextureRegion texture) {

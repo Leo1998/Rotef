@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.rotef.game.assets.Assets;
+import com.rotef.game.template.TemplateManager;
 import com.rotef.game.ui.ErrorScreen;
 import com.rotef.game.ui.LoadingScreen;
 import com.rotef.game.ui.MainMenuScreen;
@@ -25,7 +26,7 @@ public class Game extends com.badlogic.gdx.Game {
 
 	public static FileHandle rootDir;
 	public static FileHandle worldDir;
-	public static FileHandle pastebinDir;
+	public static FileHandle trashDir;
 
 	public static void openWorld(String name) {
 		final WorldDescriptor descriptor = new WorldDescriptor(name);
@@ -117,9 +118,10 @@ public class Game extends com.badlogic.gdx.Game {
 		language = Language.load(Gdx.files.internal("lang/" + config.getLanguageFile()));
 
 		assets = new Assets();
-		assets.loadFromAssetFile(Gdx.files.internal("common/assets.dat"));
 
 		UI.load();
+		TemplateManager.load();
+		TemplateManager.preloadSprites();
 
 		game = this;
 		ShaderProgram.pedantic = false;
@@ -153,8 +155,8 @@ public class Game extends com.badlogic.gdx.Game {
 		worldDir = rootDir.child("worlds");
 		worldDir.mkdirs();
 
-		pastebinDir = rootDir.child(".pastebin");
-		pastebinDir.mkdirs();
+		trashDir = rootDir.child(".trash");
+		trashDir.mkdirs();
 
 		FileHandle configFile = rootDir.child("config.json");
 

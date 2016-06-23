@@ -11,6 +11,7 @@ import com.rotef.game.chat.ChatView;
 import com.rotef.game.input.WorldInput;
 import com.rotef.game.renderer.WorldRenderer;
 import com.rotef.game.renderer.WorldViewport;
+import com.rotef.game.util.Debug;
 import com.rotef.game.world.World;
 import com.rotef.game.world.entity.Player;
 import com.rotef.game.world.physics.PhysicsManager;
@@ -119,10 +120,9 @@ public class WorldScreen extends BaseScreen {
 
 	@Override
 	public void renderAdditionalUI(float delta) {
-		// if (Game.config.isDebug() && world != null) {
-		// Debug.renderDebug(batch, world);
-		// }
-		// TODO
+		if (Game.config.isDebug() && world != null) {
+			Debug.renderDebug(batch, world);
+		}
 	}
 
 	@Override

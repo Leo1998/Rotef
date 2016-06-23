@@ -1,6 +1,0 @@
-SPRITE entity/player.png
-
-SPRITE tiles/dirt.png
-SPRITE tiles/water.png
-SPRITE tiles/stone.png
-SPRITE tiles/lava.png

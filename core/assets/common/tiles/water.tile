@@ -2,6 +2,6 @@
 	"id": 2,
 	"type": Fluid,
 	"name": "Water",
-	"spritePath": "tiles/water.png",
+	"spritePath": "common/tiles/water.png",
 	"lightColor": [0.0, 0.0, 0.0]
 }

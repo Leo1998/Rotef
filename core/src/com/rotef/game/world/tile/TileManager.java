@@ -3,35 +3,22 @@ package com.rotef.game.world.tile;
 import java.lang.reflect.Constructor;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Array;
 import com.rotef.game.template.Template;
+import com.rotef.game.template.TemplateManager;
+import com.rotef.game.template.TemplateManager.Type;
 import com.rotef.game.world.World;
 
 public class TileManager {
 
-	private Array<Template> templates = new Array<Template>();
-
 	public TileManager() {
-		loadTemplate("common/tiles/dirt.tile");
-		loadTemplate("common/tiles/water.tile");
-		loadTemplate("common/tiles/stone.tile");
-		loadTemplate("common/tiles/lava.tile");
-	}
-
-	private void loadTemplate(String path) {
-		Template template = Template.loadTemplate(Gdx.files.internal(path));
-
-		Gdx.app.log("TileManager", "Loaded Template (" + path + ", " + template.get("name") + ")");
-
-		templates.add(template);
 	}
 
 	public Tile createTile(int id, World world, int xTile, int yTile) {
-		return createTile(findTemplate(id), world, xTile, yTile);
+		return createTile(findTemplateById(id), world, xTile, yTile);
 	}
 
 	public Tile createTile(String name, World world, int xTile, int yTile) {
-		return createTile(findTemplate(name), world, xTile, yTile);
+		return createTile(TemplateManager.findByName(Type.Tile, name), world, xTile, yTile);
 	}
 
 	public Tile createTile(Template template, World world, int xTile, int yTile) {
@@ -52,18 +39,8 @@ public class TileManager {
 		return null;
 	}
 
-	private Template findTemplate(String name) {
-		for (Template t : templates) {
-			if (t.getString("name").equals(name)) {
-				return t;
-			}
-		}
-
-		return null;
-	}
-
-	private Template findTemplate(int id) {
-		for (Template t : templates) {
+	private Template findTemplateById(int id) {
+		for (Template t : TemplateManager.getTemplates(Type.Tile)) {
 			if (t.getInteger("id") == id) {
 				return t;
 			}

@@ -1,11 +1,10 @@
 package com.rotef.game.assets;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.badlogic.gdx.utils.ObjectMap;
 
 public class AssetCache {
 
-	private Map<String, Object> cache = new HashMap<String, Object>();
+	private ObjectMap<String, Object> cache = new ObjectMap<String, Object>();
 
 	public <T> void add(String key, T asset) {
 		cache.put(key, asset);

@@ -8,6 +8,8 @@ import java.util.HashMap;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.rotef.game.template.Template;
+import com.rotef.game.template.TemplateManager;
+import com.rotef.game.template.TemplateManager.Type;
 import com.rotef.game.world.World;
 import com.rotef.game.world.physics.PhysicsManager;
 
@@ -17,24 +19,13 @@ public class EntityManager {
 	private Array<Long> givenEntityIDs = new Array<Long>();
 
 	private World world;
-	private Array<Template> templates = new Array<Template>();
 
 	public EntityManager(World world) {
 		this.world = world;
-
-		loadTemplate("common/entity/player.entity");
-	}
-
-	private void loadTemplate(String path) {
-		Template template = Template.loadTemplate(Gdx.files.internal(path));
-
-		Gdx.app.log("EntityManager", "Loaded EntityTemplate (" + path + ", " + template.getString("name") + ")");
-
-		templates.add(template);
 	}
 
 	public Entity spawnEntity(String name, float x, float y) {
-		Template template = findTemplate(name);
+		Template template = TemplateManager.findByName(Type.Entity, name);
 
 		Entity entity = createEntity(template, world);
 		if (entity == null)
@@ -67,16 +58,6 @@ public class EntityManager {
 			} catch (Exception e) {
 				Gdx.app.error("EntityManager", "Failed creating a new Entity!", e);
 				return null;
-			}
-		}
-
-		return null;
-	}
-
-	private Template findTemplate(String name) {
-		for (Template t : templates) {
-			if (t.getString("name").equals(name)) {
-				return t;
 			}
 		}
 

@@ -41,7 +41,7 @@ public class WorldDescriptor {
 
 	public void delete() {
 		if (Game.config.isUsePastebin()) {
-			getDirectory().copyTo(Game.pastebinDir.child(name));
+			getDirectory().copyTo(Game.trashDir.child(name));
 		}
 		getDirectory().deleteDirectory();
 	}
