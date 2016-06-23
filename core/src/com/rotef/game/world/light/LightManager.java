@@ -7,6 +7,7 @@ import com.rotef.game.Game;
 import com.rotef.game.renderer.WorldRenderer;
 import com.rotef.game.renderer.WorldViewport;
 import com.rotef.game.util.MathHelper;
+import com.rotef.game.world.Layer;
 import com.rotef.game.world.World;
 import com.rotef.game.world.tile.Tile;
 
@@ -40,7 +41,7 @@ public class LightManager {
 					int worldX = startX + (x / resolution);
 					int worldY = startY + (y / resolution);
 
-					Tile tile = world.getTile(worldX, worldY);
+					Tile tile = world.getTile(Layer.Foreground, worldX, worldY);
 
 					if (tile != null) {
 						Color lightColor = tile.getLightColor();

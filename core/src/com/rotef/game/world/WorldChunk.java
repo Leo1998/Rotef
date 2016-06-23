@@ -10,7 +10,7 @@ public final class WorldChunk {
 
 	private int chunkX;
 	private int chunkY;
-	private Tile[] tiles;
+	private Tile[][] tiles;
 	private boolean active = false;
 	private PhysicsSpatial physicsSpatial = null;
 
@@ -27,21 +27,24 @@ public final class WorldChunk {
 	}
 
 	public void build(WorldChunkData data) {
-		tiles = new Tile[WorldChunk.CHUNK_SIZE * WorldChunk.CHUNK_SIZE];
+		tiles = new Tile[2][WorldChunk.CHUNK_SIZE * WorldChunk.CHUNK_SIZE];
 
 		if (!data.isValid()) {
 			Gdx.app.error("WorldChunk(x:" + chunkX + " y:" + chunkY + ")", "Invalid chunk data!");
 			return;
 		}
 
-		for (int x = 0; x < CHUNK_SIZE; x++) {
-			for (int y = 0; y < CHUNK_SIZE; y++) {
-				int id = data.getData()[x + y * CHUNK_SIZE];
+		for (int l = 0; l < 2; l++) {
+			Layer layer = Layer.get(l);
+			for (int x = 0; x < CHUNK_SIZE; x++) {
+				for (int y = 0; y < CHUNK_SIZE; y++) {
+					int id = data.getData()[l][x + y * CHUNK_SIZE];
 
-				int xTile = chunkX * CHUNK_SIZE + x;
-				int yTile = chunkY * CHUNK_SIZE + y;
+					int xTile = chunkX * CHUNK_SIZE + x;
+					int yTile = chunkY * CHUNK_SIZE + y;
 
-				setTile(x, y, world.getTileManager().createTile(id, world, xTile, yTile), true);
+					setTile(layer, x, y, world.getTileManager().createTile(id, world, layer, xTile, yTile), true);
+				}
 			}
 		}
 	}
@@ -49,19 +52,22 @@ public final class WorldChunk {
 	public void save() {
 		// TODO only save if nessessary
 
-		int[] rawData = new int[CHUNK_SIZE * CHUNK_SIZE];
+		int[][] rawData = new int[2][CHUNK_SIZE * CHUNK_SIZE];
 
-		for (int y = 0; y < CHUNK_SIZE; y++) {
-			for (int x = 0; x < CHUNK_SIZE; x++) {
-				rawData[x + y * CHUNK_SIZE] = getTileId(x, y);
+		for (int l = 0; l < 2; l++) {
+			Layer layer = Layer.get(l);
+			for (int y = 0; y < CHUNK_SIZE; y++) {
+				for (int x = 0; x < CHUNK_SIZE; x++) {
+					rawData[l][x + y * CHUNK_SIZE] = getTileId(layer, x, y);
+				}
 			}
 		}
 
 		this.saveData = new RawChunkData(rawData);
 	}
 
-	public int getTileId(int xTile, int yTile) {
-		Tile tile = getTile(xTile, yTile);
+	public int getTileId(Layer layer, int xTile, int yTile) {
+		Tile tile = getTile(layer, xTile, yTile);
 
 		if (tile != null) {
 			return tile.getId();
@@ -70,16 +76,16 @@ public final class WorldChunk {
 		return 0;
 	}
 
-	public Tile getTile(int xTile, int yTile) {
+	public Tile getTile(Layer layer, int xTile, int yTile) {
 		if (xTile >= 0 && xTile < CHUNK_SIZE && yTile >= 0 && yTile < CHUNK_SIZE) {
-			return tiles[xTile + yTile * CHUNK_SIZE];
+			return tiles[layer.index][xTile + yTile * CHUNK_SIZE];
 		}
 
 		return null;
 	}
 
-	public void setTile(int xTile, int yTile, Tile tile) {
-		setTile(xTile, yTile, tile, false);
+	public void setTile(Layer layer, int xTile, int yTile, Tile tile) {
+		setTile(layer, xTile, yTile, tile, false);
 	}
 
 	/**
@@ -92,31 +98,33 @@ public final class WorldChunk {
 	 * @param tile
 	 * @param skipTileUpdate
 	 */
-	public void setTile(int xTile, int yTile, Tile tile, boolean skipTileUpdate) {
+	public void setTile(Layer layer, int xTile, int yTile, Tile tile, boolean skipTileUpdate) {
 		if (xTile >= 0 && xTile < CHUNK_SIZE && yTile >= 0 && yTile < CHUNK_SIZE) {
-			Tile oldTile = tiles[xTile + yTile * CHUNK_SIZE];
+			Tile oldTile = tiles[layer.index][xTile + yTile * CHUNK_SIZE];
 
-			tiles[xTile + yTile * CHUNK_SIZE] = tile;
+			tiles[layer.index][xTile + yTile * CHUNK_SIZE] = tile;
 
 			if (!skipTileUpdate) {
-				tileUpdate(oldTile, tile, xTile + chunkX * CHUNK_SIZE, yTile + chunkY * CHUNK_SIZE);
+				tileUpdate(oldTile, tile, layer, xTile + chunkX * CHUNK_SIZE, yTile + chunkY * CHUNK_SIZE);
 			}
 		}
 	}
 
-	private void tileUpdate(Tile oldTile, Tile tile, int xTile, int yTile) {
-		world.onTileUpdate(this, oldTile, tile, xTile, yTile);
+	private void tileUpdate(Tile oldTile, Tile tile, Layer layer, int xTile, int yTile) {
+		world.onTileUpdate(this, oldTile, tile, layer, xTile, yTile);
 
 		physicsSpatial.update();
 	}
 
 	public void update(float delta) {
-		for (int x = 0; x < CHUNK_SIZE; x++) {
-			for (int y = 0; y < CHUNK_SIZE; y++) {
-				Tile tile = getTile(x, y);
-				if (tile != null) {
-					tile.internalUpdate(delta);
-					tile.update(delta);
+		for (int l = 0; l < 2; l++) {
+			for (int x = 0; x < CHUNK_SIZE; x++) {
+				for (int y = 0; y < CHUNK_SIZE; y++) {
+					Tile tile = getTile(Layer.get(l), x, y);
+					if (tile != null) {
+						tile.internalUpdate(delta);
+						tile.update(delta);
+					}
 				}
 			}
 		}

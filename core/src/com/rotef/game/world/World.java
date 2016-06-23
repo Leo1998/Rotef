@@ -121,14 +121,15 @@ public class World {
 			int loadedChunks = 0;
 			for (int chunkX = 0; chunkX < width / WorldChunk.CHUNK_SIZE; chunkX++) {
 				for (int chunkY = 0; chunkY < height / WorldChunk.CHUNK_SIZE; chunkY++) {
-					int[] subData = new int[WorldChunk.CHUNK_SIZE * WorldChunk.CHUNK_SIZE];
+					int[][] subData = new int[2][WorldChunk.CHUNK_SIZE * WorldChunk.CHUNK_SIZE];
+					for (int l = 0; l < 2; l++) {
+						for (int x = 0; x < WorldChunk.CHUNK_SIZE; x++) {
+							for (int y = 0; y < WorldChunk.CHUNK_SIZE; y++) {
+								int totalX = chunkX * WorldChunk.CHUNK_SIZE + x;
+								int totalY = chunkY * WorldChunk.CHUNK_SIZE + y;
 
-					for (int x = 0; x < WorldChunk.CHUNK_SIZE; x++) {
-						for (int y = 0; y < WorldChunk.CHUNK_SIZE; y++) {
-							int totalX = chunkX * WorldChunk.CHUNK_SIZE + x;
-							int totalY = chunkY * WorldChunk.CHUNK_SIZE + y;
-
-							subData[x + y * WorldChunk.CHUNK_SIZE] = map[totalX + totalY * width];
+								subData[l][x + y * WorldChunk.CHUNK_SIZE] = map[totalX + totalY * width];
+							}
 						}
 					}
 
@@ -260,14 +261,17 @@ public class World {
 	 * 
 	 * @param chunk
 	 * @param tile
+	 * @param layer
 	 * @param xTile
 	 * @param yTile
 	 */
-	void onTileUpdate(WorldChunk chunk, Tile oldTile, Tile newTile, int xTile, int yTile) {
-		updateHeightmap(xTile);
+	void onTileUpdate(WorldChunk chunk, Tile oldTile, Tile newTile, Layer layer, int xTile, int yTile) {
+		if (layer.index == 0) {
+			updateHeightmap(xTile);
+		}
 	}
 
-	public Tile getTile(int xTile, int yTile) {
+	public Tile getTile(Layer layer, int xTile, int yTile) {
 		if (xTile < 0 || xTile >= width || yTile < 0 || yTile >= height) {
 			return null;
 		}
@@ -281,10 +285,10 @@ public class World {
 			return null;
 		}
 
-		return chunk.getTile(xTile - chunkX * WorldChunk.CHUNK_SIZE, yTile - chunkY * WorldChunk.CHUNK_SIZE);
+		return chunk.getTile(layer, xTile - chunkX * WorldChunk.CHUNK_SIZE, yTile - chunkY * WorldChunk.CHUNK_SIZE);
 	}
 
-	public void setTile(int xTile, int yTile, int id) {
+	public void setTile(Layer layer, int xTile, int yTile, int id) {
 		if (xTile < 0 || xTile >= width || yTile < 0 || yTile >= height) {
 			return;
 		}
@@ -298,9 +302,9 @@ public class World {
 			return;
 		}
 
-		Tile tile = tileManager.createTile(id, this, xTile, yTile);
+		Tile tile = tileManager.createTile(id, this, layer, xTile, yTile);
 
-		chunk.setTile(xTile - chunkX * WorldChunk.CHUNK_SIZE, yTile - chunkY * WorldChunk.CHUNK_SIZE, tile);
+		chunk.setTile(layer, xTile - chunkX * WorldChunk.CHUNK_SIZE, yTile - chunkY * WorldChunk.CHUNK_SIZE, tile);
 	}
 
 	public int getHighestTileAt(int xTile) {
@@ -431,7 +435,7 @@ public class World {
 	private void updateHeightmap(int x) {
 		int h = 0;
 		for (int y = height - 1; y > 0; y--) {
-			if (getTile(x, y) != null) {
+			if (getTile(Layer.Foreground, x, y) != null) {
 				h = y;
 				break;
 			}

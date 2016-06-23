@@ -32,6 +32,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.rotef.game.assets.Sprite;
 import com.rotef.game.util.ShaderUtils;
+import com.rotef.game.world.Layer;
 import com.rotef.game.world.World;
 import com.rotef.game.world.entity.Entity;
 import com.rotef.game.world.light.LightManager;
@@ -39,6 +40,9 @@ import com.rotef.game.world.physics.PhysicsManager;
 import com.rotef.game.world.tile.Tile;
 
 public class WorldRenderer {
+
+	private static final Color foregroundColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+	private static final Color backgroundColor = new Color(0.5f, 0.5f, 0.5f, 1.0f);
 
 	private static final int NUM_VERTICES = 20;
 
@@ -123,17 +127,18 @@ public class WorldRenderer {
 
 		for (int xt = tileX0; xt < tileX1; xt++) {
 			for (int yt = tileY0; yt < tileY1; yt++) {
-				Tile tile = world.getTile(xt, yt);
+				Tile tile = world.getTile(Layer.Background, xt, yt);
 
 				if (tile != null) {
 					if (tile.hasSprite()) {
 						int x = xt * Tile.TILE_SIZE;
 						int y = yt * Tile.TILE_SIZE;
-						renderObject(tile.getSprite().getSprite(), x, y, Tile.TILE_SIZE, Tile.TILE_SIZE);
+						renderObject(tile.getSprite().getSprite(), x, y, Tile.TILE_SIZE, Tile.TILE_SIZE, backgroundColor);
 					}
 				}
 			}
 		}
+
 		Collection<Entity> entities = world.getEntityManager().getEntities();
 		for (Entity e : entities) {
 			float x = (e.getX() - e.getWidth() / 2) * PhysicsManager.PPM;
@@ -144,51 +149,32 @@ public class WorldRenderer {
 			e.render(this, x, y, w, h);
 		}
 
+		for (int xt = tileX0; xt < tileX1; xt++) {
+			for (int yt = tileY0; yt < tileY1; yt++) {
+				Tile tile = world.getTile(Layer.Foreground, xt, yt);
+
+				if (tile != null) {
+					if (tile.hasSprite()) {
+						int x = xt * Tile.TILE_SIZE;
+						int y = yt * Tile.TILE_SIZE;
+						renderObject(tile.getSprite().getSprite(), x, y, Tile.TILE_SIZE, Tile.TILE_SIZE, foregroundColor);
+					}
+				}
+			}
+		}
+
 		batch.end();
 	}
 
-	// public void renderOccluders(Light light, OrthographicCamera
-	// shadowMapCamera) {
-	// float lx = light.getX();
-	// float ly = light.getY();
-	// float ld = light.getDistance();
-	// Rectangle lightRect = new Rectangle(lx - ld, ly - ld, ld * 2, ld * 2);
-	//
-	// batch.setShader(objectShader);
-	// batch.setProjectionMatrix(shadowMapCamera.combined);
-	// batch.begin();
-	// batch.enableBlending();
-	// batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-	//
-	// int x0 = (int) (lightRect.x * 2);
-	// int y0 = (int) (lightRect.y * 2);
-	// int x1 = (int) (x0 + (lightRect.width * 2));
-	// int y1 = (int) (y0 + (lightRect.height * 2));
-	//
-	// for (int xt = x0; xt < x1; xt++) {
-	// for (int yt = y0; yt < y1; yt++) {
-	// Tile tile = world.getTile(xt, yt);
-	//
-	// if (tile != null) {
-	// if (tile.hasSprite()) {
-	// int x = xt * Tile.TILE_SIZE;
-	// int y = yt * Tile.TILE_SIZE;
-	// renderObject(tile.getSprite().getSprite(), x, y, Tile.TILE_SIZE,
-	// Tile.TILE_SIZE);
-	// }
-	// }
-	// }
-	// }
-	//
-	// batch.end();
-	// }
-
 	public void renderObject(Sprite sprite, float x, float y, float width, float height) {
+		renderObject(sprite, x, y, width, height, batch.getColor());
+	}
+
+	public void renderObject(Sprite sprite, float x, float y, float width, float height, Color col) {
 		if (sprite == null)
 			return;
 
-		final Color batchColor = batch.getColor();
-		final float color = Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, batchColor.a);
+		final float color = Color.toFloatBits(col.r, col.g, col.b, col.a);
 
 		final float[] vertices = this.vertices;
 

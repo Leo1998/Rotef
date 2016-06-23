@@ -25,9 +25,11 @@ public class WorldChunkSerializer extends Serializer<WorldChunk> {
 		o.save();
 		WorldChunkData data = o.getSaveData();
 		if (data != null) {
-			output.writeInts(data.getData());
+			for (int l = 0; l < 2; l++) {
+				output.writeInts(data.getData()[l]);
+			}
 		} else {
-			output.writeInts(new int[WorldChunk.CHUNK_SIZE * WorldChunk.CHUNK_SIZE]);
+
 		}
 		o.clearSaveData();
 	}
@@ -36,7 +38,9 @@ public class WorldChunkSerializer extends Serializer<WorldChunk> {
 	public WorldChunk read(Kryo kryo, Input input, Class<WorldChunk> type) {
 		int chunkX = input.readInt();
 		int chunkY = input.readInt();
-		int[] data = input.readInts(WorldChunk.CHUNK_SIZE * WorldChunk.CHUNK_SIZE);
+		int[] foreground = input.readInts(WorldChunk.CHUNK_SIZE * WorldChunk.CHUNK_SIZE);
+		int[] background = input.readInts(WorldChunk.CHUNK_SIZE * WorldChunk.CHUNK_SIZE);
+		int[][] data = new int[][] { foreground, background };
 
 		return new WorldChunk(chunkX, chunkY, world, new RawChunkData(data));
 	}

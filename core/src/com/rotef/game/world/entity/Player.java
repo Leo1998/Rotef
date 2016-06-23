@@ -1,6 +1,7 @@
 package com.rotef.game.world.entity;
 
 import com.rotef.game.template.Template;
+import com.rotef.game.world.Layer;
 import com.rotef.game.world.World;
 import com.rotef.game.world.tile.Tile;
 
@@ -22,15 +23,17 @@ public class Player extends LivingEntity {
 	}
 
 	public void mine(float x, float y) {
+		Layer layer = Layer.Foreground;
+
 		int xt = (int) (x * 2);
 		int yt = (int) (y * 2);
-		Tile tile = getWorld().getTile(xt, yt);
+		Tile tile = getWorld().getTile(layer, xt, yt);
 
 		if (tile != null) {
 			float dst = calcDst(x, y, getX(), getY());
 
 			if (dst <= getMiningDistance()) {
-				getWorld().setTile(xt, yt, 0);
+				getWorld().setTile(layer, xt, yt, 0);
 			}
 		}
 	}

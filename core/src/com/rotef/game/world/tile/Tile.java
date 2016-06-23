@@ -3,6 +3,7 @@ package com.rotef.game.world.tile;
 import com.badlogic.gdx.graphics.Color;
 import com.rotef.game.Game;
 import com.rotef.game.template.Template;
+import com.rotef.game.world.Layer;
 import com.rotef.game.world.World;
 import com.rotef.game.world.tile.textures.DynamicTileSprite;
 import com.rotef.game.world.tile.textures.TileSprite;
@@ -34,6 +35,7 @@ public abstract class Tile {
 	private TileSprite sprite;
 	private Color lightColor = null;
 
+	private Layer layer;
 	private int xTile;
 	private int yTile;
 
@@ -42,7 +44,7 @@ public abstract class Tile {
 	private boolean hasTileBeneath = false;
 	private boolean hasTileLeft = false;
 
-	Tile(Template template, World world, int xTile, int yTile) {
+	Tile(Template template, World world, Layer layer, int xTile, int yTile) {
 		this.template = template;
 		this.id = template.getInteger("id");
 		this.type = Type.valueOf(template.getString("type"));
@@ -53,6 +55,7 @@ public abstract class Tile {
 		this.world = world;
 		this.xTile = xTile;
 		this.yTile = yTile;
+		this.layer = layer;
 	}
 
 	/**
@@ -61,10 +64,10 @@ public abstract class Tile {
 	 * @param delta
 	 */
 	public void internalUpdate(float delta) {
-		hasTileAbove = world.getTile(xTile, yTile + 1) != null;
-		hasTileRight = world.getTile(xTile + 1, yTile) != null;
-		hasTileBeneath = world.getTile(xTile, yTile - 1) != null;
-		hasTileLeft = world.getTile(xTile - 1, yTile) != null;
+		hasTileAbove = world.getTile(layer, xTile, yTile + 1) != null;
+		hasTileRight = world.getTile(layer, xTile + 1, yTile) != null;
+		hasTileBeneath = world.getTile(layer, xTile, yTile - 1) != null;
+		hasTileLeft = world.getTile(layer, xTile - 1, yTile) != null;
 
 		if (this.hasSprite()) {
 			sprite.update();
@@ -123,6 +126,10 @@ public abstract class Tile {
 
 	public boolean hasTileLeft() {
 		return hasTileLeft;
+	}
+
+	public Layer getLayer() {
+		return layer;
 	}
 
 	public int getXTile() {
