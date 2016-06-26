@@ -115,7 +115,7 @@ public class World {
 				listener.status(msg, progress);
 			}
 		});
-		int[] map = generator.generateMap(width, height);
+		int[][] map = generator.generateMap(width, height);
 
 		{
 			int loadedChunks = 0;
@@ -128,7 +128,7 @@ public class World {
 								int totalX = chunkX * WorldChunk.CHUNK_SIZE + x;
 								int totalY = chunkY * WorldChunk.CHUNK_SIZE + y;
 
-								subData[l][x + y * WorldChunk.CHUNK_SIZE] = map[totalX + totalY * width];
+								subData[l][x + y * WorldChunk.CHUNK_SIZE] = map[l][totalX + totalY * width];
 							}
 						}
 					}

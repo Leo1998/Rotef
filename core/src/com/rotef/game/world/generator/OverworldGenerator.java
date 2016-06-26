@@ -10,8 +10,8 @@ public class OverworldGenerator extends Generator {
 	}
 
 	@Override
-	public int[] generateMap(int width, int height) {
-		int[] map = new int[width * height];
+	public int[][] generateMap(int width, int height) {
+		int[][] map = new int[2][width * height];
 
 		int surface = height / 2;
 
@@ -49,19 +49,21 @@ public class OverworldGenerator extends Generator {
 				if (yLevel - y < 10) {
 					localCaveOffset = (yLevel - y) / 20D;
 				}
+
 				if (caveVal < caveOffset + localCaveOffset) {
-					map[(int) (x + y * width)] = tile;
+					map[0][(int) (x + y * width)] = tile;
 				} else {
 					if (y < lavaLevel) {
-						map[(int) (x + y * width)] = 4;
+						map[0][(int) (x + y * width)] = 4;
 					}
 				}
+				map[1][(int) (x + y * width)] = tile;
 			}
 
 			// generate oceans and lakes
 			if (yLevel <= oceanLevel) {
 				for (int y = yLevel; y < oceanLevel; y++) {
-					map[(int) (x + y * width)] = 2;
+					map[0][(int) (x + y * width)] = 2;
 				}
 			}
 		}
