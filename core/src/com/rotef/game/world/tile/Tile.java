@@ -11,7 +11,7 @@ import com.rotef.game.world.tile.textures.TileSprite;
 public abstract class Tile {
 
 	public enum Type {
-		Solid(TileSolid.class), Fluid(TileFluid.class);
+		Solid(TileSolid.class), Fluid(TileFluid.class), Unsolid(TileUnsolid.class);
 
 		//
 

@@ -68,6 +68,19 @@ public class OverworldGenerator extends Generator {
 			}
 		}
 
+		// place torches
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				if (map[0][x + y * width] == 0) {
+					if (map[0][x + Math.max(0, y - 1) * width] > 0) {
+						if (random.nextInt(20) == 0) {
+							map[0][x + y * width] = 5;
+						}
+					}
+				}
+			}
+		}
+
 		sendProgress("Finished!", 1.0f);
 
 		return map;

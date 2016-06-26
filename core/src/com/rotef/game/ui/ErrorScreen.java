@@ -7,18 +7,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.rotef.game.Game;
-import com.rotef.game.util.ExceptionUtils;
 
 public class ErrorScreen extends BaseScreen {
 
-	private Exception e;
-	private String msg;
+	private Throwable e;
 
-	public ErrorScreen(Exception e) {
+	public ErrorScreen(Throwable e) {
 		super();
 
 		this.e = e;
-		this.msg = ExceptionUtils.getStackTrace(e);
 	}
 
 	@Override
@@ -26,12 +23,8 @@ public class ErrorScreen extends BaseScreen {
 		super.show();
 	}
 
-	public Exception getException() {
+	public Throwable getThrowable() {
 		return e;
-	}
-
-	public String getMsg() {
-		return msg;
 	}
 
 	@Override
@@ -40,7 +33,7 @@ public class ErrorScreen extends BaseScreen {
 		ScrollPane scrollPane = new ScrollPane(scrollTable, UI.skin);
 		rootTable.add(scrollPane).width(width / 2 / uiScale).height(height / 2 / uiScale).center();
 
-		Label label = new Label(msg, UI.skin);
+		Label label = new Label(e.toString(), UI.skin);
 		scrollTable.add(label).center();
 
 		scrollTable.row();

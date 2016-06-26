@@ -1,0 +1,7 @@
+{
+	"id": 5,
+	"type": Unsolid,
+	"name": "Torch",
+	"spritePath": "common/tiles/torch.png",
+	"lightColor": [1.0, 1.0, 0.18]
+}

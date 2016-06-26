@@ -21,6 +21,7 @@ public class TemplateManager {
 		loadTemplate("common/tiles/water.tile", Type.Tile);
 		loadTemplate("common/tiles/stone.tile", Type.Tile);
 		loadTemplate("common/tiles/lava.tile", Type.Tile);
+		loadTemplate("common/tiles/torch.tile", Type.Tile);
 
 		loadTemplate("common/entity/player.entity", Type.Entity);
 	}
