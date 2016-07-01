@@ -1,6 +1,7 @@
 package com.rotef.game.world.entity;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
 import com.rotef.game.template.Template;
 import com.rotef.game.world.World;
@@ -11,6 +12,8 @@ public abstract class LivingEntity extends Entity {
 		Right(), Left();
 	}
 
+	private Foot foot = null;
+
 	private Array<MobTask> tasks = new Array<MobTask>();
 	private int life = 10;
 	private float walkingSpeed = 3.6f;
@@ -18,14 +21,41 @@ public abstract class LivingEntity extends Entity {
 
 	private float lastJumpTime = 0.0f;
 
-	public LivingEntity(Template template, World world) {
+	LivingEntity(Template template, World world) {
 		super(template, world);
 
 		this.life = template.getInteger("life");
 		this.walkingSpeed = template.getFloat("walkingSpeed");
 
-		// setup some more friction, 60 kg weight and fix rotation
-		this.physicsProperties = new PhysicsProperties(60.0f, 0.0f, 0.99f, true, true);
+		// setup some more friction, 80 kg weight and fix rotation
+		this.physicsProperties = new PhysicsProperties(80.0f, 0.0f, 0.99f, true, true);
+	}
+
+	@Override
+	public void update(float delta) {
+		super.update(delta);
+
+		if (hasFoot()) {
+			for (Fixture f : body.getFixtureList()) {
+				f.setFriction(isGrounded() ? physicsProperties.getFriction() : 0f);
+			}
+		}
+	}
+
+	public boolean isGrounded() {
+		return hasFoot() && foot.getNumContacts() > 0;
+	}
+
+	public Foot getFoot() {
+		return foot;
+	}
+
+	public boolean hasFoot() {
+		return foot != null;
+	}
+
+	public void setFoot(Foot foot) {
+		this.foot = foot;
 	}
 
 	public void walk(float val) {

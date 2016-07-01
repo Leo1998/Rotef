@@ -1,20 +1,37 @@
 package com.rotef.game.world.entity;
 
+import com.rotef.game.Game;
+import com.rotef.game.assets.Sprite;
+import com.rotef.game.renderer.WorldRenderer;
 import com.rotef.game.template.Template;
 import com.rotef.game.world.Layer;
 import com.rotef.game.world.World;
+import com.rotef.game.world.physics.PhysicsManager;
 import com.rotef.game.world.tile.Tile;
 
 public class Player extends LivingEntity {
 
 	private float miningDistance = 3.5f;
 
-	// playerDef.addValue("walkingSpeed", "3.6");
-	// playerDef.addValue("life", "100");
-	// playerDef.addValue("miningDistance", "3.5");
+	private Sprite sprite;
 
 	public Player(Template template, World world) {
 		super(template, world);
+
+		this.sprite = Game.assets.getSprite(template.getString("spritePath"));
+
+		this.width = sprite.getWidth() / PhysicsManager.PPM;
+		this.height = sprite.getHeight() / PhysicsManager.PPM;
+	}
+
+	@Override
+	public void render(WorldRenderer renderer, float x, float y, float w, float h) {
+		if (this.getDirection() == Direction.Left) {
+			x += w;
+			w = -w;
+		}
+
+		renderer.renderObject(sprite, x, y, w, h);
 	}
 
 	@Override

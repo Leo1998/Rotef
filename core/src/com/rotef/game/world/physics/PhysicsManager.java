@@ -17,9 +17,11 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.rotef.game.world.World;
 import com.rotef.game.world.entity.Entity;
 import com.rotef.game.world.entity.Foot;
+import com.rotef.game.world.entity.LivingEntity;
 import com.rotef.game.world.entity.PhysicsProperties;
 
 public class PhysicsManager implements ContactListener {
@@ -107,13 +109,12 @@ public class PhysicsManager implements ContactListener {
 
 		Body entityBody = physicsWorld.createBody(entityBodyDef);
 
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(entity.getWidth() / 2, entity.getHeight() / 2);
-
 		float squareMeters = entity.getWidth() * entity.getHeight();
 		float density = props.getWeight() / squareMeters;
 
 		{
+			Shape shape = entity.createShape();
+
 			FixtureDef fDef = new FixtureDef();
 			fDef.shape = shape;
 			fDef.density = density;
@@ -122,13 +123,17 @@ public class PhysicsManager implements ContactListener {
 			fDef.isSensor = false;
 
 			entityBody.createFixture(fDef).setUserData(entity);
+
+			shape.dispose();
 		}
 
-		if (props.isRequireFootSensor()) {
+		if (props.isRequireFootSensor() && entity instanceof LivingEntity) {
+			PolygonShape shape = new PolygonShape();
 			shape.setAsBox(entity.getWidth() / 3, 0.15f, new Vector2(0, -entity.getHeight() / 2), 0);
 
-			Foot foot = new Foot(entity);
-			entity.setFoot(foot);
+			LivingEntity livingEntity = (LivingEntity) entity;
+			Foot foot = new Foot(livingEntity);
+			livingEntity.setFoot(foot);
 
 			FixtureDef fDef = new FixtureDef();
 			fDef.shape = shape;
@@ -138,9 +143,9 @@ public class PhysicsManager implements ContactListener {
 			fDef.isSensor = true;
 
 			entityBody.createFixture(fDef).setUserData(foot);
-		}
 
-		shape.dispose();
+			shape.dispose();
+		}
 
 		entityBodies.put(entity, entityBody);
 

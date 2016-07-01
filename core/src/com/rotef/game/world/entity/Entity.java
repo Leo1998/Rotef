@@ -2,9 +2,8 @@ package com.rotef.game.world.entity;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.rotef.game.Game;
-import com.rotef.game.assets.Sprite;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.rotef.game.renderer.WorldRenderer;
 import com.rotef.game.template.Template;
 import com.rotef.game.world.World;
@@ -28,7 +27,6 @@ public abstract class Entity {
 	private Template template;
 	private final Type type;
 	private final String name;
-	private Sprite sprite;
 
 	private final World world;
 
@@ -37,40 +35,36 @@ public abstract class Entity {
 	private float spawnX;
 	private float spawnY;
 
-	private float width;
-	private float height;
+	protected float width;
+	protected float height;
 
-	private Foot foot = null;
 	protected Body body;
 	protected PhysicsProperties physicsProperties = new PhysicsProperties();
 
-	public Entity(Template template, World world) {
+	Entity(Template template, World world) {
 		this.template = template;
 		this.type = Entity.Type.valueOf(template.getString("type"));
 		this.name = template.getString("name");
-		this.sprite = Game.assets.getSprite(template.getString("spritePath"));
-
-		this.width = sprite.getWidth() / PhysicsManager.PPM;
-		this.height = sprite.getHeight() / PhysicsManager.PPM;
 
 		this.world = world;
 	}
 
 	public void update(float delta) {
-		if (hasFoot()) {
-			for (Fixture f : body.getFixtureList()) {
-				f.setFriction(isGrounded() ? physicsProperties.getFriction() : 0f);
-			}
-		}
 	}
 
-	public void render(WorldRenderer renderer, float x, float y, float w, float h) {
-		renderer.renderObject(sprite, x, y, w, h);
-	}
+	public abstract void render(WorldRenderer renderer, float x, float y, float w, float h);
 
 	void setSpawnPosition(float x, float y) {
 		this.spawnX = x;
 		this.spawnY = y;
+	}
+
+	public Shape createShape() {
+		PolygonShape shape = new PolygonShape();
+
+		shape.setAsBox(width / 2, height / 2);
+
+		return shape;
 	}
 
 	public Vector2 getPosition() {
@@ -143,22 +137,6 @@ public abstract class Entity {
 
 	public void setBody(Body body) {
 		this.body = body;
-	}
-
-	public boolean isGrounded() {
-		return hasFoot() && foot.getNumContacts() > 0;
-	}
-
-	public Foot getFoot() {
-		return foot;
-	}
-
-	public boolean hasFoot() {
-		return foot != null;
-	}
-
-	public void setFoot(Foot foot) {
-		this.foot = foot;
 	}
 
 	@Override

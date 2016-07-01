@@ -2,14 +2,14 @@ package com.rotef.game.world.entity;
 
 public class Foot {
 
-	private final Entity owner;
+	private final LivingEntity owner;
 	private int numContacts = 0;
 
-	public Foot(Entity owner) {
+	public Foot(LivingEntity owner) {
 		this.owner = owner;
 	}
 
-	public Entity getOwner() {
+	public LivingEntity getOwner() {
 		return owner;
 	}
 
