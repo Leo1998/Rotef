@@ -21,7 +21,7 @@ public class LightManager {
 	private int stateHeight;
 	private int startX;
 	private int startY;
-	private int offScreenTiles = 6;
+	private int offScreenTiles = 2;
 
 	private Color sunColor = Color.WHITE;
 	private float ambient = 0.053f;
@@ -46,20 +46,21 @@ public class LightManager {
 					if (tile != null) {
 						Color lightColor = tile.getLightColor();
 						if (!lightColor.equals(Color.BLACK)) {
-							state.set(lightColor.r, lightColor.g, lightColor.b);
-							state.setLit(true);
+							state.set2(lightColor.r, lightColor.g, lightColor.b);
 						} else {
-							state.set(0.0f, 0.0f, 0.0f);
-							state.setLit(false);
+							state.set2(0.0f, 0.0f, 0.0f);
 						}
 					} else {
-						int a = 25;
-						float brightness = 1.0f - MathHelper.ensureRange(world.getHighestTileAt(worldX) - worldY, 0, a) / (float) a;
-						brightness *= world.getTimeManager().getSunIntensity();
-						brightness = MathHelper.ensureRange(brightness, 0.0f, 1.0f);
+						float d = world.getHighestTileAt(worldX) - worldY;
 
-						state.setLit(brightness > 0.0f);
-						state.set(sunColor.r * brightness, sunColor.g * brightness, sunColor.b * brightness);
+						if (world.getTile(Layer.Background, worldX, worldY) == null) {
+							int a = 25;
+							float brightness = 1.0f - MathHelper.ensureRange(d, 0, a) / (float) a;
+							brightness *= world.getTimeManager().getSunIntensity();
+							brightness = MathHelper.ensureRange(brightness, 0.0f, 1.0f);
+
+							state.set2(sunColor.r * brightness, sunColor.g * brightness, sunColor.b * brightness);
+						}
 					}
 				}
 			}
@@ -73,46 +74,45 @@ public class LightManager {
 				for (int y = swipe.y; y < swipe.y + swipe.height; y++) {
 					LightingState state = states[x + y * stateWidth];
 
-					if (!state.isLit()) {
-						float r = 0.0f;
-						float g = 0.0f;
-						float b = 0.0f;
+					int shineDist = 3 * resolution;
 
-						int shineDist = 3 * resolution;
+					float r = 0.0f;
+					float g = 0.0f;
+					float b = 0.0f;
 
-						LightingState s = null;
-						double dist = Double.MAX_VALUE;
-						for (int x0 = x - shineDist; x0 < x + shineDist; x0++) {
-							for (int y0 = y - shineDist; y0 < y + shineDist; y0++) {
-								if (x0 >= 0 && x0 < stateWidth && y0 >= 0 && y0 < stateHeight) {
-									LightingState s0 = states[x0 + y0 * stateWidth];
+					double minDist = Double.MAX_VALUE;
+					for (int x0 = x - shineDist; x0 < x + shineDist; x0++) {
+						for (int y0 = y - shineDist; y0 < y + shineDist; y0++) {
+							if (x0 >= 0 && x0 < stateWidth && y0 >= 0 && y0 < stateHeight) {
+								LightingState s = states[x0 + y0 * stateWidth];
 
-									if (s0.isLit()) {
-										double dist0 = MathHelper.distance(x, y, s0.getX(), s0.getY());
+								if (s.isLit()) {
+									double dist = MathHelper.distance(x, y, s.getX(), s.getY());
 
-										if (dist0 < dist) {
-											s = s0;
-											dist = dist0;
-										}
+									if (dist < minDist) {
+										minDist = dist;
+
+										r = s.r2;
+										g = s.g2;
+										b = s.b2;
 									}
 								}
 							}
 						}
-
-						if (s != null) {
-							float lit = 1.0f - (float) (Math.min(dist, shineDist) / shineDist);
-							lit = MathHelper.ensureRange(lit, 0.0f, 1.0f);
-
-							r += s.getR() * lit;
-							g += s.getG() * lit;
-							b += s.getB() * lit;
-						}
-
-						r = MathHelper.ensureRange(r, ambient, 1.0f);
-						g = MathHelper.ensureRange(g, ambient, 1.0f);
-						b = MathHelper.ensureRange(b, ambient, 1.0f);
-						state.set(r, g, b);
 					}
+
+					float lit = 1.0f - (float) (Math.min(minDist, shineDist) / shineDist);
+					lit = MathHelper.ensureRange(lit, 0.0f, 1.0f);
+
+					r *= lit;
+					g *= lit;
+					b *= lit;
+
+					r = MathHelper.ensureRange(r, ambient, 1.0f);
+					g = MathHelper.ensureRange(g, ambient, 1.0f);
+					b = MathHelper.ensureRange(b, ambient, 1.0f);
+
+					state.set(r, g, b);
 				}
 			}
 		}
@@ -181,42 +181,15 @@ public class LightManager {
 		startX = (int) (viewport.getX() / Tile.TILE_SIZE) - offScreenTiles;
 		startY = (int) (viewport.getY() / Tile.TILE_SIZE) - offScreenTiles;
 
+		for (int x = 0; x < stateWidth; x++) {
+			for (int y = 0; y < stateHeight; y++) {
+				states[x + y * stateWidth].clear();
+			}
+		}
+
 		executer.executeLightingPass(lightingPass1);
 
 		executer.executeLightingPass(lightingPass2);
-
-		// for (int x = 0; x < stateWidth; x++) {
-		// for (int y = 0; y < stateHeight; y++) {
-		// LightingState state = states[x][y];
-		//
-		// if (state.lit) {
-		// int shineDist = 2 * resolution;
-		//
-		// for (int x0 = x - shineDist; x0 < x + shineDist; x0++) {
-		// for (int y0 = y - shineDist; y0 < y + shineDist; y0++) {
-		// if (x0 >= 0 && x0 < stateWidth && y0 >= 0 && y0 < stateHeight) {
-		// LightingState s0 = states[x0][y0];
-		//
-		// if (!s0.lit) {
-		// double dist0 = MathHelper.distance(x, y, s0.x, s0.y);
-		//
-		// float lit = 1.0f - (float) (Math.min(dist0, shineDist) / shineDist);
-		// lit = MathHelper.ensureRange(lit, 0.0f, 1.0f);
-		//
-		// s0.r += state.r * lit;
-		// s0.g += state.g * lit;
-		// s0.b += state.b * lit;
-		//
-		// s0.r = MathHelper.ensureRange(s0.r, 0.0f, 1.0f);
-		// s0.g = MathHelper.ensureRange(s0.g, 0.0f, 1.0f);
-		// s0.b = MathHelper.ensureRange(s0.b, 0.0f, 1.0f);
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
 
 		lightMap.setLightData(states);
 	}

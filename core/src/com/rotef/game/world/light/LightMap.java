@@ -55,9 +55,9 @@ public class LightMap {
 			for (int x = 0; x < width; x++) {
 				LightingState state = states[x + y * width];
 
-				buffer.put(convertColorChannel(state.getR()));
-				buffer.put(convertColorChannel(state.getG()));
-				buffer.put(convertColorChannel(state.getB()));
+				buffer.put(convertColorChannel(state.r));
+				buffer.put(convertColorChannel(state.g));
+				buffer.put(convertColorChannel(state.b));
 			}
 		}
 		buffer.flip();
