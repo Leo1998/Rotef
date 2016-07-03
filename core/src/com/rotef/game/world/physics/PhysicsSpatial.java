@@ -47,7 +47,7 @@ public class PhysicsSpatial {
 		bodyDef.position.set(new Vector2(xp, yp));
 		bodyDef.type = BodyType.StaticBody;
 
-		Body yody = physicsWorld.createBody(bodyDef);
+		Body body = physicsWorld.createBody(bodyDef);
 
 		float w2 = r.getWidth() / 2 / 2;
 		float h2 = r.getHeight() / 2 / 2;
@@ -64,13 +64,13 @@ public class PhysicsSpatial {
 		fDef.shape = shape;
 		fDef.density = 0.0f;
 
-		yody.createFixture(fDef).setUserData("tile");
+		body.createFixture(fDef).setUserData("tile");
 
 		shape.dispose();
 
-		bodies.add(yody);
+		bodies.add(body);
 
-		return yody;
+		return body;
 	}
 
 	public Array<Body> getBodies() {

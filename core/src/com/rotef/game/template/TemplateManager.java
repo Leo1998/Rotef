@@ -30,13 +30,13 @@ public class TemplateManager {
 		Gdx.app.log("TemplateManager", "Preloading Sprites...");
 
 		for (Template t : getTemplates(Type.Tile)) {
-			String spritePath = t.getString("spritePath");
+			String spritePath = t.map.getString("spritePath");
 			if (spritePath != null && !spritePath.isEmpty()) {
 				Game.assets.loadSprite(Gdx.files.internal(spritePath));
 			}
 		}
 		for (Template t : getTemplates(Type.Entity)) {
-			String spritePath = t.getString("spritePath");
+			String spritePath = t.map.getString("spritePath");
 			if (spritePath != null && !spritePath.isEmpty()) {
 				Game.assets.loadSprite(Gdx.files.internal(spritePath));
 			}
@@ -48,7 +48,7 @@ public class TemplateManager {
 	}
 
 	private static void loadTemplate(FileHandle file, Type type) {
-		Template template = Template.loadTemplate(file);
+		Template template = new Template(file);
 
 		Gdx.app.log("TemplateManager", "Loaded Template (" + file.path() + ", " + type.name() + ")");
 
@@ -70,7 +70,7 @@ public class TemplateManager {
 		Array<Template> list = getTemplates(type);
 
 		for (Template t : list) {
-			if (t.getString("name").equals(name)) {
+			if (t.map.getString("name").equals(name)) {
 				return t;
 			}
 		}

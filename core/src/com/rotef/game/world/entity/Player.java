@@ -6,7 +6,6 @@ import com.rotef.game.renderer.WorldRenderer;
 import com.rotef.game.template.Template;
 import com.rotef.game.world.Layer;
 import com.rotef.game.world.World;
-import com.rotef.game.world.physics.PhysicsManager;
 import com.rotef.game.world.tile.Tile;
 
 public class Player extends LivingEntity {
@@ -18,10 +17,7 @@ public class Player extends LivingEntity {
 	public Player(Template template, World world) {
 		super(template, world);
 
-		this.sprite = Game.assets.getSprite(template.getString("spritePath"));
-
-		this.width = sprite.getWidth() / PhysicsManager.PPM;
-		this.height = sprite.getHeight() / PhysicsManager.PPM;
+		this.sprite = Game.assets.getSprite(template.map.getString("spritePath"));
 	}
 
 	@Override

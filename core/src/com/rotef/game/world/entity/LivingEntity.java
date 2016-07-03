@@ -24,8 +24,8 @@ public abstract class LivingEntity extends Entity {
 	LivingEntity(Template template, World world) {
 		super(template, world);
 
-		this.life = template.getInteger("life");
-		this.walkingSpeed = template.getFloat("walkingSpeed");
+		this.life = template.map.getInt("life");
+		this.walkingSpeed = template.map.getFloat("walkingSpeed");
 
 		// setup some more friction, 80 kg weight and fix rotation
 		this.physicsProperties = new PhysicsProperties(80.0f, 0.0f, 0.99f, true, true);

@@ -39,7 +39,7 @@ public class LightingState {
 	}
 
 	public boolean isLit() {
-		return r2 > 0.0f && g2 > 0.0f && b2 > 0.0f;
+		return r2 > 0.0f || g2 > 0.0f || b2 > 0.0f;
 	}
 
 	public void clear() {

@@ -79,8 +79,8 @@ public class LightManager {
 					float r = 0.0f;
 					float g = 0.0f;
 					float b = 0.0f;
-
 					double minDist = Double.MAX_VALUE;
+
 					for (int x0 = x - shineDist; x0 < x + shineDist; x0++) {
 						for (int y0 = y - shineDist; y0 < y + shineDist; y0++) {
 							if (x0 >= 0 && x0 < stateWidth && y0 >= 0 && y0 < stateHeight) {

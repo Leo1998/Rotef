@@ -48,7 +48,7 @@ public class EntityManager {
 	private Entity createEntity(Template template, World world) {
 		if (template != null) {
 			try {
-				Class<? extends Entity> clazz = Entity.Type.valueOf(template.getString("type")).clazz;
+				Class<? extends Entity> clazz = Entity.Type.valueOf(template.map.getString("type")).clazz;
 
 				Constructor<? extends Entity> c = clazz.getConstructor(Template.class, World.class);
 

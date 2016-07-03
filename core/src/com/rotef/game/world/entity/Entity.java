@@ -35,16 +35,19 @@ public abstract class Entity {
 	private float spawnX;
 	private float spawnY;
 
-	protected float width;
-	protected float height;
+	private float width;
+	private float height;
 
 	protected Body body;
 	protected PhysicsProperties physicsProperties = new PhysicsProperties();
 
 	Entity(Template template, World world) {
 		this.template = template;
-		this.type = Entity.Type.valueOf(template.getString("type"));
-		this.name = template.getString("name");
+		this.type = Entity.Type.valueOf(template.map.getString("type"));
+		this.name = template.map.getString("name");
+
+		this.width = template.map.getFloat("width");
+		this.height = template.map.getFloat("height");
 
 		this.world = world;
 	}

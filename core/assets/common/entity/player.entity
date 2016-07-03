@@ -1,6 +1,8 @@
 {
 	"type": Player,
 	"name": "Player",
+	"width": 0.875,
+	"height": 1.75,
 	"spritePath": "common/entity/player.png",
 	"life": 100,
 	"walkingSpeed": 3.6

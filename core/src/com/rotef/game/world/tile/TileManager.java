@@ -25,7 +25,7 @@ public class TileManager {
 	public Tile createTile(Template template, World world, Layer layer, int xTile, int yTile) {
 		if (template != null) {
 			try {
-				Class<? extends Tile> clazz = Tile.Type.valueOf(template.getString("type")).clazz;
+				Class<? extends Tile> clazz = Tile.Type.valueOf(template.map.getString("type")).clazz;
 
 				Constructor<? extends Tile> c = clazz.getConstructor(Template.class, World.class, Layer.class, int.class, int.class);
 
@@ -42,7 +42,7 @@ public class TileManager {
 
 	private Template findTemplateById(int id) {
 		for (Template t : TemplateManager.getTemplates(Type.Tile)) {
-			if (t.getInteger("id") == id) {
+			if (t.map.getInt("id") == id) {
 				return t;
 			}
 		}

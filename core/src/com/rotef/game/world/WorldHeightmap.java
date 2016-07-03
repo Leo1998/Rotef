@@ -17,6 +17,10 @@ public class WorldHeightmap {
 	}
 
 	public int getHeight(int x) {
+		if (x < 0 || x >= heightValues.length) {
+			return 0;
+		}
+
 		return heightValues[x];
 	}
 

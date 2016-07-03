@@ -2,221 +2,37 @@ package com.rotef.game.template;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.JsonValue.ValueType;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.SerializationException;
 
-public class Template implements Serializable {
+public class Template {
 
-	public static Template loadTemplate(FileHandle file) {
-		Json json = new Json(OutputType.json);
+	public final JsonValue map;
 
-		return json.fromJson(Template.class, file);
+	public Template(FileHandle file) {
+		this.map = new JsonReader().parse(file);
 	}
 
-	public static void saveTemplate(Template template, FileHandle file) {
-		Json json = new Json(OutputType.json);
-
-		String jsonText = json.prettyPrint(template);
+	public void save(FileHandle file) {
+		String jsonText = map.prettyPrint(OutputType.json, 0);
 
 		file.writeString(jsonText, false);
 	}
 
-	private ObjectMap<String, Object> map;
+	public static Color getColor(JsonValue val) {
+		if (val == null || !val.isArray())
+			return Color.BLACK;
 
-	public Template() {
-		this.map = new ObjectMap<String, Object>();
-	}
+		float[] array = val.asFloatArray();
 
-	public boolean has(String key) {
-		return map.containsKey(key);
-	}
-
-	public Object get(String key) {
-		return has(key) ? map.get(key) : null;
-	}
-
-	public String getString(String key) {
-		Object object = get(key);
-		if (object != null && object instanceof String) {
-			return (String) object;
+		if (array.length == 3) {
+			return new Color(array[0], array[1], array[2], 1.0f);
+		} else if (array.length == 4) {
+			return new Color(array[0], array[1], array[2], array[3]);
 		} else {
-			throw new IllegalArgumentException("The Object is not a String!");
+			throw new IllegalStateException("JsonValue is not assignable as a Color!");
 		}
-	}
-
-	public boolean getBoolean(String key) {
-		Object object = get(key);
-		if (object != null && object instanceof Boolean) {
-			return (boolean) object;
-		} else {
-			throw new IllegalArgumentException("The Object is not a Boolean!");
-		}
-	}
-
-	public byte getByte(String key) {
-		Object object = get(key);
-		if (object != null && (object instanceof Long || object instanceof Double)) {
-			return (byte) object;
-		} else {
-			throw new IllegalArgumentException("The Object is not a Byte!");
-		}
-	}
-
-	public char getCharacter(String key) {
-		Object object = get(key);
-		if (object != null && (object instanceof Long || object instanceof Double)) {
-			return (char) object;
-		} else {
-			throw new IllegalArgumentException("The Object is not a Character!");
-		}
-	}
-
-	public short getShort(String key) {
-		Object object = get(key);
-		if (object != null && (object instanceof Long || object instanceof Double)) {
-			return ((Long) object).shortValue();
-		} else {
-			throw new IllegalArgumentException("The Object is not a Short!");
-		}
-	}
-
-	public int getInteger(String key) {
-		Object object = get(key);
-		if (object != null && (object instanceof Long || object instanceof Double)) {
-			return ((Long) object).intValue();
-		} else {
-			throw new IllegalArgumentException("The Object is not a Integer!");
-		}
-	}
-
-	public long getLong(String key) {
-		Object object = get(key);
-		if (object != null && (object instanceof Long || object instanceof Double)) {
-			return (long) object;
-		} else {
-			throw new IllegalArgumentException("The Object is not a Long!");
-		}
-	}
-
-	public float getFloat(String key) {
-		Object object = get(key);
-		if (object != null && (object instanceof Long || object instanceof Double)) {
-			return ((Double) object).floatValue();
-		} else {
-			throw new IllegalArgumentException("The Object is not a Float!");
-		}
-	}
-
-	public double getDouble(String key) {
-		Object object = get(key);
-		if (object != null && (object instanceof Long || object instanceof Double)) {
-			return (double) object;
-		} else {
-			throw new IllegalArgumentException("The Object is not a Double!");
-		}
-	}
-
-	public Color getColor(String key) {
-		Object object = get(key);
-		if (object != null) {
-			Object[] objectArray = (Object[]) object;
-			float[] array = new float[objectArray.length];
-			for (int i = 0; i < objectArray.length; i++) {
-				double d = (double) objectArray[i];
-				array[i] = (float) d;
-			}
-
-			if (array.length == 4) {
-				return new Color(array[0], array[1], array[2], array[3]);
-			} else if (array.length == 3) {
-				return new Color(array[0], array[1], array[2], 1.0f);
-			} else {
-				throw new IllegalArgumentException("The Object is not a Color!");
-			}
-		} else {
-			throw new IllegalArgumentException("The Object is not a Color!");
-		}
-	}
-
-	@Override
-	public String toString() {
-		return map.toString();
-	}
-
-	@Override
-	public void write(Json json) {
-		for (Object object : map) {
-			json.writeValue(object);
-		}
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		read(jsonData);
-	}
-
-	private void read(JsonValue root) {
-		for (JsonValue object : root) {
-			String key = object.name;
-			Object out = null;
-
-			if (object.isObject()) {
-
-				// nothing
-			} else if (object.isArray()) {
-				out = toArray(object);
-			} else if (object.isString()) {
-				out = object.asString();
-			} else if (object.isDouble()) {
-				double doubleValue = object.asDouble();
-				long longValue = object.asLong();
-				out = doubleValue == longValue ? longValue : doubleValue;
-			} else if (object.isLong()) {
-				out = object.asLong();
-			} else if (object.isBoolean()) {
-				out = object.asBoolean();
-			} else if (object.isNull()) {
-				out = null;
-			} else {
-				throw new SerializationException("Unknown object type: " + object);
-			}
-
-			map.put(key, out);
-		}
-	}
-
-	public Object[] toArray(JsonValue object) {
-		if (object.type() != ValueType.array)
-			throw new IllegalStateException("Value is not an array: " + object.type());
-
-		Object[] array = new Object[object.size];
-		int i = 0;
-		for (JsonValue value = object.child; value != null; value = value.next, i++) {
-			Object v;
-			switch (value.type()) {
-			case stringValue:
-				v = value.asString();
-				break;
-			case doubleValue:
-				v = value.asDouble();
-				break;
-			case longValue:
-				v = value.asLong();
-				break;
-			case booleanValue:
-				v = value.asBoolean();
-				break;
-			default:
-				throw new IllegalStateException("Value cannot be converted to boolean: " + value.type());
-			}
-			array[i] = v;
-		}
-		return array;
 	}
 
 }

@@ -46,11 +46,11 @@ public abstract class Tile {
 
 	Tile(Template template, World world, Layer layer, int xTile, int yTile) {
 		this.template = template;
-		this.id = template.getInteger("id");
-		this.type = Type.valueOf(template.getString("type"));
-		this.name = template.getString("name");
-		this.sprite = new DynamicTileSprite(this, Game.assets.getSprite(template.getString("spritePath")));
-		this.lightColor = template.getColor("lightColor");
+		this.id = template.map.getInt("id");
+		this.type = Type.valueOf(template.map.getString("type"));
+		this.name = template.map.getString("name");
+		this.sprite = new DynamicTileSprite(this, Game.assets.getSprite(template.map.getString("spritePath")));
+		this.lightColor = Template.getColor(template.map.get("lightColor"));
 
 		this.world = world;
 		this.xTile = xTile;
